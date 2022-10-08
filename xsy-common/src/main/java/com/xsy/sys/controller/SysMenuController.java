@@ -53,6 +53,17 @@ public class SysMenuController {
         return Result.ok(set);
     }
 
+    /**
+     * 后端所有可配置权限
+     *
+     * @return
+     */
+    @GetMapping("/allPermissions")
+    public Result<List<String>> allPermissions() {
+        List<String> list = sysMenuService.getAllPermissions();
+        return Result.ok(list);
+    }
+
     @GetMapping("list")
     @RequiresPermissions("sys:menu:list")
     public Result<List<SysMenuDTO>> list(Integer type) {

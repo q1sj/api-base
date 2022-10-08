@@ -53,4 +53,7 @@ public interface SysMenuService extends RenBaseService<SysMenuEntity> {
 	 * @param pid  父菜单ID
 	 */
 	List<SysMenuDTO> getListPid(Long pid);
+
+    List<String> getAllPermissions();
+
 }
