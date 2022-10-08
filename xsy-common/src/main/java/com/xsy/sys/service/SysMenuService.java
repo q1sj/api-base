@@ -47,7 +47,11 @@ public interface SysMenuService extends RenBaseService<SysMenuEntity> {
 	 * @param type 菜单类型
 	 */
 	List<SysMenuDTO> getUserMenuList(UserDetail user, Integer type);
-
+	/**
+	 * 查询用户权限列表
+	 * @param userId  用户ID
+	 */
+	List<String> getUserPermissionsList(Long userId);
 	/**
 	 * 根据父菜单，查询子菜单
 	 * @param pid  父菜单ID

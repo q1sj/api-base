@@ -17,7 +17,7 @@ lombok
 commons-lang3
 
 spring-boot-starter-data-elasticsearch:2.3.3.RELEASE(?)
-shiro-core:1.9.0(?)
+shiro-core:1.9.0
 shiro-spring:1.9.0
 mysql-connector-java:8.0.17
 druid-spring-boot-starter:1.1.13

@@ -106,6 +106,11 @@ public class SysMenuServiceImpl extends RenBaseServiceImpl<SysMenuDao, SysMenuEn
     }
 
     @Override
+    public List<String> getUserPermissionsList(Long userId) {
+        return baseDao.getUserPermissionsList(userId);
+    }
+
+    @Override
     public List<SysMenuDTO> getListPid(Long pid) {
         List<SysMenuEntity> menuList = baseDao.getListPid(pid);
 

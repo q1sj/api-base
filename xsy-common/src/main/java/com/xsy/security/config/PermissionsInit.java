@@ -29,7 +29,7 @@ public class PermissionsInit implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         Map<String, Object> controllers = applicationContext.getBeansWithAnnotation(Controller.class);
-        Set<String> permissionsSet = new HashSet<>();
+        Set<String> permissionsSet = new LinkedHashSet<>();
         //遍历每个controller层
         for (Map.Entry<String, Object> entry : controllers.entrySet()) {
             Object value = entry.getValue();
@@ -41,7 +41,7 @@ public class PermissionsInit implements ApplicationContextAware {
                 if (permissions == null) {
                     continue;
                 }
-                log.debug("method:{} permissions:{}",method.getName(),permissions.value());
+                log.debug("method:{} permissions:{}", method.getName(), permissions.value());
                 permissionsSet.addAll(Arrays.asList(permissions.value()));
             }
         }

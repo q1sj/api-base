@@ -13,9 +13,9 @@ import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.service.AuthService;
 import com.xsy.security.service.SysUserTokenService;
 import com.xsy.security.user.UserDetail;
-import com.xsy.sys.dao.SysMenuDao;
 import com.xsy.sys.entity.SysUserEntity;
 import com.xsy.sys.enums.SuperAdminEnum;
+import com.xsy.sys.service.SysMenuService;
 import com.xsy.sys.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,21 +30,21 @@ import java.util.Set;
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
-    private SysMenuDao sysMenuDao;
+    private SysMenuService sysMenuService;
     @Autowired
     private SysUserService sysUserService;
     @Autowired
     private SysUserTokenService sysUserTokenService;
 
     @Override
-    @Cacheable(cacheNames = SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME,key = "T(com.xsy.security.enums.SecurityConstant).getSysUserPermissionsCacheKey(#user.getId())")
+    @Cacheable(cacheNames = SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserPermissionsCacheKey(#user.getId())")
     public Set<String> getUserPermissions(UserDetail user) {
         //系统管理员，拥有最高权限
         List<String> permissionsList;
         if (user.getSuperAdmin() == SuperAdminEnum.YES.value()) {
-            permissionsList = sysMenuDao.getPermissionsList();
+            permissionsList = sysMenuService.getAllPermissions();
         } else {
-            permissionsList = sysMenuDao.getUserPermissionsList(user.getId());
+            permissionsList = sysMenuService.getUserPermissionsList(user.getId());
         }
 
         //用户权限列表
