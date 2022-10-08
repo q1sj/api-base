@@ -1,0 +1,25 @@
+package ${package}.${projectName}.${moduleName}.service.impl;
+
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${package}.base.util.PageData;
+import ${package}.${projectName}.${moduleName}.dao.${className}Dao;
+import ${package}.${projectName}.${moduleName}.pojo.po.${className}Entity;
+import ${package}.${projectName}.${moduleName}.service.${className}Service;
+import org.springframework.stereotype.Service;
+
+/**
+ * ${comments}
+ *
+ * @author ${author} ${email}
+ * @since ${version} ${date}
+ */
+@Service
+public class ${className}ServiceImpl extends ServiceImpl<${className}Dao, ${className}Entity> implements ${className}Service {
+    @Override
+    public PageData<${className}Entity> page(${className}Query query) {
+        Page<${className}Entity> page = page(new Page<>(query.getPage(), query.getPageSize()), Wrappers.emptyWrapper());
+        return new PageData<>(page);
+    }
+}
