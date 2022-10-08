@@ -19,7 +19,6 @@ public class FieldMetaObjectHandler implements MetaObjectHandler {
     private final static String CREATOR = "creator";
     private final static String UPDATE_DATE = "updateDate";
     private final static String UPDATER = "updater";
-    private final static String DEPT_ID = "deptId";
 
     @Override
     public void insertFill(MetaObject metaObject) {
@@ -30,10 +29,6 @@ public class FieldMetaObjectHandler implements MetaObjectHandler {
         strictInsertFill(metaObject, CREATOR, Long.class, user.getId());
         //创建时间
         strictInsertFill(metaObject, CREATE_DATE, Date.class, date);
-
-        //创建者所属部门
-        strictInsertFill(metaObject, DEPT_ID, Long.class, user.getDeptId());
-
         //更新者
         strictInsertFill(metaObject, UPDATER, Long.class, user.getId());
         //更新时间

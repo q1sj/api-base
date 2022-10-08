@@ -12,7 +12,6 @@ import com.xsy.base.enums.AddGroup;
 import com.xsy.base.enums.UpdateGroup;
 import com.xsy.base.util.*;
 import com.xsy.sys.dto.SysRoleDTO;
-import com.xsy.sys.service.SysRoleDataScopeService;
 import com.xsy.sys.service.SysRoleMenuService;
 import com.xsy.sys.service.SysRoleService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -36,8 +35,6 @@ public class SysRoleController {
 	private SysRoleService sysRoleService;
 	@Autowired
 	private SysRoleMenuService sysRoleMenuService;
-	@Autowired
-	private SysRoleDataScopeService sysRoleDataScopeService;
 
 	@GetMapping("page")
 	@RequiresPermissions("sys:role:page")
@@ -63,10 +60,6 @@ public class SysRoleController {
 		//查询角色对应的菜单
 		List<Long> menuIdList = sysRoleMenuService.getMenuIdList(id);
 		data.setMenuIdList(menuIdList);
-
-		//查询角色对应的数据权限
-		List<Long> deptIdList = sysRoleDataScopeService.getDeptIdList(id);
-		data.setDeptIdList(deptIdList);
 
 		return Result.ok(data);
 	}

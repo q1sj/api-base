@@ -1,8 +1,8 @@
-package com.xsy.base.config;
+package com.xsy.security.config;
 
 import com.xsy.base.cache.CacheManagerWrapper;
 import com.xsy.base.cache.CacheWrapper;
-import com.xsy.sys.entity.ListKey;
+import com.xsy.security.enums.SecurityConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.aop.support.AopUtils;
@@ -22,12 +22,9 @@ public class PermissionsInit implements ApplicationContextAware {
 
     private final CacheWrapper cache;
 
-    private final ListKey<String> permissionsKey = new ListKey<>("permissions", Collections.emptyList(), String.class);
-
-    private static final String PERMISSIONS_CACHE_NAME = "permissions";
 
     public PermissionsInit(CacheManagerWrapper cacheManagerWrapper) {
-        cache = cacheManagerWrapper.getCache(PERMISSIONS_CACHE_NAME);
+        cache = cacheManagerWrapper.getCache(SecurityConstant.PERMISSIONS_CACHE_NAME);
     }
 
     @Override
@@ -48,6 +45,6 @@ public class PermissionsInit implements ApplicationContextAware {
                 permissionsSet.addAll(Arrays.asList(permissions.value()));
             }
         }
-        cache.put(permissionsKey, new ArrayList<>(permissionsSet));
+        cache.put(SecurityConstant.PERMISSIONS_KEY, new ArrayList<>(permissionsSet));
     }
 }

@@ -46,6 +46,4 @@ public class SysRoleDTO implements Serializable {
 
 	private List<Long> menuIdList;
 
-	private List<Long> deptIdList;
-
 }

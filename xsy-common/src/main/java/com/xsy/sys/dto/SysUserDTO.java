@@ -69,8 +69,6 @@ public class SysUserDTO implements Serializable {
 
 	private List<Long> roleIdList;
 
-	private String deptName;
-
 	interface AddGroup{}
 	interface UpdateGroup{}
 }

@@ -15,13 +15,12 @@ import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.PageData;
 import com.xsy.security.enums.SecurityConstant;
-import com.xsy.security.user.SecurityUser;
-import com.xsy.security.user.UserDetail;
 import com.xsy.sys.dao.SysRoleDao;
 import com.xsy.sys.dto.SysRoleDTO;
 import com.xsy.sys.entity.SysRoleEntity;
-import com.xsy.sys.enums.SuperAdminEnum;
-import com.xsy.sys.service.*;
+import com.xsy.sys.service.SysRoleMenuService;
+import com.xsy.sys.service.SysRoleService;
+import com.xsy.sys.service.SysRoleUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -42,11 +41,7 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
     @Autowired
-    private SysRoleDataScopeService sysRoleDataScopeService;
-    @Autowired
     private SysRoleUserService sysRoleUserService;
-    @Autowired
-    private SysDeptService sysDeptService;
 
 
     @Override
@@ -72,13 +67,6 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
         QueryWrapper<SysRoleEntity> wrapper = new QueryWrapper<>();
         wrapper.like(StringUtils.isNotBlank(name), "name", name);
 
-        //普通管理员，只能查询所属部门及子部门的数据
-        UserDetail user = SecurityUser.getUser();
-        if (user.getSuperAdmin() == SuperAdminEnum.NO.value()) {
-            List<Long> deptIdList = sysDeptService.getSubDeptIdList(user.getDeptId());
-            wrapper.in(deptIdList != null, "dept_id", deptIdList);
-        }
-
         return wrapper;
     }
 
@@ -99,9 +87,6 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
 
         //保存角色菜单关系
         sysRoleMenuService.saveOrUpdate(entity.getId(), dto.getMenuIdList());
-
-        //保存角色数据权限关系
-        sysRoleDataScopeService.saveOrUpdate(entity.getId(), dto.getDeptIdList());
     }
 
     @Override
@@ -114,9 +99,6 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
 
         //更新角色菜单关系
         sysRoleMenuService.saveOrUpdate(entity.getId(), dto.getMenuIdList());
-
-        //更新角色数据权限关系
-        sysRoleDataScopeService.saveOrUpdate(entity.getId(), dto.getDeptIdList());
     }
 
     @Override
@@ -131,9 +113,6 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
 
         //删除角色菜单关系
         sysRoleMenuService.deleteByRoleIds(ids);
-
-        //删除角色数据权限关系
-        sysRoleDataScopeService.deleteByRoleIds(ids);
     }
 
 }

@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
             if (StringUtils.isBlank(permissions)) {
                 continue;
             }
-            permsSet.addAll(Arrays.asList(permissions.trim().split(",")));
+            permsSet.addAll(Arrays.asList(permissions.trim().split(SecurityConstant.PERMISSIONS_SEPARATOR)));
         }
 
         return permsSet;

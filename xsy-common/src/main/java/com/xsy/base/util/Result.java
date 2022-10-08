@@ -42,7 +42,7 @@ public class Result<T> {
     /**
      * 响应时间戳
      */
-    private Long timeStamp;
+    private Long timestamp;
 
     public Result() {
     }
@@ -50,7 +50,7 @@ public class Result<T> {
     public Result(int code, String msg) {
         this.code = code;
         this.msg = msg;
-        this.timeStamp = System.currentTimeMillis();
+        this.timestamp = System.currentTimeMillis();
     }
 
     public static <T> Result<T> ok() {

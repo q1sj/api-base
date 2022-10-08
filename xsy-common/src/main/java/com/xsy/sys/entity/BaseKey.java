@@ -1,6 +1,7 @@
 package com.xsy.sys.entity;
 
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 import java.util.Objects;
 
@@ -9,10 +10,11 @@ public abstract class BaseKey<T> {
     private final String key;
     private T defaultValue;
 
+    @Nullable
     public String serialization(T val) {
         return val != null ? serializationNotNull(val) : null;
     }
-
+    @Nullable
     public T deserialization(String val) {
         return val != null ? deserializationNotNull(val) : null;
     }

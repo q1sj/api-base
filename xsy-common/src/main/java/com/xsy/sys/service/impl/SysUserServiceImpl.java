@@ -9,7 +9,6 @@
 package com.xsy.sys.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-
 import com.xsy.base.cache.CacheManagerWrapper;
 import com.xsy.base.cache.CacheWrapper;
 import com.xsy.base.enums.RenConstant;
@@ -18,13 +17,10 @@ import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.PageData;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.password.PasswordUtils;
-import com.xsy.security.user.SecurityUser;
-import com.xsy.security.user.UserDetail;
 import com.xsy.sys.dao.SysUserDao;
 import com.xsy.sys.dto.SysUserDTO;
 import com.xsy.sys.entity.SysUserEntity;
 import com.xsy.sys.enums.SuperAdminEnum;
-import com.xsy.sys.service.SysDeptService;
 import com.xsy.sys.service.SysRoleUserService;
 import com.xsy.sys.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +46,6 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     @Autowired
     private SysRoleUserService sysRoleUserService;
     @Autowired
-    private SysDeptService sysDeptService;
-    @Autowired
     private CacheManagerWrapper cacheManagerWrapper;
 
     @Override
@@ -61,12 +55,6 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
         //分页
         IPage<SysUserEntity> page = getPage(params, RenConstant.CREATE_DATE, false);
-
-        //普通管理员，只能查询所属部门及子部门的数据
-        UserDetail user = SecurityUser.getUser();
-        if (user.getSuperAdmin() == SuperAdminEnum.NO.value()) {
-            params.put("deptIdList", sysDeptService.getSubDeptIdList(user.getDeptId()));
-        }
 
         //查询
         List<SysUserEntity> list = baseDao.getList(params);
@@ -88,11 +76,6 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
     @Override
     public List<SysUserDTO> list(Map<String, Object> params) {
-        //普通管理员，只能查询所属部门及子部门的数据
-        UserDetail user = SecurityUser.getUser();
-        if (user.getSuperAdmin() == SuperAdminEnum.NO.value()) {
-            params.put("deptIdList", sysDeptService.getSubDeptIdList(user.getDeptId()));
-        }
 
         List<SysUserEntity> entityList = baseDao.getList(params);
 
@@ -138,7 +121,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME,key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
+    @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
     public void update(SysUserDTO dto) {
         SysUserEntity entity = ConvertUtils.sourceToTarget(dto, SysUserEntity.class);
         // 清除用户权限缓存
@@ -160,7 +143,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     @Override
-    @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME,key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
+    @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
     public void delete(Long[] ids) {
         // 清除用户权限缓存
         CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME);
