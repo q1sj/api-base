@@ -177,7 +177,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return source + "_" + System.currentTimeMillis() + "_" + count() + "." + getFileSuffix(originalFilename);
+        return String.format("%s_%s_%s.%s",source,System.currentTimeMillis(),count(),getFileSuffix(originalFilename));
     }
 
     private final AtomicInteger accumulator = new AtomicInteger();

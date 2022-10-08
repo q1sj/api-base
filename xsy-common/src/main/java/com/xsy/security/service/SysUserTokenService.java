@@ -21,7 +21,8 @@ public interface SysUserTokenService extends RenBaseService<SysUserTokenEntity> 
 
     /**
      * 生成token
-     * @param userId  用户ID
+     *
+     * @param userId 用户ID
      */
     Result createToken(Long userId);
 
@@ -35,8 +36,15 @@ public interface SysUserTokenService extends RenBaseService<SysUserTokenEntity> 
 
     /**
      * 退出，修改token值
-     * @param userId  用户ID
+     *
+     * @param userId 用户ID
      */
     void logout(Long userId);
 
+    /**
+     * 刷新token过期时间
+     *
+     * @param token
+     */
+    void refreshExpireDate(String token);
 }

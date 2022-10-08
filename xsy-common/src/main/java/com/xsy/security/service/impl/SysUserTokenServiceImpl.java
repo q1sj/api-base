@@ -17,6 +17,7 @@ import com.xsy.security.entity.SysUserTokenEntity;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.oauth2.TokenGenerator;
 import com.xsy.security.service.SysUserTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,13 +26,15 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
     /**
      * 12小时后过期
      */
-    private final static int EXPIRE = 3600 * 12;
+    private final static long EXPIRE_MS = TimeUnit.HOURS.toMillis(12);
 
     private final Cache cache;
 
@@ -47,7 +50,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
         //当前时间
         Date now = new Date();
         //过期时间
-        Date expireTime = new Date(now.getTime() + EXPIRE * 1000);
+        Date expireTime = new Date(now.getTime() + EXPIRE_MS);
 
         //判断是否生成过token
         SysUserTokenEntity tokenEntity = baseDao.getByUserId(userId);
@@ -71,7 +74,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
 
         Map<String, Object> map = new HashMap<>(2);
         map.put(SecurityConstant.TOKEN_HEADER, token);
-        map.put("expire", EXPIRE);
+        map.put("expire", EXPIRE_MS);
         return Result.ok(map);
     }
 
@@ -106,5 +109,16 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
 
         //修改token
         baseDao.updateToken(userId, token);
+    }
+
+    @Override
+    public void refreshExpireDate(String token) {
+        SysUserTokenEntity userToken = getByToken(token);
+        if (userToken == null) {
+            return;
+        }
+        cache.evict(SecurityConstant.getSysUserTokenCacheKey(token));
+        userToken.setExpireDate(new Date(System.currentTimeMillis() + EXPIRE_MS));
+        this.updateById(userToken);
     }
 }
