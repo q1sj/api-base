@@ -192,7 +192,7 @@ com.xsy.项目名.业务模块名 业务模块
     enums 枚举常量
     util 业务相关工具类
     pojo 实体类
-        entity
+        po
         dto
         vo
     exception 业务异常

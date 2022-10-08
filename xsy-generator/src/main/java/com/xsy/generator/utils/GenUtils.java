@@ -198,21 +198,9 @@ public class GenUtils {
     public static void initJavaModulePackage(ZipOutputStream zip, String packageName, String projectName, String moduleName) throws IOException {
         String packageNamePre = getPackageName(packageName, projectName, moduleName);
         try {
-            zip.putNextEntry(new ZipEntry(packageNamePre + "controller/"));
-            zip.closeEntry();
-            zip.putNextEntry(new ZipEntry(packageNamePre + "service/"));
-            zip.closeEntry();
-            zip.putNextEntry(new ZipEntry(packageNamePre + "service" + File.separator + "impl/"));
-            zip.closeEntry();
-            zip.putNextEntry(new ZipEntry(packageNamePre + "dao/"));
-            zip.closeEntry();
             zip.putNextEntry(new ZipEntry(packageNamePre + "enums/"));
             zip.closeEntry();
             zip.putNextEntry(new ZipEntry(packageNamePre + "util/"));
-            zip.closeEntry();
-            zip.putNextEntry(new ZipEntry(packageNamePre + "pojo/"));
-            zip.closeEntry();
-            zip.putNextEntry(new ZipEntry(packageNamePre + "exception/" ));
             zip.closeEntry();
             zip.putNextEntry(new ZipEntry(packageNamePre + "task/"));
             zip.closeEntry();
