@@ -1,5 +1,6 @@
 package ${package}.${projectName}.${moduleName}.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
  * @author ${author} ${email}
  * @since ${version} ${date}
  */
+@Slf4j
 @Service
 public class ${className}ServiceImpl extends ServiceImpl<${className}Dao, ${className}Entity> implements ${className}Service {
     @Override
