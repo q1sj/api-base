@@ -1,0 +1,7 @@
+{
+  "serverEnv": "{{server}}",
+  "allInOne": true,
+  "outPath": "src/main/resources/static/doc",
+  "coverOld": true,
+  "createDebugPage": true
+}
