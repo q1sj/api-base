@@ -1,4 +1,4 @@
-package ${package}.${projectName}.${moduleName}.pojo.entity;
+package ${package}.${projectName}.${moduleName}.pojo.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;

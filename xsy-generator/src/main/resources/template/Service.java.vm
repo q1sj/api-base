@@ -1,7 +1,9 @@
-package ${package}.${projectName}.${moduleName}. service;
+package ${package}.${projectName}.${moduleName}.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import ${package}.${projectName}.${moduleName}. pojo.po.${className}Entity;
+import ${package}.base.util.PageData;
+import ${package}.${projectName}.${moduleName}.pojo.dto.${className}Query;
+import ${package}.${projectName}.${moduleName}.pojo.po.${className}Entity;
 
 /**
  * ${comments}

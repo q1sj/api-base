@@ -1,0 +1,27 @@
+package ${package}.${projectName}.${moduleName}.pojo.dto;
+
+import lombok.Data;
+
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+import java.util.Date;
+
+/**
+ * ${comments} 查询参数
+ *
+ * @author ${author} ${email}
+ * @since ${version} ${date}
+ */
+@Data
+public class ${className}Query {
+	/**
+	* 当前页
+	*/
+	private Integer page;
+	/**
+	* 每页条数
+	*/
+	private Integer pageSize;
+	// TODO
+}

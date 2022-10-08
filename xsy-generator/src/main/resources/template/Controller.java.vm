@@ -1,31 +1,14 @@
-package ${package}.${projectName}.${moduleName}.controller;
+package ${package}.${projectName}.${moduleName}. controller;
 
-import ${package}.common.annotation.LogOperation;
-import ${package}.common.constant.Constant;
-import ${package}.common.page.PageData;
-import ${package}.common.utils.ExcelUtils;
-import ${package}.common.utils.Result;
-import ${package}.common.validator.AssertUtils;
-import ${package}.common.validator.ValidatorUtils;
-import ${package}.common.validator.group.AddGroup;
-import ${package}.common.validator.group.DefaultGroup;
-import ${package}.common.validator.group.UpdateGroup;
-import ${package}.${projectName}.${moduleName}.dto.${className}DTO;
-import ${package}.${projectName}.${moduleName}.excel.${className}Excel;
+import ${package}.base.util.PageData;
+import ${package}.base.util.Result;
+import ${package}.${projectName}.${moduleName}.pojo.po.${className}Entity;
+import ${package}.${projectName}.${moduleName}.pojo.dto.${className}Query;
 import ${package}.${projectName}.${moduleName}.service.${className}Service;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * ${comments}
@@ -34,83 +17,59 @@ import java.util.Map;
  * @since ${version} ${date}
  */
 @RestController
-@RequestMapping("${moduleName}/${pathName}")
-@Api(tags="${comments}")
+@RequestMapping("/${requestMapping}")
 public class ${className}Controller {
     @Autowired
     private ${className}Service ${classname}Service;
 
-    @GetMapping("page")
-    @ApiOperation("分页")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = Constant.PAGE, value = "当前页码，从1开始", paramType = "query", required = true, dataType="int") ,
-        @ApiImplicitParam(name = Constant.LIMIT, value = "每页显示记录数", paramType = "query",required = true, dataType="int") ,
-        @ApiImplicitParam(name = Constant.ORDER_FIELD, value = "排序字段", paramType = "query", dataType="String") ,
-        @ApiImplicitParam(name = Constant.ORDER, value = "排序方式，可选值(asc、desc)", paramType = "query", dataType="String")
-    })
-    @RequiresPermissions("${moduleName}:${pathName}:page")
-    public Result<PageData<${className}DTO>> page(@ApiIgnore @RequestParam Map<String, Object> params){
-        PageData<${className}DTO> page = ${classname}Service.page(params);
-
-        return new Result<PageData<${className}DTO>>().ok(page);
+    /**
+    * 列表
+    *
+    * @return
+    */
+    @GetMapping("/list")
+    @RequiresPermissions("${classname}:list")
+    public Result<PageData<${className}Entity>> list(@Validated ${className}Query query) {
+        PageData<${className}Entity> pageData = ${classname}Service.page(query);
+        return Result.ok(pageData);
     }
 
-    @GetMapping("{id}")
-    @ApiOperation("信息")
-    @RequiresPermissions("${moduleName}:${pathName}:info")
-    public Result<${className}DTO> get(@PathVariable("id") Long id){
-        ${className}DTO data = ${classname}Service.get(id);
-
-        return new Result<${className}DTO>().ok(data);
+    /**
+    * 新增
+    *
+    * @param entity
+    * @return
+    */
+    @PostMapping("/save")
+    @RequiresPermissions("${classname}:save")
+    public Result<Void> save(@RequestBody @Validated ${className}Entity entity) {
+        ${classname}Service.save(entity);
+        return Result.ok();
     }
 
-    @PostMapping
-    @ApiOperation("保存")
-    @LogOperation("保存")
-    @RequiresPermissions("${moduleName}:${pathName}:save")
-    public Result save(@RequestBody ${className}DTO dto){
-        //效验数据
-        ValidatorUtils.validateEntity(dto, AddGroup.class, DefaultGroup.class);
-
-        ${classname}Service.save(dto);
-
-        return new Result();
+    /**
+    * 更新
+    *
+    * @param entity
+    * @return
+    */
+    @PostMapping("/update")
+    @RequiresPermissions("${classname}:update")
+    public Result<Void> update(@RequestBody @Validated ${className}Entity entity) {
+        ${classname}Service.updateById(entity);
+        return Result.ok();
     }
 
-    @PutMapping
-    @ApiOperation("修改")
-    @LogOperation("修改")
-    @RequiresPermissions("${moduleName}:${pathName}:update")
-    public Result update(@RequestBody ${className}DTO dto){
-        //效验数据
-        ValidatorUtils.validateEntity(dto, UpdateGroup.class, DefaultGroup.class);
-
-        ${classname}Service.update(dto);
-
-        return new Result();
+    /**
+    * 删除
+    *
+    * @param id
+    * @return
+    */
+    @PostMapping("/delete/{id}")
+    @RequiresPermissions("${classname}:delete")
+    public Result<Void> delete(@PathVariable Integer id) {
+        ${classname}Service.removeById(id);
+        return Result.ok();
     }
-
-    @DeleteMapping
-    @ApiOperation("删除")
-    @LogOperation("删除")
-    @RequiresPermissions("${moduleName}:${pathName}:delete")
-    public Result delete(@RequestBody Long[] ids){
-        //效验数据
-        AssertUtils.isArrayEmpty(ids, "id");
-
-        ${classname}Service.delete(ids);
-
-        return new Result();
-    }
-
-    @GetMapping("export")
-    @ApiOperation("导出")
-    @LogOperation("导出")
-    @RequiresPermissions("${moduleName}:${pathName}:export")
-    public void export(@ApiIgnore @RequestParam Map<String, Object> params, HttpServletResponse response) throws Exception {
-        List<${className}DTO> list = ${classname}Service.list(params);
-
-        ExcelUtils.exportExcelToTarget(response, null, list, ${className}Excel.class);
-    }
-
 }
