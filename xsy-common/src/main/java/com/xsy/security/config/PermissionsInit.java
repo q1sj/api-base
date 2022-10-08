@@ -22,7 +22,6 @@ public class PermissionsInit implements ApplicationContextAware {
 
     private final CacheWrapper cache;
 
-
     public PermissionsInit(CacheManagerWrapper cacheManagerWrapper) {
         cache = cacheManagerWrapper.getCache(SecurityConstant.PERMISSIONS_CACHE_NAME);
     }
@@ -35,13 +34,14 @@ public class PermissionsInit implements ApplicationContextAware {
         for (Map.Entry<String, Object> entry : controllers.entrySet()) {
             Object value = entry.getValue();
             Class<?> controllerClass = AopUtils.getTargetClass(value);
-            log.debug("class:{}", controllerClass);
+            log.debug("controller:{}", controllerClass);
             Method[] methods = controllerClass.getMethods();
             for (Method method : methods) {
                 RequiresPermissions permissions = AnnotationUtils.getAnnotation(method, RequiresPermissions.class);
                 if (permissions == null) {
                     continue;
                 }
+                log.debug("method:{} permissions:{}",method.getName(),permissions.value());
                 permissionsSet.addAll(Arrays.asList(permissions.value()));
             }
         }

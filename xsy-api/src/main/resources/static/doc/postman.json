@@ -1,8 +1,8 @@
 {
   "info": {
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_postman_id": "4893f4dc-0597-4636-8cb6-faabf9d42818",
-    "name": "xsy-api-1.0"
+    "_postman_id": "a8e8433e-0767-4269-aea1-4acac3764fb9",
+    "name": "xsy-api-demo-1.0"
   },
   "item": [
     {
@@ -80,7 +80,7 @@
               }
             },
             "url": {
-              "raw": "::server/log/get?names=k4f5hp",
+              "raw": "::server/log/get?names=rdufrm",
               "path": [
                 "log",
                 "get"
@@ -91,7 +91,7 @@
               "query": [
                 {
                   "key": "names",
-                  "value": "k4f5hp",
+                  "value": "rdufrm",
                   "description": "   文件名 多个逗号分割"
                 }
               ],
@@ -147,7 +147,7 @@
               }
             },
             "url": {
-              "raw": "::server/file/img?path=64aexb",
+              "raw": "::server/file/img?path=nx7rqz",
               "path": [
                 "file",
                 "img"
@@ -158,7 +158,7 @@
               "query": [
                 {
                   "key": "path",
-                  "value": "64aexb",
+                  "value": "nx7rqz",
                   "description": "    {@link FileRecordEntity#getPath()}"
                 }
               ],
@@ -181,7 +181,7 @@
               }
             },
             "url": {
-              "raw": "::server/file/download?path=vhbi9j",
+              "raw": "::server/file/download?path=rk51cu",
               "path": [
                 "file",
                 "download"
@@ -192,7 +192,7 @@
               "query": [
                 {
                   "key": "path",
-                  "value": "vhbi9j",
+                  "value": "rk51cu",
                   "description": "    {@link FileRecordEntity#getPath()}"
                 }
               ],
@@ -209,12 +209,12 @@
       "name": "登录",
       "item": [
         {
-          "name": "Interface name is not set.",
+          "name": "登录",
           "request": {
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"willy.kilback\",\n  \"password\": \"osmtks\"\n}",
+              "raw": "{\n  \"username\": \"cris.skiles\",\n  \"password\": \"e4t3dx\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -232,12 +232,13 @@
               "query": [],
               "variable": []
             },
+            "description": "登录",
             "header": []
           },
-          "description": ""
+          "description": "登录"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "登出",
           "request": {
             "method": "POST",
             "body": {
@@ -255,9 +256,10 @@
               "query": [],
               "variable": []
             },
+            "description": "登出",
             "header": []
           },
-          "description": ""
+          "description": "登出"
         }
       ]
     },
@@ -276,7 +278,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/config/list?configKey=6sjkop&page=1&pageSize=10",
+              "raw": "::server/sys/config/list?configKey=ra9xi5&page=1&pageSize=10",
               "path": [
                 "sys",
                 "config",
@@ -288,7 +290,7 @@
               "query": [
                 {
                   "key": "configKey",
-                  "value": "6sjkop",
+                  "value": "ra9xi5",
                   "description": "No comments found."
                 },
                 {
@@ -315,7 +317,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"configKey\": \"egvxgp\",\n  \"configValue\": \"aqve3b\",\n  \"remark\": \"2qxfb3\"\n}",
+              "raw": "{\n  \"configKey\": \"r40qo7\",\n  \"configValue\": \"ja1t10\",\n  \"remark\": \"wdycse\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -343,171 +345,10 @@
       ]
     },
     {
-      "name": "部门管理",
-      "item": [
-        {
-          "name": "Interface name is not set.",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/sys/dept/list",
-              "path": [
-                "sys",
-                "dept",
-                "list"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "header": []
-          },
-          "description": ""
-        },
-        {
-          "name": "Interface name is not set.",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/sys/dept/892",
-              "path": [
-                "sys",
-                "dept",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "892",
-                  "description": "No comments found."
-                }
-              ]
-            },
-            "header": []
-          },
-          "description": ""
-        },
-        {
-          "name": "Interface name is not set.",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"object\": \"any object\"\n    }\n  ],\n  \"id\": 801,\n  \"pid\": 386,\n  \"name\": \"willy.kilback\",\n  \"sort\": 116,\n  \"parentName\": \"willy.kilback\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/sys/dept/",
-              "path": [
-                "sys",
-                "dept",
-                ""
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "header": []
-          },
-          "description": ""
-        },
-        {
-          "name": "Interface name is not set.",
-          "request": {
-            "method": "PUT",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"object\": \"any object\"\n    }\n  ],\n  \"id\": 698,\n  \"pid\": 148,\n  \"name\": \"willy.kilback\",\n  \"sort\": 436,\n  \"parentName\": \"willy.kilback\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/sys/dept/",
-              "path": [
-                "sys",
-                "dept",
-                ""
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "header": []
-          },
-          "description": ""
-        },
-        {
-          "name": "Interface name is not set.",
-          "request": {
-            "method": "DELETE",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/sys/dept/747",
-              "path": [
-                "sys",
-                "dept",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "747",
-                  "description": "No comments found."
-                }
-              ]
-            },
-            "header": []
-          },
-          "description": ""
-        }
-      ]
-    },
-    {
       "name": "菜单管理",
       "item": [
         {
-          "name": "Interface name is not set.",
+          "name": "nav",
           "request": {
             "method": "GET",
             "body": {
@@ -530,12 +371,13 @@
               "query": [],
               "variable": []
             },
+            "description": "nav",
             "header": []
           },
-          "description": ""
+          "description": "nav"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "当前用户拥有权限",
           "request": {
             "method": "GET",
             "body": {
@@ -558,12 +400,13 @@
               "query": [],
               "variable": []
             },
+            "description": "当前用户拥有权限",
             "header": []
           },
-          "description": ""
+          "description": "当前用户拥有权限"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "后端所有可配置权限",
           "request": {
             "method": "GET",
             "body": {
@@ -574,7 +417,36 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/list?type=193",
+              "raw": "::server/sys/menu/allPermissions",
+              "path": [
+                "sys",
+                "menu",
+                "allPermissions"
+              ],
+              "host": [
+                "{{server}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "description": "后端所有可配置权限",
+            "header": []
+          },
+          "description": "后端所有可配置权限"
+        },
+        {
+          "name": "列表",
+          "request": {
+            "method": "GET",
+            "body": {
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "::server/sys/menu/list?type=716",
               "path": [
                 "sys",
                 "menu",
@@ -586,18 +458,19 @@
               "query": [
                 {
                   "key": "type",
-                  "value": "193",
+                  "value": "716",
                   "description": "No comments found."
                 }
               ],
               "variable": []
             },
+            "description": "列表",
             "header": []
           },
-          "description": ""
+          "description": "列表"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "根据id查询",
           "request": {
             "method": "GET",
             "body": {
@@ -608,7 +481,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/584",
+              "raw": "::server/sys/menu/26",
               "path": [
                 "sys",
                 "menu",
@@ -621,22 +494,23 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "584",
+                  "value": "26",
                   "description": "No comments found."
                 }
               ]
             },
+            "description": "根据id查询",
             "header": []
           },
-          "description": ""
+          "description": "根据id查询"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "保存",
           "request": {
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 70,\n  \"pid\": 26,\n  \"name\": \"willy.kilback\",\n  \"url\": \"www.breanne-strosin.info\",\n  \"type\": 406,\n  \"icon\": \"78iuo4\",\n  \"permissions\": \"0k2r33\",\n  \"sort\": 593,\n  \"parentName\": \"willy.kilback\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 854,\n  \"pid\": 692,\n  \"name\": \"cris.skiles\",\n  \"url\": \"www.dale-borer.net\",\n  \"type\": 781,\n  \"icon\": \"xmc2qh\",\n  \"permissions\": \"f4cip9\",\n  \"sort\": 522,\n  \"parentName\": \"cris.skiles\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -656,17 +530,18 @@
               "query": [],
               "variable": []
             },
+            "description": "保存",
             "header": []
           },
-          "description": ""
+          "description": "保存"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "更新",
           "request": {
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 532,\n  \"pid\": 11,\n  \"name\": \"willy.kilback\",\n  \"url\": \"www.breanne-strosin.info\",\n  \"type\": 267,\n  \"icon\": \"058tbe\",\n  \"permissions\": \"7kyji9\",\n  \"sort\": 85,\n  \"parentName\": \"willy.kilback\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 920,\n  \"pid\": 238,\n  \"name\": \"cris.skiles\",\n  \"url\": \"www.dale-borer.net\",\n  \"type\": 846,\n  \"icon\": \"0vx5nh\",\n  \"permissions\": \"zgwnnt\",\n  \"sort\": 286,\n  \"parentName\": \"cris.skiles\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -686,12 +561,13 @@
               "query": [],
               "variable": []
             },
+            "description": "更新",
             "header": []
           },
-          "description": ""
+          "description": "更新"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "删除",
           "request": {
             "method": "DELETE",
             "body": {
@@ -702,7 +578,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/295",
+              "raw": "::server/sys/menu/244",
               "path": [
                 "sys",
                 "menu",
@@ -715,17 +591,18 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "295",
+                  "value": "244",
                   "description": "No comments found."
                 }
               ]
             },
+            "description": "删除",
             "header": []
           },
-          "description": ""
+          "description": "删除"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "当前用户拥有菜单",
           "request": {
             "method": "GET",
             "body": {
@@ -748,9 +625,10 @@
               "query": [],
               "variable": []
             },
+            "description": "当前用户拥有菜单",
             "header": []
           },
-          "description": ""
+          "description": "当前用户拥有菜单"
         }
       ]
     },
@@ -758,7 +636,7 @@
       "name": "角色管理",
       "item": [
         {
-          "name": "Interface name is not set.",
+          "name": "分页查询",
           "request": {
             "method": "GET",
             "body": {
@@ -787,12 +665,13 @@
               ],
               "variable": []
             },
+            "description": "分页查询",
             "header": []
           },
-          "description": ""
+          "description": "分页查询"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "列表",
           "request": {
             "method": "GET",
             "body": {
@@ -815,12 +694,13 @@
               "query": [],
               "variable": []
             },
+            "description": "列表",
             "header": []
           },
-          "description": ""
+          "description": "列表"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "根据id查询",
           "request": {
             "method": "GET",
             "body": {
@@ -831,7 +711,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/role/109",
+              "raw": "::server/sys/role/561",
               "path": [
                 "sys",
                 "role",
@@ -844,22 +724,23 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "109",
+                  "value": "561",
                   "description": "No comments found."
                 }
               ]
             },
+            "description": "根据id查询",
             "header": []
           },
-          "description": ""
+          "description": "根据id查询"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "新增",
           "request": {
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 389,\n  \"name\": \"willy.kilback\",\n  \"remark\": \"x505nz\",\n  \"menuIdList\": [\n    880\n  ],\n  \"deptIdList\": [\n    641\n  ]\n}",
+              "raw": "{\n  \"id\": 557,\n  \"name\": \"cris.skiles\",\n  \"remark\": \"n0zi57\",\n  \"menuIdList\": [\n    45\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -879,17 +760,18 @@
               "query": [],
               "variable": []
             },
+            "description": "新增",
             "header": []
           },
-          "description": ""
+          "description": "新增"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "更新",
           "request": {
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 837,\n  \"name\": \"willy.kilback\",\n  \"remark\": \"1tzwx3\",\n  \"menuIdList\": [\n    244\n  ],\n  \"deptIdList\": [\n    722\n  ]\n}",
+              "raw": "{\n  \"id\": 511,\n  \"name\": \"cris.skiles\",\n  \"remark\": \"zd8egc\",\n  \"menuIdList\": [\n    321\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -909,17 +791,18 @@
               "query": [],
               "variable": []
             },
+            "description": "更新",
             "header": []
           },
-          "description": ""
+          "description": "更新"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "删除",
           "request": {
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"a37069\"\n]",
+              "raw": "[\n  \"xe1xvm\"\n]",
               "options": {
                 "raw": {
                   "language": "json"
@@ -939,9 +822,10 @@
               "query": [],
               "variable": []
             },
+            "description": "删除",
             "header": []
           },
-          "description": ""
+          "description": "删除"
         }
       ]
     },
@@ -949,7 +833,7 @@
       "name": "用户管理",
       "item": [
         {
-          "name": "Interface name is not set.",
+          "name": "分页查询",
           "request": {
             "method": "GET",
             "body": {
@@ -978,12 +862,13 @@
               ],
               "variable": []
             },
+            "description": "分页查询",
             "header": []
           },
-          "description": ""
+          "description": "分页查询"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "根据id查询",
           "request": {
             "method": "GET",
             "body": {
@@ -994,7 +879,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/user/411",
+              "raw": "::server/sys/user/996",
               "path": [
                 "sys",
                 "user",
@@ -1007,17 +892,18 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "411",
+                  "value": "996",
                   "description": "No comments found."
                 }
               ]
             },
+            "description": "根据id查询",
             "header": []
           },
-          "description": ""
+          "description": "根据id查询"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "当前用户信息",
           "request": {
             "method": "GET",
             "body": {
@@ -1040,17 +926,18 @@
               "query": [],
               "variable": []
             },
+            "description": "当前用户信息",
             "header": []
           },
-          "description": ""
+          "description": "当前用户信息"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "修改密码",
           "request": {
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"password\": \"9knvo6\",\n  \"newPassword\": \"wxvmzh\"\n}",
+              "raw": "{\n  \"password\": \"i5k9rt\",\n  \"newPassword\": \"6xcg7d\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1070,17 +957,18 @@
               "query": [],
               "variable": []
             },
+            "description": "修改密码",
             "header": []
           },
-          "description": ""
+          "description": "修改密码"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "新增",
           "request": {
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 9,\n  \"username\": \"willy.kilback\",\n  \"password\": \"jyt4yh\",\n  \"realName\": \"willy.kilback\",\n  \"headUrl\": \"www.breanne-strosin.info\",\n  \"gender\": 0,\n  \"email\": \"jason.king@hotmail.com\",\n  \"mobile\": \"314.707.1913\",\n  \"deptId\": 55,\n  \"status\": 696,\n  \"roleIdList\": [\n    342\n  ],\n  \"deptName\": \"willy.kilback\"\n}",
+              "raw": "{\n  \"id\": 655,\n  \"username\": \"cris.skiles\",\n  \"password\": \"oeuogc\",\n  \"realName\": \"cris.skiles\",\n  \"headUrl\": \"www.dale-borer.net\",\n  \"gender\": 0,\n  \"email\": \"lilla.huels@gmail.com\",\n  \"mobile\": \"(248) 501-3718\",\n  \"deptId\": 2,\n  \"status\": 847,\n  \"roleIdList\": [\n    354\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1100,17 +988,18 @@
               "query": [],
               "variable": []
             },
+            "description": "新增",
             "header": []
           },
-          "description": ""
+          "description": "新增"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "更新",
           "request": {
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 289,\n  \"username\": \"willy.kilback\",\n  \"password\": \"77sdsk\",\n  \"realName\": \"willy.kilback\",\n  \"headUrl\": \"www.breanne-strosin.info\",\n  \"gender\": 0,\n  \"email\": \"jason.king@hotmail.com\",\n  \"mobile\": \"314.707.1913\",\n  \"deptId\": 8,\n  \"status\": 486,\n  \"roleIdList\": [\n    63\n  ],\n  \"deptName\": \"willy.kilback\"\n}",
+              "raw": "{\n  \"id\": 185,\n  \"username\": \"cris.skiles\",\n  \"password\": \"q0qwfn\",\n  \"realName\": \"cris.skiles\",\n  \"headUrl\": \"www.dale-borer.net\",\n  \"gender\": 0,\n  \"email\": \"lilla.huels@gmail.com\",\n  \"mobile\": \"(248) 501-3718\",\n  \"deptId\": 616,\n  \"status\": 430,\n  \"roleIdList\": [\n    893\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1130,17 +1019,18 @@
               "query": [],
               "variable": []
             },
+            "description": "更新",
             "header": []
           },
-          "description": ""
+          "description": "更新"
         },
         {
-          "name": "Interface name is not set.",
+          "name": "删除",
           "request": {
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"88q4rc\"\n]",
+              "raw": "[\n  \"by00m2\"\n]",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1160,1668 +1050,10 @@
               "query": [],
               "variable": []
             },
+            "description": "删除",
             "header": []
           },
-          "description": ""
-        }
-      ]
-    },
-    {
-      "name": "对外开放接口",
-      "item": [
-        {
-          "name": "设备端数据推送接口",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "xv9uv0",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/pushStatus",
-              "path": [
-                "pushStatus"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "设备端数据推送接口",
-            "header": []
-          },
-          "description": "根据不同json内容跳转到不同service"
-        }
-      ]
-    },
-    {
-      "name": "设备管理",
-      "item": [
-        {
-          "name": "诱导设备状态枚举",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/guideDeviceStatus",
-              "path": [
-                "equipment",
-                "guideDeviceStatus"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "诱导设备状态枚举",
-            "header": []
-          },
-          "description": "诱导设备状态枚举"
-        },
-        {
-          "name": "配电机箱状态枚举",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/powerBoxStatus",
-              "path": [
-                "equipment",
-                "powerBoxStatus"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "配电机箱状态枚举",
-            "header": []
-          },
-          "description": "配电机箱状态枚举"
-        },
-        {
-          "name": "摄像机状态枚举",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/cameraStatus",
-              "path": [
-                "equipment",
-                "cameraStatus"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "摄像机状态枚举",
-            "header": []
-          },
-          "description": "摄像机状态枚举"
-        },
-        {
-          "name": "摄像机类型枚举",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/cameraType",
-              "path": [
-                "equipment",
-                "cameraType"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "摄像机类型枚举",
-            "header": []
-          },
-          "description": "摄像机类型枚举"
-        },
-        {
-          "name": "设备列表",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/list?page=1&pageSize=10&ip=81.156.32.50&online=true&guideDeviceStatus=mz9ica&powerBoxStatus=c5bkhu&cameraStatus=r395yv&videoStatus=true",
-              "path": [
-                "equipment",
-                "list"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "description": "当前页"
-                },
-                {
-                  "key": "pageSize",
-                  "value": "10",
-                  "description": "每页条数"
-                },
-                {
-                  "key": "ip",
-                  "value": "81.156.32.50",
-                  "description": "设备ip"
-                },
-                {
-                  "key": "online",
-                  "value": "true",
-                  "description": "设备状态"
-                },
-                {
-                  "key": "guideDeviceStatus",
-                  "value": "tk1usu",
-                  "description": "诱导设备状态 04灭灯 05亮灯 06故障\r\n{@link com.xsy.api.equipment.enums.GuideDeviceStatusEnum}"
-                },
-                {
-                  "key": "powerBoxStatus",
-                  "value": "r1p628",
-                  "description": "配电机箱状态 07关箱 08开箱\r\n{@link com.xsy.api.equipment.enums.PowerBoxStatusEnum}"
-                },
-                {
-                  "key": "cameraStatus",
-                  "value": "7a1nxd",
-                  "description": "摄像机状态 01正常 02未配置 03异常\r\n{@link com.xsy.api.equipment.enums.CameraStatusEnum}"
-                },
-                {
-                  "key": "videoStatus",
-                  "value": "true",
-                  "description": "视频流状态"
-                }
-              ],
-              "variable": []
-            },
-            "description": "设备列表",
-            "header": []
-          },
-          "description": "设备列表"
-        },
-        {
-          "name": "设备详情",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/detail?id=504",
-              "path": [
-                "equipment",
-                "detail"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "id",
-                  "value": "504",
-                  "description": "设备id"
-                }
-              ],
-              "variable": []
-            },
-            "description": "设备详情",
-            "header": []
-          },
-          "description": "设备详情"
-        },
-        {
-          "name": "添加设备",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": 996,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"sn\": \"6dp78l\",\n  \"username\": \"willy.kilback\",\n  \"password\": \"zvlzes\",\n  \"videoPath\": \"u27bc9\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/save",
-              "path": [
-                "equipment",
-                "save"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "添加设备",
-            "header": []
-          },
-          "description": "添加设备"
-        },
-        {
-          "name": "修改设备(web端)",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": 64,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"sn\": \"tbh9ou\",\n  \"username\": \"willy.kilback\",\n  \"password\": \"8suiuw\",\n  \"videoPath\": \"7649t6\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/update",
-              "path": [
-                "equipment",
-                "update"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "修改设备(web端)",
-            "header": []
-          },
-          "description": "修改设备 只修改web端 不同步设备端"
-        },
-        {
-          "name": "设备状态上传",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"CameraStatus\": \"03\",\n  \"GuideDeviceStatus\": \"06\",\n  \"PowerBoxStatus\": \"08\",\n  \"sn\": \"1cmnbm\",\n  \"timestamp\": 1664436302918,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"ntp\": \"ff14td\",\n  \"mac\": \"8qgkbd\",\n  \"remark\": \"8o1j21\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/upload",
-              "path": [
-                "equipment",
-                "upload"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "设备状态上传",
-            "header": []
-          },
-          "description": "设备状态上传 预留 现在使用{@link com.xsy.api.common.controller.ApiController#pushStatus(String)}"
-        },
-        {
-          "name": "设备删除",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "formdata",
-              "formdata": []
-            },
-            "url": {
-              "raw": "::server/equipment/delete/119",
-              "path": [
-                "equipment",
-                "delete",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "119",
-                  "description": "设备id"
-                }
-              ]
-            },
-            "description": "设备删除",
-            "header": []
-          },
-          "description": "设备删除"
-        },
-        {
-          "name": "导出",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/export?page=1&pageSize=10&ip=81.156.32.50&online=true&guideDeviceStatus=zuuwy9&powerBoxStatus=l3o20f&cameraStatus=ek6byg&videoStatus=true",
-              "path": [
-                "equipment",
-                "export"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "description": "当前页"
-                },
-                {
-                  "key": "pageSize",
-                  "value": "10",
-                  "description": "每页条数"
-                },
-                {
-                  "key": "ip",
-                  "value": "81.156.32.50",
-                  "description": "设备ip"
-                },
-                {
-                  "key": "online",
-                  "value": "true",
-                  "description": "设备状态"
-                },
-                {
-                  "key": "guideDeviceStatus",
-                  "value": "523vq2",
-                  "description": "诱导设备状态 04灭灯 05亮灯 06故障\r\n{@link com.xsy.api.equipment.enums.GuideDeviceStatusEnum}"
-                },
-                {
-                  "key": "powerBoxStatus",
-                  "value": "0p351x",
-                  "description": "配电机箱状态 07关箱 08开箱\r\n{@link com.xsy.api.equipment.enums.PowerBoxStatusEnum}"
-                },
-                {
-                  "key": "cameraStatus",
-                  "value": "raqqkr",
-                  "description": "摄像机状态 01正常 02未配置 03异常\r\n{@link com.xsy.api.equipment.enums.CameraStatusEnum}"
-                },
-                {
-                  "key": "videoStatus",
-                  "value": "true",
-                  "description": "视频流状态"
-                }
-              ],
-              "variable": []
-            },
-            "description": "导出",
-            "header": []
-          },
-          "description": "导出"
-        },
-        {
-          "name": "获取设备实时视频",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/videoUrl?id=117",
-              "path": [
-                "equipment",
-                "videoUrl"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "id",
-                  "value": "117",
-                  "description": "设备id"
-                }
-              ],
-              "variable": []
-            },
-            "description": "获取设备实时视频",
-            "header": []
-          },
-          "description": "获取设备实时视频"
-        },
-        {
-          "name": "修改设备名称",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": 917,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"sn\": \"cin5i0\",\n  \"mac\": \"xzshi7\",\n  \"ntp\": \"whuw85\",\n  \"username\": \"willy.kilback\",\n  \"password\": \"ozk5o3\",\n  \"online\": true,\n  \"onlineName\": \"willy.kilback\",\n  \"guideDeviceStatus\": \"kuljtl\",\n  \"guideDeviceStatusName\": \"willy.kilback\",\n  \"powerBoxStatus\": \"aaolit\",\n  \"powerBoxStatusName\": \"willy.kilback\",\n  \"cameraStatus\": \"qo4leh\",\n  \"cameraStatusName\": \"willy.kilback\",\n  \"uploadTime\": \"2022-09-29 15:25:20\",\n  \"videoStatus\": true,\n  \"videoStatusName\": \"willy.kilback\",\n  \"videoPath\": \"1clgpy\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/updateName",
-              "path": [
-                "equipment",
-                "updateName"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "修改设备名称",
-            "header": []
-          },
-          "description": "只需要传id name"
-        },
-        {
-          "name": "获取推送地址",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/getPushPath?id=204",
-              "path": [
-                "equipment",
-                "getPushPath"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "id",
-                  "value": "204",
-                  "description": "设备id"
-                }
-              ],
-              "variable": []
-            },
-            "description": "获取推送地址",
-            "header": []
-          },
-          "description": "获取推送地址"
-        },
-        {
-          "name": "修改推送地址",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": 237,\n  \"pushPath\": \"x9v01h\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/updatePushPath",
-              "path": [
-                "equipment",
-                "updatePushPath"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "修改推送地址",
-            "header": []
-          },
-          "description": "修改推送地址"
-        },
-        {
-          "name": "修改时钟同步地址",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": 706,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"sn\": \"yftp79\",\n  \"mac\": \"rih7rs\",\n  \"ntp\": \"338awy\",\n  \"username\": \"willy.kilback\",\n  \"password\": \"78htpc\",\n  \"online\": true,\n  \"onlineName\": \"willy.kilback\",\n  \"guideDeviceStatus\": \"e556hm\",\n  \"guideDeviceStatusName\": \"willy.kilback\",\n  \"powerBoxStatus\": \"5csfzz\",\n  \"powerBoxStatusName\": \"willy.kilback\",\n  \"cameraStatus\": \"au9gys\",\n  \"cameraStatusName\": \"willy.kilback\",\n  \"uploadTime\": \"2022-09-29 15:25:20\",\n  \"videoStatus\": true,\n  \"videoStatusName\": \"willy.kilback\",\n  \"videoPath\": \"ujbvrh\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/updateNtp",
-              "path": [
-                "equipment",
-                "updateNtp"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "修改时钟同步地址",
-            "header": []
-          },
-          "description": "只需要传id ntp"
-        },
-        {
-          "name": "获取摄像机信息",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/cameraInfo?id=747",
-              "path": [
-                "equipment",
-                "cameraInfo"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "id",
-                  "value": "747",
-                  "description": "设备id"
-                }
-              ],
-              "variable": []
-            },
-            "description": "获取摄像机信息",
-            "header": []
-          },
-          "description": "获取摄像机信息"
-        },
-        {
-          "name": "修改摄像机信息",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"cameraType\": 660,\n  \"username\": \"willy.kilback\",\n  \"password\": \"zkexj6\",\n  \"ip\": \"81.156.32.50\",\n  \"port\": 409,\n  \"rtsp\": \"s4lirb\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/updateCameraInfo/10",
-              "path": [
-                "equipment",
-                "updateCameraInfo",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "10",
-                  "description": "           设备id"
-                }
-              ]
-            },
-            "description": "修改摄像机信息",
-            "header": []
-          },
-          "description": "修改摄像机信息"
-        },
-        {
-          "name": "诱导设备测试-车辆停靠/有人",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "formdata",
-              "formdata": []
-            },
-            "url": {
-              "raw": "::server/equipment/guideTestParking/940",
-              "path": [
-                "equipment",
-                "guideTestParking",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "940",
-                  "description": "设备id"
-                }
-              ]
-            },
-            "description": "诱导设备测试-车辆停靠/有人",
-            "header": []
-          },
-          "description": "诱导设备测试-车辆停靠/有人"
-        },
-        {
-          "name": "诱导设备测试-车辆驶离",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "formdata",
-              "formdata": []
-            },
-            "url": {
-              "raw": "::server/equipment/guideTestLeave/432",
-              "path": [
-                "equipment",
-                "guideTestLeave",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "432",
-                  "description": "设备id"
-                }
-              ]
-            },
-            "description": "诱导设备测试-车辆驶离",
-            "header": []
-          },
-          "description": "诱导设备测试-车辆驶离"
-        },
-        {
-          "name": "获取语音文件",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/cameraVoice?id=315",
-              "path": [
-                "equipment",
-                "cameraVoice"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "id",
-                  "value": "315",
-                  "description": "设备id"
-                }
-              ],
-              "variable": []
-            },
-            "description": "获取语音文件",
-            "header": []
-          },
-          "description": "获取语音文件"
-        },
-        {
-          "name": "测试语音",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "formdata",
-              "formdata": []
-            },
-            "url": {
-              "raw": "::server/equipment/cameraVoiceTest/756",
-              "path": [
-                "equipment",
-                "cameraVoiceTest",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "756",
-                  "description": "设备id"
-                }
-              ]
-            },
-            "description": "测试语音",
-            "header": []
-          },
-          "description": "音频在摄像机外接功放播放"
-        },
-        {
-          "name": "修改声音 应用所有设备",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "file",
-                  "type": "file",
-                  "description": "音频文件",
-                  "value": "",
-                  "hasItems": false
-                }
-              ]
-            },
-            "url": {
-              "raw": "::server/equipment/uploadVoice",
-              "path": [
-                "equipment",
-                "uploadVoice"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "修改声音 应用所有设备",
-            "header": []
-          },
-          "description": "修改声音 应用所有设备"
-        },
-        {
-          "name": "修改声音 应用当前设备",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "file",
-                  "type": "file",
-                  "description": "音频文件",
-                  "value": "",
-                  "hasItems": false
-                }
-              ]
-            },
-            "url": {
-              "raw": "::server/equipment/uploadVoice/677",
-              "path": [
-                "equipment",
-                "uploadVoice",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "677",
-                  "description": "  设备id"
-                }
-              ]
-            },
-            "description": "修改声音 应用当前设备",
-            "header": []
-          },
-          "description": "修改声音 应用当前设备"
-        },
-        {
-          "name": "修改设备ip",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": 386,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"sn\": \"raptdm\",\n  \"mac\": \"uo0j3w\",\n  \"ntp\": \"6kva87\",\n  \"username\": \"willy.kilback\",\n  \"password\": \"ssrpfm\",\n  \"online\": true,\n  \"onlineName\": \"willy.kilback\",\n  \"guideDeviceStatus\": \"bhdk8c\",\n  \"guideDeviceStatusName\": \"willy.kilback\",\n  \"powerBoxStatus\": \"j59th4\",\n  \"powerBoxStatusName\": \"willy.kilback\",\n  \"cameraStatus\": \"3u5qut\",\n  \"cameraStatusName\": \"willy.kilback\",\n  \"uploadTime\": \"2022-09-29 15:25:21\",\n  \"videoStatus\": true,\n  \"videoStatusName\": \"willy.kilback\",\n  \"videoPath\": \"ubksiy\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/updateIp",
-              "path": [
-                "equipment",
-                "updateIp"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "修改设备ip",
-            "header": []
-          },
-          "description": "只需要传id ip"
-        },
-        {
-          "name": "修改视频流地址",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": 86,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"sn\": \"up5can\",\n  \"mac\": \"ehtmva\",\n  \"ntp\": \"rrv79z\",\n  \"username\": \"willy.kilback\",\n  \"password\": \"d9ons0\",\n  \"online\": true,\n  \"onlineName\": \"willy.kilback\",\n  \"guideDeviceStatus\": \"3q8ajo\",\n  \"guideDeviceStatusName\": \"willy.kilback\",\n  \"powerBoxStatus\": \"kaegmk\",\n  \"powerBoxStatusName\": \"willy.kilback\",\n  \"cameraStatus\": \"ce7d4u\",\n  \"cameraStatusName\": \"willy.kilback\",\n  \"uploadTime\": \"2022-09-29 15:25:21\",\n  \"videoStatus\": true,\n  \"videoStatusName\": \"willy.kilback\",\n  \"videoPath\": \"oif4ex\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/updateVideoPath",
-              "path": [
-                "equipment",
-                "updateVideoPath"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "修改视频流地址",
-            "header": []
-          },
-          "description": "只需要传id videoPath"
-        }
-      ]
-    },
-    {
-      "name": "设备记录",
-      "item": [
-        {
-          "name": "列表",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/record/list?page=1&pageSize=10&equipmentName=willy.kilback&equipmentIp=81.156.32.50&online=true&guideDeviceStatus=z8dy1l&powerBoxStatus=c8k8r7&cameraStatus=cfbbeo&videoStatus=true&startTime=2022-09-29 15:25:21&endTime=2022-09-29",
-              "path": [
-                "equipment",
-                "record",
-                "list"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "description": "当前页"
-                },
-                {
-                  "key": "pageSize",
-                  "value": "10",
-                  "description": "每页条数"
-                },
-                {
-                  "key": "equipmentName",
-                  "value": "willy.kilback",
-                  "description": "设备名称"
-                },
-                {
-                  "key": "equipmentIp",
-                  "value": "81.156.32.50",
-                  "description": "设备ip"
-                },
-                {
-                  "key": "online",
-                  "value": "true",
-                  "description": "设备状态"
-                },
-                {
-                  "key": "guideDeviceStatus",
-                  "value": "emxdvs",
-                  "description": "诱导设备状态 04灭灯 05亮灯 06故障\r\n{@link com.xsy.api.equipment.enums.GuideDeviceStatusEnum}"
-                },
-                {
-                  "key": "powerBoxStatus",
-                  "value": "mvall6",
-                  "description": "配电机箱状态 07关箱 08开箱\r\n{@link com.xsy.api.equipment.enums.PowerBoxStatusEnum}"
-                },
-                {
-                  "key": "cameraStatus",
-                  "value": "x7hpl2",
-                  "description": "摄像机状态 01正常 02未配置 03异常\r\n{@link com.xsy.api.equipment.enums.CameraStatusEnum}"
-                },
-                {
-                  "key": "videoStatus",
-                  "value": "true",
-                  "description": "视频流状态"
-                },
-                {
-                  "key": "startTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "开始时间 yyyy-MM-dd HH:mm:ss"
-                },
-                {
-                  "key": "endTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "结束时间 yyyy-MM-dd HH:mm:ss"
-                }
-              ],
-              "variable": []
-            },
-            "description": "列表",
-            "header": []
-          },
-          "description": "列表"
-        },
-        {
-          "name": "导出",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/equipment/record/export?page=1&pageSize=10&equipmentName=willy.kilback&equipmentIp=81.156.32.50&online=true&guideDeviceStatus=jitdqj&powerBoxStatus=pujskj&cameraStatus=pzzqpt&videoStatus=true&startTime=2022-09-29 15:25:21&endTime=2022-09-29",
-              "path": [
-                "equipment",
-                "record",
-                "export"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "description": "当前页"
-                },
-                {
-                  "key": "pageSize",
-                  "value": "10",
-                  "description": "每页条数"
-                },
-                {
-                  "key": "equipmentName",
-                  "value": "willy.kilback",
-                  "description": "设备名称"
-                },
-                {
-                  "key": "equipmentIp",
-                  "value": "81.156.32.50",
-                  "description": "设备ip"
-                },
-                {
-                  "key": "online",
-                  "value": "true",
-                  "description": "设备状态"
-                },
-                {
-                  "key": "guideDeviceStatus",
-                  "value": "amgnav",
-                  "description": "诱导设备状态 04灭灯 05亮灯 06故障\r\n{@link com.xsy.api.equipment.enums.GuideDeviceStatusEnum}"
-                },
-                {
-                  "key": "powerBoxStatus",
-                  "value": "cl50ci",
-                  "description": "配电机箱状态 07关箱 08开箱\r\n{@link com.xsy.api.equipment.enums.PowerBoxStatusEnum}"
-                },
-                {
-                  "key": "cameraStatus",
-                  "value": "dujhma",
-                  "description": "摄像机状态 01正常 02未配置 03异常\r\n{@link com.xsy.api.equipment.enums.CameraStatusEnum}"
-                },
-                {
-                  "key": "videoStatus",
-                  "value": "true",
-                  "description": "视频流状态"
-                },
-                {
-                  "key": "startTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "开始时间 yyyy-MM-dd HH:mm:ss"
-                },
-                {
-                  "key": "endTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "结束时间 yyyy-MM-dd HH:mm:ss"
-                }
-              ],
-              "variable": []
-            },
-            "description": "导出",
-            "header": []
-          },
-          "description": "导出"
-        }
-      ]
-    },
-    {
-      "name": "告警事件",
-      "item": [
-        {
-          "name": "告警事件类型枚举(异常类型)",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/code",
-              "path": [
-                "event",
-                "code"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "告警事件类型枚举(异常类型)",
-            "header": []
-          },
-          "description": "告警事件类型枚举(异常类型)"
-        },
-        {
-          "name": "事件状态枚举",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/status",
-              "path": [
-                "event",
-                "status"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "事件状态枚举",
-            "header": []
-          },
-          "description": "事件状态枚举"
-        },
-        {
-          "name": "告警事件列表",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/list?page=1&pageSize=10&eventCode=194&equipmentName=willy.kilback&startTime=2022-09-29 15:25:21&endTime=2022-09-29",
-              "path": [
-                "event",
-                "list"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "description": "当前页"
-                },
-                {
-                  "key": "pageSize",
-                  "value": "10",
-                  "description": "每页条数"
-                },
-                {
-                  "key": "eventCode",
-                  "value": "164",
-                  "description": "事件类型"
-                },
-                {
-                  "key": "equipmentName",
-                  "value": "willy.kilback",
-                  "description": "设备名称"
-                },
-                {
-                  "key": "startTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "开始时间yyyy-MM-dd HH:mm:ss"
-                },
-                {
-                  "key": "endTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "结束时间yyyy-MM-dd HH:mm:ss"
-                }
-              ],
-              "variable": []
-            },
-            "description": "告警事件列表",
-            "header": []
-          },
-          "description": "告警事件列表"
-        },
-        {
-          "name": "事件上传",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"detectEvent\": 2,\n  \"picture\": \"fb27wi\",\n  \"plateNumber\": \"浙A88888\",\n  \"sn\": \"1fa5cada-9dac-45f4-b49d-c523d601f3c2\",\n  \"timestamp\": 1664436302918,\n  \"name\": \"willy.kilback\",\n  \"ip\": \"81.156.32.50\",\n  \"ntp\": \"gnzvzb\",\n  \"mac\": \"4l1i7d\",\n  \"remark\": \"8t9l9f\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/upload",
-              "path": [
-                "event",
-                "upload"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "事件上传",
-            "header": []
-          },
-          "description": "事件上传 预留 现在使用{@link com.xsy.api.common.controller.ApiController#pushStatus(String)}"
-        },
-        {
-          "name": "事件误报",
-          "request": {
-            "method": "POST",
-            "body": {
-              "mode": "formdata",
-              "formdata": []
-            },
-            "url": {
-              "raw": "::server/event/falseAlarm/811",
-              "path": [
-                "event",
-                "falseAlarm",
-                ":id"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "811",
-                  "description": "事件id"
-                }
-              ]
-            },
-            "description": "事件误报",
-            "header": []
-          },
-          "description": "事件误报"
-        },
-        {
-          "name": "导出",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/export?page=1&pageSize=10&eventCode=129&equipmentName=willy.kilback&startTime=2022-09-29 15:25:21&endTime=2022-09-29",
-              "path": [
-                "event",
-                "export"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "description": "当前页"
-                },
-                {
-                  "key": "pageSize",
-                  "value": "10",
-                  "description": "每页条数"
-                },
-                {
-                  "key": "eventCode",
-                  "value": "979",
-                  "description": "事件类型"
-                },
-                {
-                  "key": "equipmentName",
-                  "value": "willy.kilback",
-                  "description": "设备名称"
-                },
-                {
-                  "key": "startTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "开始时间yyyy-MM-dd HH:mm:ss"
-                },
-                {
-                  "key": "endTime",
-                  "value": "2022-09-29 15:25:21",
-                  "description": "结束时间yyyy-MM-dd HH:mm:ss"
-                }
-              ],
-              "variable": []
-            },
-            "description": "导出",
-            "header": []
-          },
-          "description": "导出"
-        }
-      ]
-    },
-    {
-      "name": "事件统计",
-      "item": [
-        {
-          "name": "事件总次数",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/total?startDay=2022-08-01&endDay=2023-09-01",
-              "path": [
-                "event",
-                "statistics",
-                "total"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "startDay",
-                  "value": "2022-08-01",
-                  "description": "开始日期 yyyy-MM-dd"
-                },
-                {
-                  "key": "endDay",
-                  "value": "2023-09-01",
-                  "description": "  结束日期 yyyy-MM-dd"
-                }
-              ],
-              "variable": []
-            },
-            "description": "事件总次数",
-            "header": []
-          },
-          "description": "事件总次数 不包含车辆驶离事件"
-        },
-        {
-          "name": "各类型事件次数统计",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/totalList?timeUnit=day&limit=7",
-              "path": [
-                "event",
-                "statistics",
-                "totalList"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "timeUnit",
-                  "value": "day",
-                  "description": "时间单位 日:day 周:week 月:month 为空默认日 "
-                },
-                {
-                  "key": "limit",
-                  "value": "7",
-                  "description": "   时间单位=天 近几天 单位=周 近几周 为空默认7 "
-                }
-              ],
-              "variable": []
-            },
-            "description": "各类型事件次数统计",
-            "header": []
-          },
-          "description": "事件次数统计（车辆停靠/人驻留/抛洒物）"
-        },
-        {
-          "name": "易发设备排行",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/eventTotalRanking",
-              "path": [
-                "event",
-                "statistics",
-                "eventTotalRanking"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "易发设备排行",
-            "header": []
-          },
-          "description": "易发设备排行"
-        },
-        {
-          "name": "实时数据",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/realTimeData",
-              "path": [
-                "event",
-                "statistics",
-                "realTimeData"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "实时数据",
-            "header": []
-          },
-          "description": "实时数据"
-        },
-        {
-          "name": "根据事件类型查询告警易发设备",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/equipmentAlarmCountRanking?code=197",
-              "path": [
-                "event",
-                "statistics",
-                "equipmentAlarmCountRanking"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "code",
-                  "value": "197",
-                  "description": "事件类型"
-                }
-              ],
-              "variable": []
-            },
-            "description": "根据事件类型查询告警易发设备",
-            "header": []
-          },
-          "description": "根据事件类型查询告警易发设备"
-        },
-        {
-          "name": "根据事件类型查询误报易发设备",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/equipmentFalseAlarmCountRanking?code=658",
-              "path": [
-                "event",
-                "statistics",
-                "equipmentFalseAlarmCountRanking"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "code",
-                  "value": "658",
-                  "description": "事件类型 为空查全部"
-                }
-              ],
-              "variable": []
-            },
-            "description": "根据事件类型查询误报易发设备",
-            "header": []
-          },
-          "description": "根据事件类型查询误报易发设备"
-        },
-        {
-          "name": "告警易发时间 3小时一段",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/alarmTimeRanking?code=816",
-              "path": [
-                "event",
-                "statistics",
-                "alarmTimeRanking"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "code",
-                  "value": "816",
-                  "description": "事件类型 为空查全部"
-                }
-              ],
-              "variable": []
-            },
-            "description": "告警易发时间 3小时一段",
-            "header": []
-          },
-          "description": "告警易发时间 3小时一段"
-        },
-        {
-          "name": "误报易发时间 1小时一段",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/falseAlarmTimeRanking",
-              "path": [
-                "event",
-                "statistics",
-                "falseAlarmTimeRanking"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "误报易发时间 1小时一段",
-            "header": []
-          },
-          "description": "误报易发时间 1小时一段"
-        },
-        {
-          "name": "车/人/抛洒/故障事件 今日昨日统计",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/event/statistics/todayYesterdayEventStatistics",
-              "path": [
-                "event",
-                "statistics",
-                "todayYesterdayEventStatistics"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "车/人/抛洒/故障事件 今日昨日统计",
-            "header": []
-          },
-          "description": "车/人/抛洒/故障事件 今日昨日统计"
+          "description": "删除"
         }
       ]
     }

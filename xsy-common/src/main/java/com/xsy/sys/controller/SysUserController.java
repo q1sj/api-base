@@ -41,6 +41,12 @@ public class SysUserController {
     @Autowired
     private SysRoleUserService sysRoleUserService;
 
+    /**
+     * 分页查询
+     *
+     * @param params
+     * @return
+     */
     @GetMapping("page")
     @RequiresPermissions("sys:user:page")
     public Result<PageData<SysUserDTO>> page(@RequestParam Map<String, Object> params) {
@@ -49,6 +55,12 @@ public class SysUserController {
         return Result.ok(page);
     }
 
+    /**
+     * 根据id查询
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("{id}")
     @RequiresPermissions("sys:user:info")
     public Result<SysUserDTO> get(@PathVariable("id") Long id) {
@@ -61,12 +73,23 @@ public class SysUserController {
         return Result.ok(data);
     }
 
+    /**
+     * 当前用户信息
+     *
+     * @return
+     */
     @GetMapping("info")
     public Result<SysUserDTO> info() {
         SysUserDTO data = ConvertUtils.sourceToTarget(SecurityUser.getUser(), SysUserDTO.class);
         return Result.ok(data);
     }
 
+    /**
+     * 修改密码
+     *
+     * @param dto
+     * @return
+     */
     @PutMapping("password")
     public Result password(@RequestBody PasswordDTO dto) {
         //效验数据
@@ -84,6 +107,12 @@ public class SysUserController {
         return Result.ok();
     }
 
+    /**
+     * 新增
+     *
+     * @param dto
+     * @return
+     */
     @PostMapping
     @RequiresPermissions("sys:user:save")
     public Result save(@RequestBody SysUserDTO dto) {
@@ -95,6 +124,12 @@ public class SysUserController {
         return Result.ok();
     }
 
+    /**
+     * 更新
+     *
+     * @param dto
+     * @return
+     */
     @PutMapping
     @RequiresPermissions("sys:user:update")
     public Result update(@RequestBody SysUserDTO dto) {
@@ -106,6 +141,12 @@ public class SysUserController {
         return Result.ok();
     }
 
+    /**
+     * 删除
+     *
+     * @param ids
+     * @return
+     */
     @DeleteMapping
     @RequiresPermissions("sys:user:delete")
     public Result delete(@RequestBody Long[] ids) {

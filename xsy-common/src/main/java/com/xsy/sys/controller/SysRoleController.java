@@ -1,8 +1,8 @@
 /**
  * Copyright (c) 2018 人人开源 All rights reserved.
- *
+ * <p>
  * https://www.renren.io
- *
+ * <p>
  * 版权所有，侵权必究！
  */
 
@@ -31,69 +31,104 @@ import java.util.Map;
 @RestController
 @RequestMapping("/sys/role")
 public class SysRoleController {
-	@Autowired
-	private SysRoleService sysRoleService;
-	@Autowired
-	private SysRoleMenuService sysRoleMenuService;
+    @Autowired
+    private SysRoleService sysRoleService;
+    @Autowired
+    private SysRoleMenuService sysRoleMenuService;
 
-	@GetMapping("page")
-	@RequiresPermissions("sys:role:page")
-	public Result<PageData<SysRoleDTO>> page(@RequestParam Map<String, Object> params){
-		PageData<SysRoleDTO> page = sysRoleService.page(params);
+    /**
+     * 分页查询
+     *
+     * @param params
+     * @return
+     */
+    @GetMapping("page")
+    @RequiresPermissions("sys:role:page")
+    public Result<PageData<SysRoleDTO>> page(@RequestParam Map<String, Object> params) {
+        PageData<SysRoleDTO> page = sysRoleService.page(params);
 
-		return Result.ok(page);
-	}
+        return Result.ok(page);
+    }
 
-	@GetMapping("list")
-	@RequiresPermissions("sys:role:list")
-	public Result<List<SysRoleDTO>> list(){
-		List<SysRoleDTO> data = sysRoleService.list(new HashMap<>(1));
+    /**
+     * 列表
+     *
+     * @return
+     */
+    @GetMapping("list")
+    @RequiresPermissions("sys:role:list")
+    public Result<List<SysRoleDTO>> list() {
+        List<SysRoleDTO> data = sysRoleService.list(new HashMap<>(1));
 
-		return Result.ok(data);
-	}
+        return Result.ok(data);
+    }
 
-	@GetMapping("{id}")
-	@RequiresPermissions("sys:role:info")
-	public Result<SysRoleDTO> get(@PathVariable("id") Long id){
-		SysRoleDTO data = sysRoleService.get(id);
+    /**
+     * 根据id查询
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("{id}")
+    @RequiresPermissions("sys:role:info")
+    public Result<SysRoleDTO> get(@PathVariable("id") Long id) {
+        SysRoleDTO data = sysRoleService.get(id);
 
-		//查询角色对应的菜单
-		List<Long> menuIdList = sysRoleMenuService.getMenuIdList(id);
-		data.setMenuIdList(menuIdList);
+        //查询角色对应的菜单
+        List<Long> menuIdList = sysRoleMenuService.getMenuIdList(id);
+        data.setMenuIdList(menuIdList);
 
-		return Result.ok(data);
-	}
+        return Result.ok(data);
+    }
 
-	@PostMapping
-	@RequiresPermissions("sys:role:save")
-	public Result save(@RequestBody SysRoleDTO dto){
-		//效验数据
-		ValidatorUtils.validateEntity(dto, AddGroup.class, Default.class);
+    /**
+     * 新增
+     *
+     * @param dto
+     * @return
+     */
+    @PostMapping
+    @RequiresPermissions("sys:role:save")
+    public Result save(@RequestBody SysRoleDTO dto) {
+        //效验数据
+        ValidatorUtils.validateEntity(dto, AddGroup.class, Default.class);
 
-		sysRoleService.save(dto);
+        sysRoleService.save(dto);
 
-		return Result.ok();
-	}
+        return Result.ok();
+    }
 
-	@PutMapping
-	@RequiresPermissions("sys:role:update")
-	public Result update(@RequestBody SysRoleDTO dto){
-		//效验数据
-		ValidatorUtils.validateEntity(dto, UpdateGroup.class, Default.class);
+    /**
+     * 更新
+     *
+     * @param dto
+     * @return
+     */
+    @PutMapping
+    @RequiresPermissions("sys:role:update")
+    public Result update(@RequestBody SysRoleDTO dto) {
+        //效验数据
+        ValidatorUtils.validateEntity(dto, UpdateGroup.class, Default.class);
 
-		sysRoleService.update(dto);
+        sysRoleService.update(dto);
 
-		return Result.ok();
-	}
+        return Result.ok();
+    }
 
-	@DeleteMapping
-	@RequiresPermissions("sys:role:delete")
-	public Result delete(@RequestBody Long[] ids){
-		//效验数据
-		BizAssertUtils.isNotEmpty(ids,"id不能为空");
+    /**
+     * 删除
+     *
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    @RequiresPermissions("sys:role:delete")
+    public Result delete(@RequestBody Long[] ids) {
+        //效验数据
+        BizAssertUtils.isNotEmpty(ids, "id不能为空");
 
-		sysRoleService.delete(ids);
+        sysRoleService.delete(ids);
 
-		return Result.ok();
-	}
+        return Result.ok();
+    }
 }

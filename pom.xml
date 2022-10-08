@@ -11,6 +11,7 @@
     <modules>
         <module>xsy-common</module>
         <module>xsy-api</module>
+        <module>xsy-generator</module>
     </modules>
 
     <parent>

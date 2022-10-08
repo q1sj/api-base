@@ -36,6 +36,12 @@ public class LoginController {
     @Autowired
     private SysUserTokenService sysUserTokenService;
 
+    /**
+     * 登录
+     *
+     * @param login
+     * @return
+     */
     @PostMapping(LoginController.LOGIN_MAPPING)
     public Result<Void> login(@RequestBody LoginDTO login) {
         //效验数据
@@ -54,6 +60,11 @@ public class LoginController {
         return sysUserTokenService.createToken(user.getId());
     }
 
+    /**
+     * 登出
+     *
+     * @return
+     */
     @PostMapping("logout")
     public Result logout() {
         UserDetail user = SecurityUser.getUser();

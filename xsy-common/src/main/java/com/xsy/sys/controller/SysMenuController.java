@@ -37,6 +37,11 @@ public class SysMenuController {
     @Autowired
     private AuthService authService;
 
+    /**
+     * nav
+     *
+     * @return
+     */
     @GetMapping("nav")
     public Result<List<SysMenuDTO>> nav() {
         UserDetail user = SecurityUser.getUser();
@@ -45,6 +50,11 @@ public class SysMenuController {
         return Result.ok(list);
     }
 
+    /**
+     * 当前用户拥有权限
+     *
+     * @return
+     */
     @GetMapping("permissions")
     public Result<Set<String>> permissions() {
         UserDetail user = SecurityUser.getUser();
@@ -64,6 +74,12 @@ public class SysMenuController {
         return Result.ok(list);
     }
 
+    /**
+     * 列表
+     *
+     * @param type
+     * @return
+     */
     @GetMapping("list")
     @RequiresPermissions("sys:menu:list")
     public Result<List<SysMenuDTO>> list(Integer type) {
@@ -72,6 +88,12 @@ public class SysMenuController {
         return Result.ok(list);
     }
 
+    /**
+     * 根据id查询
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("{id}")
     @RequiresPermissions("sys:menu:info")
     public Result<SysMenuDTO> get(@PathVariable("id") Long id) {
@@ -80,6 +102,12 @@ public class SysMenuController {
         return Result.ok(data);
     }
 
+    /**
+     * 保存
+     *
+     * @param dto
+     * @return
+     */
     @PostMapping
     @RequiresPermissions("sys:menu:save")
     public Result save(@RequestBody SysMenuDTO dto) {
@@ -91,6 +119,12 @@ public class SysMenuController {
         return Result.ok();
     }
 
+    /**
+     * 更新
+     *
+     * @param dto
+     * @return
+     */
     @PutMapping
     @RequiresPermissions("sys:menu:update")
     public Result update(@RequestBody SysMenuDTO dto) {
@@ -102,6 +136,12 @@ public class SysMenuController {
         return Result.ok();
     }
 
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     */
     @DeleteMapping("{id}")
     @RequiresPermissions("sys:menu:delete")
     public Result delete(@PathVariable("id") Long id) {
@@ -116,6 +156,11 @@ public class SysMenuController {
         return Result.ok();
     }
 
+    /**
+     * 当前用户拥有菜单
+     *
+     * @return
+     */
     @GetMapping("select")
     @RequiresPermissions("sys:menu:select")
     public Result<List<SysMenuDTO>> select() {
