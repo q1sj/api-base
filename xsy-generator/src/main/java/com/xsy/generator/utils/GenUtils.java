@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -121,10 +122,13 @@ public class GenUtils {
         map.put("columns", tableEntity.getColumns());
         map.put("hasBigDecimal", hasBigDecimal);
         map.put("version", config.getString("version"));
-        map.put("package", config.getString("package"));
-        map.put("projectName", config.getString("projectName"));
+        String packageName = config.getString("package");
+        map.put("package", packageName);
+        String projectName = config.getString("projectName");
+        map.put("projectName", projectName);
         String[] tableNameSplit = tableEntity.getTableName().split("_");
-        map.put("moduleName", tableNameSplit[0]);
+        String moduleName = tableNameSplit[0];
+        map.put("moduleName", moduleName);
         map.put("requestMapping", tableEntity.getTableName().replace("_", "/"));
         map.put("author", config.getString("author"));
         map.put("email", config.getString("email"));
@@ -136,7 +140,12 @@ public class GenUtils {
         }
 
         VelocityContext context = new VelocityContext(map);
-
+        //初始化模块目录
+        try {
+            initJavaModulePackage(zip, packageName, projectName, moduleName);
+        } catch (IOException e) {
+            throw new RenException("初始化目录失败", e);
+        }
         //获取模板列表
         List<String> templates = getTemplates();
         for (String template : templates) {
@@ -147,7 +156,7 @@ public class GenUtils {
 
             try {
                 //添加到zip
-                zip.putNextEntry(new ZipEntry(getFileName(template, tableEntity.getClassName(), config.getString("package"), map.get("projectName").toString(), map.get("moduleName").toString())));
+                zip.putNextEntry(new ZipEntry(getFileName(template, tableEntity.getClassName(), packageName, projectName, moduleName)));
                 IOUtils.write(sw.toString(), zip, "UTF-8");
                 IOUtils.closeQuietly(sw);
                 zip.closeEntry();
@@ -185,6 +194,41 @@ public class GenUtils {
             throw new RenException("获取配置文件失败，", e);
         }
     }
+
+    public static void initJavaModulePackage(ZipOutputStream zip, String packageName, String projectName, String moduleName) throws IOException {
+        String packageNamePre = getPackageName(packageName, projectName, moduleName);
+        try {
+            zip.putNextEntry(new ZipEntry(packageNamePre + "controller/"));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "service/"));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "service" + File.separator + "impl/"));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "dao/"));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "enums/"));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "util/"));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "pojo/"));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "exception/" ));
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(packageNamePre + "task/"));
+            zip.closeEntry();
+        } catch (ZipException e) {
+            //忽略 duplicate entry
+        }
+    }
+
+    public static String getPackageName(String packageName, String projectName, String moduleName) {
+        String packagePath = "main" + File.separator + "java" + File.separator;
+        if (StringUtils.isNotBlank(packageName)) {
+            packagePath += packageName.replace(".", File.separator) + File.separator + projectName + File.separator + moduleName + File.separator;
+        }
+        return packagePath;
+    }
+
 
     /**
      * 获取文件名
