@@ -19,6 +19,8 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +36,10 @@ import java.util.zip.ZipOutputStream;
  * @author Mark sunlightcs@gmail.com
  */
 public class GenUtils {
+    private static final Logger logger = LoggerFactory.getLogger(GenUtils.class);
 
     public static List<String> getTemplates() {
+
         List<String> templates = new ArrayList<String>();
         templates.add("template/DTO.java.vm");
         templates.add("template/Query.java.vm");
@@ -206,6 +210,7 @@ public class GenUtils {
             zip.closeEntry();
         } catch (ZipException e) {
             //忽略 duplicate entry
+            logger.warn(e.getMessage());
         }
     }
 

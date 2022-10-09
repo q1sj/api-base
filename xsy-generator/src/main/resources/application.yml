@@ -44,7 +44,3 @@ pagehelper:
   supportMethodsArguments: true
   params: count=countSql
 
-
-#指定数据库，可选值有【mysql、oracle、sqlserver、postgresql】
-renren:
-  database: mysql
