@@ -20,13 +20,13 @@ commons-lang3
 spring-boot-starter-data-elasticsearch:2.3.3.RELEASE(?)
 shiro-core:1.9.0
 shiro-spring:1.9.0
-caffeine:2.8.5
 mysql-connector-java:8.0.17
 druid-spring-boot-starter:1.1.13
+mybatis-plus-boot-starter:3.5.2
+caffeine:2.8.5
 easyexcel:3.0.0-beta1
 commons-io:2.5
 joda-time:2.10.14
-mybatis-plus-boot-starter:3.5.2
 ```
 ## common模块功能介绍
 ### 文件存储

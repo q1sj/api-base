@@ -32,15 +32,15 @@ public class CacheConfig {
      *
      * @return 缓存管理器
      */
-    @Bean("caffeineCacheManager")
+    @Bean("cacheManager")
     public CacheManager cacheManager() {
         TimeUnit timeUnit = null;
         try {
             timeUnit = TimeUnit.valueOf(expireTimeUnit);
         } catch (IllegalArgumentException e) {
-            log.warn("expireTimeUnit:{}无效 使用默认过期时间",expireTimeUnit);
             timeUnit = TimeUnit.HOURS;
             expire = 1;
+            log.warn("expireTimeUnit:{}无效 使用默认过期时间{} {}", expireTimeUnit, expire, timeUnit.name());
         }
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(Caffeine.newBuilder()

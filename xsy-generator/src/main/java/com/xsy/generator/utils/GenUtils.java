@@ -53,9 +53,9 @@ public class GenUtils {
         templates.add("template/index.vue.vm");
         templates.add("template/add-or-update.vue.vm");
         templates.add("template/mysql.vm");
-//        templates.add("template/sqlserver.vm");
-//        templates.add("template/oracle.vm");
-//        templates.add("template/postgresql.vm");
+        templates.add("template/sqlserver.vm");
+        templates.add("template/oracle.vm");
+        templates.add("template/postgresql.vm");
         return templates;
     }
 

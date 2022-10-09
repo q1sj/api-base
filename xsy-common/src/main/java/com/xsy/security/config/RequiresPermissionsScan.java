@@ -16,13 +16,18 @@ import org.springframework.stereotype.Controller;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * 可用权限注解扫描
+ *
+ * @author Q1sj
+ */
 @Slf4j
 @Component
-public class PermissionsInit implements ApplicationContextAware {
+public class RequiresPermissionsScan implements ApplicationContextAware {
 
     private final CacheWrapper cache;
 
-    public PermissionsInit(CacheManagerWrapper cacheManagerWrapper) {
+    public RequiresPermissionsScan(CacheManagerWrapper cacheManagerWrapper) {
         cache = cacheManagerWrapper.getCache(SecurityConstant.PERMISSIONS_CACHE_NAME);
     }
 
