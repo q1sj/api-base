@@ -45,7 +45,7 @@ public class FileRecordController {
         String source = "upload-api-demo";
         try {
             FileRecordEntity record = fileRecordService.upload(file, source,
-                    TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS),
+                    TimeUnit.DAYS.toMillis(1),
                     10 * FileUtils.ONE_MB,
                     Arrays.asList("jpg", "png"));
             return Result.ok(record);

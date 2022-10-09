@@ -29,7 +29,6 @@ public class UserDetail implements Serializable {
     private Integer gender;
     private String email;
     private String mobile;
-    private Long deptId;
     private String password;
     private Integer status;
     private Integer superAdmin;

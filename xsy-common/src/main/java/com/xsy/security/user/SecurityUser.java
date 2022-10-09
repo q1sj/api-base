@@ -10,6 +10,7 @@ package com.xsy.security.user;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.springframework.lang.Nullable;
 
 /**
  * 用户
@@ -34,26 +35,18 @@ public class SecurityUser {
         if(subject == null){
             return new UserDetail();
         }
-
         UserDetail user = (UserDetail)subject.getPrincipal();
         if(user == null){
             return new UserDetail();
         }
-
         return user;
     }
 
     /**
      * 获取用户ID
      */
+    @Nullable
     public static Long getUserId() {
         return getUser().getId();
-    }
-
-    /**
-     * 获取部门ID
-     */
-    public static Long getDeptId() {
-        return getUser().getDeptId();
     }
 }

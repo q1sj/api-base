@@ -9,6 +9,7 @@ mysql5.7
 ```text
 spring-boot-starter-parent:2.3.3.RELEASE
 spring-boot-starter-web
+spring-boot-starter-cache
 spring-boot-starter-test
 spring-boot-starter-aop
 spring-boot-starter-validation
@@ -19,6 +20,7 @@ commons-lang3
 spring-boot-starter-data-elasticsearch:2.3.3.RELEASE(?)
 shiro-core:1.9.0
 shiro-spring:1.9.0
+caffeine:2.8.5
 mysql-connector-java:8.0.17
 druid-spring-boot-starter:1.1.13
 easyexcel:3.0.0-beta1
@@ -107,7 +109,7 @@ com.xsy.sys.service.SysConfigService
  * @param val
  * @param <T>
  */
-<T> void put(BaseConfigKey<T> key, T val);
+<T> void put(BaseKey<T> key, T val);
 /**
  * 获取
  *
@@ -115,7 +117,37 @@ com.xsy.sys.service.SysConfigService
  * @param <T>
  * @return
  */
-<T> T get(BaseConfigKey<T> key);
+<T> T get(BaseKey<T> key);
+```
+### 缓存
+com.xsy.base.cache.CacheManagerWrapper包装org.springframework.cache.CacheManager
+com.xsy.base.cache.CacheWrapper包装org.springframework.cache.Cache
+避免类型转换问题
+```java
+class CacheDemo {
+    @Autowired
+    private CacheManagerWrapper cacheManagerWrapper;
+
+    private void put() {
+        // cache name根据具体业务修改
+        CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_TOKEN_CACHE_NAME);
+        cache.put(new StringKey("xxx"), "abc");
+        cache.put(new ObjectKey<>("o",SysUserEntity.class),new SysUserEntity());
+   }
+
+    private void get() {
+        CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_TOKEN_CACHE_NAME);
+        StringKey key = new StringKey("xxx");
+        String s = cache.get(key);
+        String s1 = cache.get(key, () -> "123");
+    }
+
+    private void evict(){
+        CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_TOKEN_CACHE_NAME);
+        StringKey key = new StringKey("xxx");
+        cache.evict(key);
+    }
+}
 ```
 ### 全局异常处理
 com.xsy.base.exception.GlobalExceptionHandler  
