@@ -28,9 +28,12 @@ import java.util.UUID;
 @Slf4j
 public class TokenGenerator {
 
-    public final static String KEY_SEED = "xsy";
+    public static final String KEY_SEED = "xsy";
 
-    public final static Key KEY;
+    public static final Key KEY;
+
+    private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
+
 
     static {
         try {
@@ -45,12 +48,14 @@ public class TokenGenerator {
     }
 
     public static String generateValue() {
-        return encrypt(KEY_SEED + UUID.randomUUID().toString());
+        String encrypt = encrypt(KEY_SEED + UUID.randomUUID().toString());
+        return replacePlusSign(encrypt);
     }
 
     public static boolean validToken(String token) {
         String decrypt = null;
         try {
+            token = restorePlusSign(token);
             decrypt = decrypt(token);
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
@@ -65,9 +70,9 @@ public class TokenGenerator {
      * @param plainText 明文
      * @return 加密后的密文.
      */
-    public static final String encrypt(String plainText) {
+    public static String encrypt(String plainText) {
         try {
-            Cipher cipher = Cipher.getInstance("AES");
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, KEY);
             byte[] p = plainText.getBytes(StandardCharsets.UTF_8);
             byte[] result = cipher.doFinal(p);
@@ -85,11 +90,19 @@ public class TokenGenerator {
      * @return 解密后的明文.
      */
     public static String decrypt(String cipherText) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, KEY);
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] c = decoder.decodeBuffer(cipherText);
         byte[] result = cipher.doFinal(c);
         return new String(result, StandardCharsets.UTF_8);
+    }
+
+    private static String replacePlusSign(String token) {
+        return token.replace("+", "_");
+    }
+
+    private static String restorePlusSign(String token) {
+        return token.replace("_", "+");
     }
 }

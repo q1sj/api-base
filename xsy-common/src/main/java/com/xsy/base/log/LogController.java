@@ -1,5 +1,6 @@
 package com.xsy.base.log;
 
+import com.xsy.base.util.FileUtils;
 import com.xsy.base.util.Result;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.Channels;
@@ -120,7 +119,7 @@ public class LogController {
         public LogFile(File file) {
             Objects.requireNonNull(file);
             this.fileName = file.getName();
-            this.size = new BigDecimal(Objects.toString(file.length() / 1024 / 1024D)).setScale(2, RoundingMode.HALF_UP) + "MB";
+            this.size = FileUtils.byteCountToDisplaySize(file.length());
             this.date = new Date(file.lastModified());
         }
     }

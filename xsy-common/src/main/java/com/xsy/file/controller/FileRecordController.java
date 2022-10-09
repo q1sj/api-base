@@ -81,7 +81,7 @@ public class FileRecordController {
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             os.write(fileBytes);
         } catch (IOException e) {
-            log.error("图片获取失败", e);
+            log.warn("图片获取失败", e);
         }
     }
 
@@ -101,7 +101,7 @@ public class FileRecordController {
             response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(path, StandardCharsets.UTF_8.displayName()));
             os.write(fileBytes);
         } catch (IOException e) {
-            log.error("文件获取失败", e);
+            log.warn("文件获取失败", e);
         }
     }
 }
