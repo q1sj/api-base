@@ -23,5 +23,5 @@ public class ${className}Query {
 	* 每页条数
 	*/
 	private Integer pageSize;
-	// TODO
+	// TODO 添加业务字段
 }

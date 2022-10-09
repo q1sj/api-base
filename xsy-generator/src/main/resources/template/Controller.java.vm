@@ -21,6 +21,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/${requestMapping}")
 public class ${className}Controller {
+    public static final String LIST_PERMISSIONS = "${classname}:list";
+    public static final String DETAIL_PERMISSIONS = "${classname}:detail";
+    public static final String SAVE_PERMISSIONS = "${classname}:save";
+    public static final String UPDATE_PERMISSIONS = "${classname}:update";
+    public static final String DELETE_PERMISSIONS = "${classname}:delete";
+
     @Autowired
     private ${className}Service ${classname}Service;
 
@@ -30,10 +36,26 @@ public class ${className}Controller {
     * @return
     */
     @GetMapping("/list")
-    @RequiresPermissions("${classname}:list")
+    @RequiresPermissions(LIST_PERMISSIONS)
     public Result<PageData<${className}Entity>> list(@Validated ${className}Query query) {
         PageData<${className}Entity> pageData = ${classname}Service.page(query);
         return Result.ok(pageData);
+    }
+
+    /**
+    * 详情
+    *
+    * @param id
+    * @return
+    */
+    @GetMapping("/detail")
+    @RequiresPermissions(DETAIL_PERMISSIONS)
+    public Result<${className}Entity> detail(@RequestParam Long id) {
+        ${className}Entity entity = ${classname}Service.getById(id);
+        if (entity == null) {
+            return Result.error(id + "不存在");
+        }
+        return Result.ok(entity);
     }
 
     /**
@@ -43,7 +65,7 @@ public class ${className}Controller {
     * @return
     */
     @PostMapping("/save")
-    @RequiresPermissions("${classname}:save")
+    @RequiresPermissions(SAVE_PERMISSIONS)
     public Result<Void> save(@RequestBody @Validated ${className}Entity entity) {
         ${classname}Service.save(entity);
         return Result.ok();
@@ -56,7 +78,7 @@ public class ${className}Controller {
     * @return
     */
     @PostMapping("/update")
-    @RequiresPermissions("${classname}:update")
+    @RequiresPermissions(UPDATE_PERMISSIONS)
     public Result<Void> update(@RequestBody @Validated ${className}Entity entity) {
         ${classname}Service.updateById(entity);
         return Result.ok();
@@ -69,7 +91,7 @@ public class ${className}Controller {
     * @return
     */
     @PostMapping("/delete/{id}")
-    @RequiresPermissions("${classname}:delete")
+    @RequiresPermissions(DELETE_PERMISSIONS)
     public Result<Void> delete(@PathVariable Integer id) {
         ${classname}Service.removeById(id);
         return Result.ok();
