@@ -12,6 +12,7 @@ package com.xsy.base.enums;
  *
  * @author Mark sunlightcs@gmail.com
  */
+@Deprecated
 public interface RenConstant {
     /**
      * 成功

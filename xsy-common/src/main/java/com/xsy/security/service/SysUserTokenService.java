@@ -9,7 +9,7 @@
 package com.xsy.security.service;
 
 import com.xsy.base.service.RenBaseService;
-import com.xsy.base.util.Result;
+import com.xsy.security.dto.TokenDTO;
 import com.xsy.security.entity.SysUserTokenEntity;
 
 /**
@@ -24,7 +24,7 @@ public interface SysUserTokenService extends RenBaseService<SysUserTokenEntity> 
      *
      * @param userId 用户ID
      */
-    Result createToken(Long userId);
+    TokenDTO createToken(Long userId);
 
     /**
      * 根据有效token获取用户信息

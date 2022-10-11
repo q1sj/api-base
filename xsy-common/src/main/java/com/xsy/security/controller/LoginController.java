@@ -11,6 +11,7 @@ package com.xsy.security.controller;
 import com.xsy.base.util.Result;
 import com.xsy.base.util.ValidatorUtils;
 import com.xsy.security.dto.LoginDTO;
+import com.xsy.security.dto.TokenDTO;
 import com.xsy.security.password.PasswordUtils;
 import com.xsy.security.service.SysUserTokenService;
 import com.xsy.security.user.SecurityUser;
@@ -43,7 +44,7 @@ public class LoginController {
      * @return
      */
     @PostMapping(LoginController.LOGIN_MAPPING)
-    public Result<Void> login(@RequestBody LoginDTO login) {
+    public Result<TokenDTO> login(@RequestBody LoginDTO login) {
         //效验数据
         ValidatorUtils.validateEntity(login);
         //用户信息
@@ -57,7 +58,7 @@ public class LoginController {
             return Result.error("账号停用");
         }
         //登录成功
-        return sysUserTokenService.createToken(user.getId());
+        return Result.ok(sysUserTokenService.createToken(user.getId()));
     }
 
     /**
@@ -66,7 +67,7 @@ public class LoginController {
      * @return
      */
     @PostMapping("logout")
-    public Result logout() {
+    public Result<Void> logout() {
         UserDetail user = SecurityUser.getUser();
         //退出
         sysUserTokenService.logout(user.getId());

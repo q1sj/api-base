@@ -13,6 +13,7 @@ import com.xsy.base.exception.GlobalException;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.base.util.Result;
 import com.xsy.security.dao.SysUserTokenDao;
+import com.xsy.security.dto.TokenDTO;
 import com.xsy.security.entity.SysUserTokenEntity;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.oauth2.TokenGenerator;
@@ -43,7 +44,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
     }
 
     @Override
-    public Result createToken(Long userId) {
+    public TokenDTO createToken(Long userId) {
         logout(userId);
         //用户token
         String token = TokenGenerator.generateValue();
@@ -71,11 +72,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
             //更新token
             this.updateById(tokenEntity);
         }
-
-        Map<String, Object> map = new HashMap<>(2);
-        map.put(SecurityConstant.TOKEN_HEADER, token);
-        map.put("expire", EXPIRE_MS);
-        return Result.ok(map);
+        return new TokenDTO(token, EXPIRE_MS);
     }
 
 

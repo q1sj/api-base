@@ -9,9 +9,8 @@
 package com.xsy.security.oauth2;
 
 
+import com.xsy.base.util.Base64Utils;
 import lombok.extern.slf4j.Slf4j;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -28,12 +27,11 @@ import java.util.UUID;
 @Slf4j
 public class TokenGenerator {
 
-    public static final String KEY_SEED = "xsy";
-
-    public static final Key KEY;
+    private static final String KEY_SEED = "xsy";
 
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
 
+    private static final Key KEY;
 
     static {
         try {
@@ -47,21 +45,49 @@ public class TokenGenerator {
         }
     }
 
-    public static String generateValue() {
-        String encrypt = encrypt(KEY_SEED + UUID.randomUUID().toString());
-        return replacePlusSign(encrypt);
+    /**
+     * 加密对象
+     */
+    private static final Cipher ENCRYPT_CIPHER;
+    /**
+     * 解密对象
+     */
+    private static final Cipher DECRYPT_CIPHER;
+
+    static {
+        try {
+            ENCRYPT_CIPHER = Cipher.getInstance(TRANSFORMATION);
+            ENCRYPT_CIPHER.init(Cipher.ENCRYPT_MODE, KEY);
+            DECRYPT_CIPHER = Cipher.getInstance(TRANSFORMATION);
+            DECRYPT_CIPHER.init(Cipher.DECRYPT_MODE, KEY);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    /**
+     * 生成token
+     *
+     * @return
+     */
+    public static String generateValue() {
+        return encrypt(KEY_SEED + UUID.randomUUID().toString());
+    }
+
+    /**
+     * 校验token是否合法,解密后{@link #KEY_SEED}开头为合法token
+     *
+     * @param token
+     * @return
+     */
     public static boolean validToken(String token) {
-        String decrypt = null;
         try {
-            token = restorePlusSign(token);
-            decrypt = decrypt(token);
+            String decrypt = decrypt(token);
+            return decrypt.startsWith(KEY_SEED);
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
             return false;
         }
-        return decrypt.startsWith(KEY_SEED);
     }
 
     /**
@@ -70,14 +96,11 @@ public class TokenGenerator {
      * @param plainText 明文
      * @return 加密后的密文.
      */
-    public static String encrypt(String plainText) {
+    private static String encrypt(String plainText) {
         try {
-            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-            cipher.init(Cipher.ENCRYPT_MODE, KEY);
             byte[] p = plainText.getBytes(StandardCharsets.UTF_8);
-            byte[] result = cipher.doFinal(p);
-            BASE64Encoder encoder = new BASE64Encoder();
-            return encoder.encode(result);
+            byte[] result = ENCRYPT_CIPHER.doFinal(p);
+            return Base64Utils.encodeToUrlSafeString(result);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -89,20 +112,9 @@ public class TokenGenerator {
      * @param cipherText 密文
      * @return 解密后的明文.
      */
-    public static String decrypt(String cipherText) throws Exception {
-        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        cipher.init(Cipher.DECRYPT_MODE, KEY);
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] c = decoder.decodeBuffer(cipherText);
-        byte[] result = cipher.doFinal(c);
+    private static String decrypt(String cipherText) throws Exception {
+        byte[] c = Base64Utils.decodeFromUrlSafeString(cipherText);
+        byte[] result = DECRYPT_CIPHER.doFinal(c);
         return new String(result, StandardCharsets.UTF_8);
-    }
-
-    private static String replacePlusSign(String token) {
-        return token.replace("+", "_");
-    }
-
-    private static String restorePlusSign(String token) {
-        return token.replace("_", "+");
     }
 }

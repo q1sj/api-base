@@ -1,4 +1,4 @@
-package com.xsy.base.exception;
+package com.xsy.base.enums;
 
 /**
  * 错误编码，由5位数字组成，前2位为模块编码，后3位为业务编码

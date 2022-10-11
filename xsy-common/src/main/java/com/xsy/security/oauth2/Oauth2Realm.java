@@ -14,6 +14,7 @@ import com.xsy.security.service.AuthService;
 import com.xsy.security.service.SysUserTokenService;
 import com.xsy.security.user.UserDetail;
 import com.xsy.sys.entity.SysUserEntity;
+import com.xsy.sys.enums.UserStatusEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -80,7 +81,7 @@ public class Oauth2Realm extends AuthorizingRealm {
         UserDetail userDetail = ConvertUtils.sourceToTarget(userEntity, UserDetail.class);
 
         //账号锁定
-        if (userDetail.getStatus() == 0) {
+        if (userDetail.getStatus() == UserStatusEnum.DISABLE.value()) {
             throw new LockedAccountException("账号锁定");
         }
 

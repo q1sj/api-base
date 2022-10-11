@@ -1,7 +1,7 @@
 {
   "info": {
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_postman_id": "a8e8433e-0767-4269-aea1-4acac3764fb9",
+    "_postman_id": "715c99f0-d3f2-42b6-8e7a-93ff73ac128c",
     "name": "xsy-api-demo-1.0"
   },
   "item": [
@@ -80,7 +80,7 @@
               }
             },
             "url": {
-              "raw": "::server/log/get?names=rdufrm",
+              "raw": "::server/log/get?names=ukb718",
               "path": [
                 "log",
                 "get"
@@ -91,7 +91,7 @@
               "query": [
                 {
                   "key": "names",
-                  "value": "rdufrm",
+                  "value": "ukb718",
                   "description": "   文件名 多个逗号分割"
                 }
               ],
@@ -147,7 +147,7 @@
               }
             },
             "url": {
-              "raw": "::server/file/img?path=nx7rqz",
+              "raw": "::server/file/img?path=85szhu",
               "path": [
                 "file",
                 "img"
@@ -158,7 +158,7 @@
               "query": [
                 {
                   "key": "path",
-                  "value": "nx7rqz",
+                  "value": "85szhu",
                   "description": "    {@link FileRecordEntity#getPath()}"
                 }
               ],
@@ -181,7 +181,7 @@
               }
             },
             "url": {
-              "raw": "::server/file/download?path=rk51cu",
+              "raw": "::server/file/download?path=1brjmo",
               "path": [
                 "file",
                 "download"
@@ -192,7 +192,7 @@
               "query": [
                 {
                   "key": "path",
-                  "value": "rk51cu",
+                  "value": "1brjmo",
                   "description": "    {@link FileRecordEntity#getPath()}"
                 }
               ],
@@ -214,7 +214,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"cris.skiles\",\n  \"password\": \"e4t3dx\"\n}",
+              "raw": "{\n  \"username\": \"delilah.keebler\",\n  \"password\": \"xcs1ym\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -278,7 +278,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/config/list?configKey=ra9xi5&page=1&pageSize=10",
+              "raw": "::server/sys/config/list?configKey=w91y7p&page=1&pageSize=10",
               "path": [
                 "sys",
                 "config",
@@ -290,7 +290,7 @@
               "query": [
                 {
                   "key": "configKey",
-                  "value": "ra9xi5",
+                  "value": "w91y7p",
                   "description": "No comments found."
                 },
                 {
@@ -317,7 +317,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"configKey\": \"r40qo7\",\n  \"configValue\": \"ja1t10\",\n  \"remark\": \"wdycse\"\n}",
+              "raw": "{\n  \"configKey\": \"m0wmj9\",\n  \"configValue\": \"gx7k0q\",\n  \"remark\": \"vngx0s\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -446,7 +446,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/list?type=716",
+              "raw": "::server/sys/menu/list?type=240",
               "path": [
                 "sys",
                 "menu",
@@ -458,7 +458,7 @@
               "query": [
                 {
                   "key": "type",
-                  "value": "716",
+                  "value": "240",
                   "description": "No comments found."
                 }
               ],
@@ -481,7 +481,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/26",
+              "raw": "::server/sys/menu/493",
               "path": [
                 "sys",
                 "menu",
@@ -494,7 +494,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "26",
+                  "value": "493",
                   "description": "No comments found."
                 }
               ]
@@ -510,7 +510,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 854,\n  \"pid\": 692,\n  \"name\": \"cris.skiles\",\n  \"url\": \"www.dale-borer.net\",\n  \"type\": 781,\n  \"icon\": \"xmc2qh\",\n  \"permissions\": \"f4cip9\",\n  \"sort\": 522,\n  \"parentName\": \"cris.skiles\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 187,\n  \"pid\": 257,\n  \"name\": \"delilah.keebler\",\n  \"url\": \"www.leonardo-parker.net\",\n  \"type\": 278,\n  \"icon\": \"z6fgod\",\n  \"permissions\": \"7tsixe\",\n  \"sort\": 643,\n  \"parentName\": \"delilah.keebler\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -541,7 +541,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 920,\n  \"pid\": 238,\n  \"name\": \"cris.skiles\",\n  \"url\": \"www.dale-borer.net\",\n  \"type\": 846,\n  \"icon\": \"0vx5nh\",\n  \"permissions\": \"zgwnnt\",\n  \"sort\": 286,\n  \"parentName\": \"cris.skiles\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 454,\n  \"pid\": 68,\n  \"name\": \"delilah.keebler\",\n  \"url\": \"www.leonardo-parker.net\",\n  \"type\": 118,\n  \"icon\": \"csylwb\",\n  \"permissions\": \"kw7efn\",\n  \"sort\": 622,\n  \"parentName\": \"delilah.keebler\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -578,7 +578,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/244",
+              "raw": "::server/sys/menu/541",
               "path": [
                 "sys",
                 "menu",
@@ -591,7 +591,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "244",
+                  "value": "541",
                   "description": "No comments found."
                 }
               ]
@@ -711,7 +711,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/role/561",
+              "raw": "::server/sys/role/831",
               "path": [
                 "sys",
                 "role",
@@ -724,7 +724,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "561",
+                  "value": "831",
                   "description": "No comments found."
                 }
               ]
@@ -740,7 +740,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 557,\n  \"name\": \"cris.skiles\",\n  \"remark\": \"n0zi57\",\n  \"menuIdList\": [\n    45\n  ]\n}",
+              "raw": "{\n  \"id\": 752,\n  \"name\": \"delilah.keebler\",\n  \"remark\": \"89y913\",\n  \"menuIdList\": [\n    9\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -771,7 +771,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 511,\n  \"name\": \"cris.skiles\",\n  \"remark\": \"zd8egc\",\n  \"menuIdList\": [\n    321\n  ]\n}",
+              "raw": "{\n  \"id\": 592,\n  \"name\": \"delilah.keebler\",\n  \"remark\": \"9nnwmn\",\n  \"menuIdList\": [\n    259\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -802,7 +802,7 @@
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"xe1xvm\"\n]",
+              "raw": "[\n  \"izcn4l\"\n]",
               "options": {
                 "raw": {
                   "language": "json"
@@ -879,7 +879,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/user/996",
+              "raw": "::server/sys/user/82",
               "path": [
                 "sys",
                 "user",
@@ -892,7 +892,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "996",
+                  "value": "82",
                   "description": "No comments found."
                 }
               ]
@@ -937,7 +937,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"password\": \"i5k9rt\",\n  \"newPassword\": \"6xcg7d\"\n}",
+              "raw": "{\n  \"password\": \"wxjz85\",\n  \"newPassword\": \"jdtzgj\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -968,7 +968,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 655,\n  \"username\": \"cris.skiles\",\n  \"password\": \"oeuogc\",\n  \"realName\": \"cris.skiles\",\n  \"headUrl\": \"www.dale-borer.net\",\n  \"gender\": 0,\n  \"email\": \"lilla.huels@gmail.com\",\n  \"mobile\": \"(248) 501-3718\",\n  \"deptId\": 2,\n  \"status\": 847,\n  \"roleIdList\": [\n    354\n  ]\n}",
+              "raw": "{\n  \"id\": 560,\n  \"username\": \"delilah.keebler\",\n  \"password\": \"dbqdh6\",\n  \"realName\": \"delilah.keebler\",\n  \"headUrl\": \"www.leonardo-parker.net\",\n  \"gender\": 0,\n  \"email\": \"blanca.kling@gmail.com\",\n  \"mobile\": \"(360) 612-8015\",\n  \"deptId\": 320,\n  \"status\": 848,\n  \"roleIdList\": [\n    698\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -999,7 +999,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 185,\n  \"username\": \"cris.skiles\",\n  \"password\": \"q0qwfn\",\n  \"realName\": \"cris.skiles\",\n  \"headUrl\": \"www.dale-borer.net\",\n  \"gender\": 0,\n  \"email\": \"lilla.huels@gmail.com\",\n  \"mobile\": \"(248) 501-3718\",\n  \"deptId\": 616,\n  \"status\": 430,\n  \"roleIdList\": [\n    893\n  ]\n}",
+              "raw": "{\n  \"id\": 809,\n  \"username\": \"delilah.keebler\",\n  \"password\": \"mc9lv7\",\n  \"realName\": \"delilah.keebler\",\n  \"headUrl\": \"www.leonardo-parker.net\",\n  \"gender\": 0,\n  \"email\": \"blanca.kling@gmail.com\",\n  \"mobile\": \"(360) 612-8015\",\n  \"deptId\": 937,\n  \"status\": 862,\n  \"roleIdList\": [\n    474\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1030,7 +1030,7 @@
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"by00m2\"\n]",
+              "raw": "[\n  \"vgai4i\"\n]",
               "options": {
                 "raw": {
                   "language": "json"

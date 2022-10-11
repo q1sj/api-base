@@ -9,7 +9,7 @@
 package com.xsy.security.oauth2;
 
 
-import com.xsy.base.exception.ErrorCode;
+import com.xsy.base.enums.ErrorCode;
 import com.xsy.base.util.HttpContextUtils;
 import com.xsy.base.util.JsonUtils;
 import com.xsy.base.util.Result;
