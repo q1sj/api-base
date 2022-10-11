@@ -1,7 +1,7 @@
 {
   "info": {
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_postman_id": "715c99f0-d3f2-42b6-8e7a-93ff73ac128c",
+    "_postman_id": "447ccfee-a41b-478e-a286-ae40a8ea4bee",
     "name": "xsy-api-demo-1.0"
   },
   "item": [
@@ -80,7 +80,7 @@
               }
             },
             "url": {
-              "raw": "::server/log/get?names=ukb718",
+              "raw": "::server/log/get?names=zulciu",
               "path": [
                 "log",
                 "get"
@@ -91,7 +91,7 @@
               "query": [
                 {
                   "key": "names",
-                  "value": "ukb718",
+                  "value": "zulciu",
                   "description": "   文件名 多个逗号分割"
                 }
               ],
@@ -147,7 +147,7 @@
               }
             },
             "url": {
-              "raw": "::server/file/img?path=85szhu",
+              "raw": "::server/file/img?path=0kq3m3",
               "path": [
                 "file",
                 "img"
@@ -158,7 +158,7 @@
               "query": [
                 {
                   "key": "path",
-                  "value": "85szhu",
+                  "value": "0kq3m3",
                   "description": "    {@link FileRecordEntity#getPath()}"
                 }
               ],
@@ -181,7 +181,7 @@
               }
             },
             "url": {
-              "raw": "::server/file/download?path=1brjmo",
+              "raw": "::server/file/download?path=pkmhu4",
               "path": [
                 "file",
                 "download"
@@ -192,7 +192,7 @@
               "query": [
                 {
                   "key": "path",
-                  "value": "1brjmo",
+                  "value": "pkmhu4",
                   "description": "    {@link FileRecordEntity#getPath()}"
                 }
               ],
@@ -214,7 +214,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"delilah.keebler\",\n  \"password\": \"xcs1ym\"\n}",
+              "raw": "{\n  \"username\": \"clora.beatty\",\n  \"password\": \"k7yntu\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -278,7 +278,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/config/list?configKey=w91y7p&page=1&pageSize=10",
+              "raw": "::server/sys/config/list?configKey=yfiehr&page=1&pageSize=10",
               "path": [
                 "sys",
                 "config",
@@ -290,7 +290,7 @@
               "query": [
                 {
                   "key": "configKey",
-                  "value": "w91y7p",
+                  "value": "yfiehr",
                   "description": "No comments found."
                 },
                 {
@@ -317,7 +317,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"configKey\": \"m0wmj9\",\n  \"configValue\": \"gx7k0q\",\n  \"remark\": \"vngx0s\"\n}",
+              "raw": "{\n  \"configKey\": \"0zld3c\",\n  \"configValue\": \"lvrgsz\",\n  \"remark\": \"cwxrlp\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -446,7 +446,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/list?type=240",
+              "raw": "::server/sys/menu/list?type=817",
               "path": [
                 "sys",
                 "menu",
@@ -458,7 +458,7 @@
               "query": [
                 {
                   "key": "type",
-                  "value": "240",
+                  "value": "817",
                   "description": "No comments found."
                 }
               ],
@@ -481,7 +481,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/493",
+              "raw": "::server/sys/menu/508",
               "path": [
                 "sys",
                 "menu",
@@ -494,7 +494,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "493",
+                  "value": "508",
                   "description": "No comments found."
                 }
               ]
@@ -510,7 +510,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 187,\n  \"pid\": 257,\n  \"name\": \"delilah.keebler\",\n  \"url\": \"www.leonardo-parker.net\",\n  \"type\": 278,\n  \"icon\": \"z6fgod\",\n  \"permissions\": \"7tsixe\",\n  \"sort\": 643,\n  \"parentName\": \"delilah.keebler\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 858,\n  \"pid\": 41,\n  \"name\": \"clora.beatty\",\n  \"url\": \"www.garland-schiller.org\",\n  \"type\": 272,\n  \"icon\": \"wrpqjw\",\n  \"permissions\": \"5vpye2\",\n  \"sort\": 431,\n  \"parentName\": \"clora.beatty\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -541,7 +541,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 454,\n  \"pid\": 68,\n  \"name\": \"delilah.keebler\",\n  \"url\": \"www.leonardo-parker.net\",\n  \"type\": 118,\n  \"icon\": \"csylwb\",\n  \"permissions\": \"kw7efn\",\n  \"sort\": 622,\n  \"parentName\": \"delilah.keebler\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 416,\n  \"pid\": 849,\n  \"name\": \"clora.beatty\",\n  \"url\": \"www.garland-schiller.org\",\n  \"type\": 836,\n  \"icon\": \"rn3deo\",\n  \"permissions\": \"6elcp7\",\n  \"sort\": 822,\n  \"parentName\": \"clora.beatty\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -578,7 +578,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/541",
+              "raw": "::server/sys/menu/652",
               "path": [
                 "sys",
                 "menu",
@@ -591,7 +591,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "541",
+                  "value": "652",
                   "description": "No comments found."
                 }
               ]
@@ -711,7 +711,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/role/831",
+              "raw": "::server/sys/role/851",
               "path": [
                 "sys",
                 "role",
@@ -724,7 +724,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "831",
+                  "value": "851",
                   "description": "No comments found."
                 }
               ]
@@ -740,7 +740,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 752,\n  \"name\": \"delilah.keebler\",\n  \"remark\": \"89y913\",\n  \"menuIdList\": [\n    9\n  ]\n}",
+              "raw": "{\n  \"id\": 425,\n  \"name\": \"clora.beatty\",\n  \"remark\": \"z2ef90\",\n  \"menuIdList\": [\n    71\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -771,7 +771,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 592,\n  \"name\": \"delilah.keebler\",\n  \"remark\": \"9nnwmn\",\n  \"menuIdList\": [\n    259\n  ]\n}",
+              "raw": "{\n  \"id\": 730,\n  \"name\": \"clora.beatty\",\n  \"remark\": \"ojn4kz\",\n  \"menuIdList\": [\n    849\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -802,7 +802,7 @@
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"izcn4l\"\n]",
+              "raw": "[\n  \"kjbcmj\"\n]",
               "options": {
                 "raw": {
                   "language": "json"
@@ -879,7 +879,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/user/82",
+              "raw": "::server/sys/user/551",
               "path": [
                 "sys",
                 "user",
@@ -892,7 +892,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "82",
+                  "value": "551",
                   "description": "No comments found."
                 }
               ]
@@ -937,7 +937,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"password\": \"wxjz85\",\n  \"newPassword\": \"jdtzgj\"\n}",
+              "raw": "{\n  \"password\": \"9t1gpg\",\n  \"newPassword\": \"4rj5ej\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -968,7 +968,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 560,\n  \"username\": \"delilah.keebler\",\n  \"password\": \"dbqdh6\",\n  \"realName\": \"delilah.keebler\",\n  \"headUrl\": \"www.leonardo-parker.net\",\n  \"gender\": 0,\n  \"email\": \"blanca.kling@gmail.com\",\n  \"mobile\": \"(360) 612-8015\",\n  \"deptId\": 320,\n  \"status\": 848,\n  \"roleIdList\": [\n    698\n  ]\n}",
+              "raw": "{\n  \"id\": 358,\n  \"username\": \"clora.beatty\",\n  \"password\": \"pmn5go\",\n  \"realName\": \"clora.beatty\",\n  \"headUrl\": \"www.garland-schiller.org\",\n  \"gender\": 0,\n  \"email\": \"lucrecia.yost@hotmail.com\",\n  \"mobile\": \"785.570.2945\",\n  \"deptId\": 357,\n  \"status\": 636,\n  \"roleIdList\": [\n    186\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -999,7 +999,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 809,\n  \"username\": \"delilah.keebler\",\n  \"password\": \"mc9lv7\",\n  \"realName\": \"delilah.keebler\",\n  \"headUrl\": \"www.leonardo-parker.net\",\n  \"gender\": 0,\n  \"email\": \"blanca.kling@gmail.com\",\n  \"mobile\": \"(360) 612-8015\",\n  \"deptId\": 937,\n  \"status\": 862,\n  \"roleIdList\": [\n    474\n  ]\n}",
+              "raw": "{\n  \"id\": 213,\n  \"username\": \"clora.beatty\",\n  \"password\": \"99ssse\",\n  \"realName\": \"clora.beatty\",\n  \"headUrl\": \"www.garland-schiller.org\",\n  \"gender\": 0,\n  \"email\": \"lucrecia.yost@hotmail.com\",\n  \"mobile\": \"785.570.2945\",\n  \"deptId\": 978,\n  \"status\": 861,\n  \"roleIdList\": [\n    696\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1030,7 +1030,7 @@
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"vgai4i\"\n]",
+              "raw": "[\n  \"ayfldm\"\n]",
               "options": {
                 "raw": {
                   "language": "json"

@@ -35,7 +35,3 @@ spring:
         wall:
           config:
             multi-statement-allow: true
-video:
-  server:
-    api: http://192.168.2.24:801
-    domain: ${video.server.api}
