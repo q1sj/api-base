@@ -15,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
@@ -177,25 +174,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return String.format("%s_%s_%s.%s",source,System.currentTimeMillis(),count(),getFileSuffix(originalFilename));
-    }
-
-    private final AtomicInteger accumulator = new AtomicInteger();
-
-    /**
-     * 文件名累加数 防止文件重名
-     *
-     * @return
-     */
-    private int count() {
-        int countMax = 100;
-        int expect = accumulator.get();
-        int update = expect < countMax ? expect + 1 : 1;
-        while (!accumulator.compareAndSet(expect, update)) {
-            expect = accumulator.get();
-            update = expect < countMax ? expect + 1 : 1;
-        }
-        return update;
+        return String.format("%s_%s_%s.%s",source,System.currentTimeMillis(), UUID.randomUUID(),getFileSuffix(originalFilename));
     }
 
     @AllArgsConstructor

@@ -56,5 +56,7 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         }
     }
 
-
+    public String getBasePath() {
+        return basePath;
+    }
 }

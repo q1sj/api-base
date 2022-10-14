@@ -55,36 +55,6 @@ public class FileRecordController {
         }
     }
 
-    public static final String NOT_FOUND = "/404";
-
-    /**
-     * 文件未找到
-     */
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    @RequestMapping(NOT_FOUND)
-    public void notFound() {
-
-    }
-
-    public static final String IMG_MAPPING = "/img";
-
-    /**
-     * 查看图片
-     *
-     * @param response
-     * @param path     {@link FileRecordEntity#getPath()}
-     */
-    @GetMapping(IMG_MAPPING)
-    public void img(HttpServletResponse response, @RequestParam String path) {
-        try (OutputStream os = response.getOutputStream()) {
-            byte[] fileBytes = this.fileRecordService.getFileBytes(path);
-            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-            os.write(fileBytes);
-        } catch (IOException e) {
-            log.warn("图片获取失败", e);
-        }
-    }
-
     public static final String DOWNLOAD_MAPPING = "/download";
 
     /**
