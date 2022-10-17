@@ -55,9 +55,6 @@ public class SysUserDTO implements Serializable {
 
 	private String mobile;
 
-//	@NotNull(message="{sysuser.deptId.require}", groups = Default.class)
-	private Long deptId;
-
 	@Range(min=0, max=1, message = "{sysuser.status.range}", groups = Default.class)
 	private Integer status;
 

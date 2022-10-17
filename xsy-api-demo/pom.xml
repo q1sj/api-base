@@ -26,7 +26,7 @@
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.q1sj</groupId>
+            <groupId>io.github.q1sj</groupId>
             <artifactId>trace-log</artifactId>
             <version>1.0.4-RELEASE</version>
         </dependency>
@@ -34,7 +34,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
         </dependency>
-
     </dependencies>
     <build>
         <plugins>

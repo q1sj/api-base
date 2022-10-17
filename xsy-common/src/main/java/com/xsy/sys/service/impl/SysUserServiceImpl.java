@@ -164,15 +164,4 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
         baseDao.updatePassword(id, newPassword);
     }
-
-    @Override
-    public int getCountByDeptId(Long deptId) {
-        return baseDao.getCountByDeptId(deptId);
-    }
-
-    @Override
-    public List<Long> getUserIdListByDeptId(List<Long> deptIdList) {
-        return baseDao.getUserIdListByDeptId(deptIdList);
-    }
-
 }

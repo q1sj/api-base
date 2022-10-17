@@ -73,10 +73,5 @@ public class SysUserEntity extends BaseEntity {
 	 */
 	@TableField(fill = FieldFill.INSERT_UPDATE)
 	private Date updateDate;
-	/**
-	 * 部门名称
-	 */
-	@TableField(exist=false)
-	private String deptName;
 
 }

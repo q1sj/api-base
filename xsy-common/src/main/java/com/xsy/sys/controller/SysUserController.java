@@ -65,7 +65,9 @@ public class SysUserController {
     @RequiresPermissions("sys:user:info")
     public Result<SysUserDTO> get(@PathVariable("id") Long id) {
         SysUserDTO data = sysUserService.get(id);
-
+        if (data == null) {
+            return Result.error("用户不存在");
+        }
         //用户角色列表
         List<Long> roleIdList = sysRoleUserService.getRoleIdList(id);
         data.setRoleIdList(roleIdList);
