@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.xsy.base.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -19,13 +18,13 @@ import java.util.concurrent.Future;
  * @date 2022.9.26 14:57
  */
 @Slf4j
+@Component
 public class HttpUtils {
     private static final ExecutorService threadPool = Executors.newCachedThreadPool();
     private static RestTemplate restTemplate;
 
-    @PostConstruct
-    public void init() {
-        restTemplate = SpringContextUtils.getBean(RestTemplate.class);
+    public HttpUtils(RestTemplate restTemplate) {
+        HttpUtils.restTemplate = restTemplate;
     }
 
     public static <T> T exchange(String url, HttpMethod httpMethod, HttpEntity<Object> body, TypeReference<T> respType) throws GlobalException {
