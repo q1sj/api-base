@@ -8,6 +8,7 @@
 
 package com.xsy.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
@@ -47,16 +48,14 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
     public PageData<SysRoleDTO> page(RoleListQuery query) {
         IPage<SysRoleEntity> page = baseDao.selectPage(
                 query.initPage(),
-                Wrappers.lambdaQuery(SysRoleEntity.class)
-                        .like(StringUtils.isNotBlank(query.getName()), SysRoleEntity::getName, query.getName())
+                getWrapper(query)
         );
         return getPageData(page, SysRoleDTO.class);
     }
 
     @Override
     public List<SysRoleDTO> list(RoleListQuery query) {
-        List<SysRoleEntity> entityList = baseDao.selectList(Wrappers.lambdaQuery(SysRoleEntity.class)
-                .like(StringUtils.isNotBlank(query.getName()), SysRoleEntity::getName, query.getName()));
+        List<SysRoleEntity> entityList = baseDao.selectList(getWrapper(query));
         return ConvertUtils.sourceToTarget(entityList, SysRoleDTO.class);
     }
 
@@ -105,4 +104,8 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
         sysRoleMenuService.deleteByRoleIds(ids);
     }
 
+    private LambdaQueryWrapper<SysRoleEntity> getWrapper(RoleListQuery query) {
+        return Wrappers.lambdaQuery(SysRoleEntity.class)
+                .like(StringUtils.isNotBlank(query.getName()), SysRoleEntity::getName, query.getName());
+    }
 }

@@ -3,17 +3,6 @@
 
 <mapper namespace="com.xsy.sys.dao.SysUserDao">
 
-	<select id="getList" resultType="com.xsy.sys.entity.SysUserEntity">
-		select * from sys_user
-		where super_admin = 0
-		<if test="username != null and username.trim() != ''">
-			and username like #{username}
-		</if>
-		<if test="gender != null and gender.trim() != ''">
-			and gender = #{gender}
-		</if>
-	</select>
-
 	<select id="getById" resultType="com.xsy.sys.entity.SysUserEntity">
 		select * from sys_user
 			where id = #{value}

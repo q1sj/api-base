@@ -8,7 +8,9 @@
 
 package com.xsy.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.cache.CacheManagerWrapper;
 import com.xsy.base.cache.CacheWrapper;
 import com.xsy.base.enums.RenConstant;
@@ -19,6 +21,7 @@ import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.password.PasswordUtils;
 import com.xsy.sys.dao.SysUserDao;
 import com.xsy.sys.dto.SysUserDTO;
+import com.xsy.sys.dto.UserListQuery;
 import com.xsy.sys.entity.SysUserEntity;
 import com.xsy.sys.enums.SuperAdminEnum;
 import com.xsy.sys.service.SysRoleUserService;
@@ -49,17 +52,10 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     private CacheManagerWrapper cacheManagerWrapper;
 
     @Override
-    public PageData<SysUserDTO> page(Map<String, Object> params) {
-        //转换成like
-        paramsToLike(params, "username");
-
-        //分页
-        IPage<SysUserEntity> page = getPage(params, RenConstant.CREATE_DATE, false);
-
-        //查询
-        List<SysUserEntity> list = baseDao.getList(params);
-
-        return getPageData(list, page.getTotal(), SysUserDTO.class);
+    public PageData<SysUserDTO> page(UserListQuery query) {
+        LambdaQueryWrapper<SysUserEntity> wrapper = getWrapper(query);
+        IPage<SysUserEntity> iPage = baseDao.selectPage(query.initPage(), wrapper);
+        return getPageData(iPage, SysUserDTO.class);
     }
 
     @Override
@@ -72,14 +68,6 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     @Override
     protected <T> PageData<T> getPageData(IPage page, Class<T> target) {
         return getPageData(page.getRecords(), page.getTotal(), target);
-    }
-
-    @Override
-    public List<SysUserDTO> list(Map<String, Object> params) {
-
-        List<SysUserEntity> entityList = baseDao.getList(params);
-
-        return ConvertUtils.sourceToTarget(entityList, SysUserDTO.class);
     }
 
     @Override
@@ -163,5 +151,9 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         newPassword = PasswordUtils.encode(newPassword);
 
         baseDao.updatePassword(id, newPassword);
+    }
+    private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {
+        return Wrappers.lambdaQuery(SysUserEntity.class)
+                .like(StringUtils.isNotBlank(query.getUsername()), SysUserEntity::getUsername, query.getUsername());
     }
 }

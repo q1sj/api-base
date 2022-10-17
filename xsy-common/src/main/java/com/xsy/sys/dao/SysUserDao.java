@@ -25,8 +25,6 @@ import java.util.Map;
 @Mapper
 public interface SysUserDao extends RenBaseDao<SysUserEntity> {
 
-	List<SysUserEntity> getList(Map<String, Object> params);
-
 	SysUserEntity getById(Long id);
 
 	SysUserEntity getByUsername(String username);
