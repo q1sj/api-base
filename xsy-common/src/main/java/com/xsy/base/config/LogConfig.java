@@ -1,6 +1,8 @@
 package com.xsy.base.config;
 
-import com.xsy.base.log.MyLogAppender;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.xsy.base.log.LogAlarmHandler;
+import com.xsy.base.log.LogMonitorAppender;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,26 @@ import org.springframework.stereotype.Component;
 @Configuration
 public class LogConfig {
     @Bean
-    public MyLogAppender myLogAppender() {
-        return  MyLogAppender.getInstance();
+    public LogAlarmHandler logAlarmHandler() {
+//        return new DingTalkLogAlarmHandler();
+        return new DoNothingLogAlarmHandler();
+    }
+
+    @Bean
+    public LogMonitorAppender baseLogMonitorAppender(LogAlarmHandler logAlarmHandler) {
+        return new LogMonitorAppender(logAlarmHandler);
+    }
+
+    static class DoNothingLogAlarmHandler implements LogAlarmHandler {
+
+        @Override
+        public void handleWarn(ILoggingEvent eventObject) {
+
+        }
+
+        @Override
+        public void handleError(ILoggingEvent eventObject) {
+
+        }
     }
 }

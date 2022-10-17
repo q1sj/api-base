@@ -1,11 +1,10 @@
 package com.xsy.base.log;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
@@ -14,17 +13,15 @@ import javax.annotation.PostConstruct;
  * @author Q1sj
  * @date 2022.4.29 9:18
  */
-@Slf4j
-public class MyLogAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
+public class LogMonitorAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
+    protected Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final MyLogAppender INSTANCE = new MyLogAppender();
+    private final LogAlarmHandler logAlarmHandler;
 
     private boolean init = false;
 
-    private MyLogAppender(){}
-
-    public static MyLogAppender getInstance(){
-        return INSTANCE;
+    public LogMonitorAppender(LogAlarmHandler logAlarmHandler) {
+        this.logAlarmHandler = logAlarmHandler;
     }
 
     @PostConstruct
@@ -32,13 +29,13 @@ public class MyLogAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         if (init) {
             return;
         }
-        synchronized (MyLogAppender.class) {
+        synchronized (LogMonitorAppender.class) {
             if (init) {
                 return;
             }
             LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
             this.setContext(lc);
-            this.setName("myLogAppender");
+            this.setName("monitorAppender");
             this.start();
             ch.qos.logback.classic.Logger logger = lc.getLogger(Logger.ROOT_LOGGER_NAME);
             logger.addAppender(this);
@@ -56,11 +53,19 @@ public class MyLogAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         }
     }
 
-    protected void handleWarn(ILoggingEvent eventObject) {
-        log.debug("TODO handleWarn");
+    private void handleWarn(ILoggingEvent eventObject) {
+        try {
+            logAlarmHandler.handleWarn(eventObject);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
-    protected void handleError(ILoggingEvent eventObject) {
-        log.debug("TODO handleError");
+    private void handleError(ILoggingEvent eventObject) {
+        try {
+            logAlarmHandler.handleError(eventObject);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }
