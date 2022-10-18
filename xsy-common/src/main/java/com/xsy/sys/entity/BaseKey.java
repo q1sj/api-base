@@ -8,26 +8,52 @@ import java.util.Objects;
 @Getter
 public abstract class BaseKey<T> {
     private final String key;
+    @Nullable
     private T defaultValue;
 
+    /**
+     * val对象转换为string
+     *
+     * @param val
+     * @return
+     */
     @Nullable
-    public String serialization(T val) {
+    public String serialization(@Nullable T val) {
         return val != null ? serializationNotNull(val) : null;
     }
+
+    /**
+     * string转换为对象
+     *
+     * @param val
+     * @return
+     */
     @Nullable
-    public T deserialization(String val) {
+    public T deserialization(@Nullable String val) {
         return val != null ? deserializationNotNull(val) : null;
     }
 
+    /**
+     * val对象转换为string val不为空
+     *
+     * @param val
+     * @return
+     */
     protected abstract String serializationNotNull(T val);
 
+    /**
+     * string转换为对象 val不为空
+     *
+     * @param val
+     * @return
+     */
     protected abstract T deserializationNotNull(String val);
 
     public BaseKey(String key) {
         this.key = key;
     }
 
-    public BaseKey(String key, T defaultValue) {
+    public BaseKey(String key, @Nullable T defaultValue) {
         this.key = key;
         this.defaultValue = defaultValue;
     }

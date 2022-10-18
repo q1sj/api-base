@@ -16,6 +16,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.function.Supplier;
+
 /**
  * @author Q1sj
  * @date 2022.9.20 14:12
@@ -53,6 +55,22 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
         log.debug("select {}", key);
         SysConfigEntity entity = getById(key.getKey());
         return entity != null ? key.deserialization(entity.getConfigValue()) : key.getDefaultValue();
+    }
+
+    @Override
+    @Cacheable(cacheNames = CACHE_NAME, key = "#key.getKey()")
+    public <T> T get(BaseKey<T> key, Supplier<T> valueLoad) {
+        T val = get(key);
+        if (val == null) {
+            synchronized (key) {
+                val = get(key);
+                if (val == null) {
+                    val = valueLoad.get();
+                    put(key, val);
+                }
+            }
+        }
+        return val;
     }
 
     @Override
