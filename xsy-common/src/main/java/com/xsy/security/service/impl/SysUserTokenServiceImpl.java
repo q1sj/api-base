@@ -9,9 +9,7 @@
 package com.xsy.security.service.impl;
 
 import com.xsy.base.cache.CacheManagerWrapper;
-import com.xsy.base.exception.GlobalException;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
-import com.xsy.base.util.Result;
 import com.xsy.security.dao.SysUserTokenDao;
 import com.xsy.security.dto.TokenDTO;
 import com.xsy.security.entity.SysUserTokenEntity;
@@ -21,16 +19,17 @@ import com.xsy.security.service.SysUserTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.springframework.cache.Cache;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@CacheConfig(cacheNames = SecurityConstant.SYS_USER_TOKEN_CACHE_NAME)
 public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
     /**
      * 12小时后过期
@@ -77,7 +76,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
 
 
     @Override
-    @Cacheable(cacheNames = SecurityConstant.SYS_USER_TOKEN_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserTokenCacheKey(#token)")
+    @Cacheable(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserTokenCacheKey(#token)")
     public SysUserTokenEntity getByToken(String token) {
         if (!TokenGenerator.validToken(token)) {
             throw new IncorrectCredentialsException("token无效");
@@ -100,6 +99,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
         if (user == null) {
             return;
         }
+        // 存在内部调用 不使用注解
         cache.evict(SecurityConstant.getSysUserTokenCacheKey(user.getToken()));
         //生成一个token
         String token = TokenGenerator.generateValue();
@@ -109,6 +109,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
     }
 
     @Override
+    @CacheEvict(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserTokenCacheKey(#token)")
     public void refreshExpireDate(String token) {
         SysUserTokenEntity userToken = getByToken(token);
         if (userToken == null) {

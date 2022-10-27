@@ -59,12 +59,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     public Result<?> handleAuthorizationException(BindException e) {
         BindingResult bindingResult = e.getBindingResult();
-        StringBuilder errorMessage = new StringBuilder("校验失败:");
-        for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            errorMessage.append(fieldError.getField()).append(fieldError.getDefaultMessage()).append(" ");
-        }
-        logger.warn(errorMessage.toString(), e);
-        return Result.error(errorMessage.toString());
+        return getResult(e, bindingResult);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -83,12 +78,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<?> handleAuthorizationException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
-        StringBuilder errorMessage = new StringBuilder("校验失败:");
-        for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            errorMessage.append(fieldError.getField()).append(fieldError.getDefaultMessage()).append(" ");
-        }
-        logger.warn(errorMessage.toString(), e);
-        return Result.error(errorMessage.toString());
+        return getResult(e, bindingResult);
     }
 
     @ExceptionHandler(UnauthorizedException.class)
@@ -109,10 +99,18 @@ public class GlobalExceptionHandler {
         return Result.error("不支持的请求方式");
     }
 
-
     @ExceptionHandler(Exception.class)
     public Result<?> handleException(Exception ex) {
         logger.error(ex.getMessage(), ex);
         return Result.error(ex);
+    }
+
+    private Result<?> getResult(Exception e, BindingResult bindingResult) {
+        StringBuilder errorMessage = new StringBuilder("校验失败:");
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            errorMessage.append(fieldError.getField()).append(fieldError.getDefaultMessage()).append(" ");
+        }
+        logger.warn(errorMessage.toString(), e);
+        return Result.error(errorMessage.toString());
     }
 }

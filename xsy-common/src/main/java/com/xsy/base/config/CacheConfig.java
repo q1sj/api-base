@@ -21,10 +21,13 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class CacheConfig {
     /**
-     * 缓存过期天数
+     * 缓存过期时间
      */
     @Value("${cache.expire:1}")
     private Integer expire;
+    /**
+     * 缓存过期时间单位
+     */
     @Value(("${cache.expireTimeUnit:HOURS}"))
     private String expireTimeUnit;
     /**

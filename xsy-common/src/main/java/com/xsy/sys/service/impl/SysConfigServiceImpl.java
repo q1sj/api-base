@@ -12,6 +12,7 @@ import com.xsy.sys.entity.SysConfigEntity;
 import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,10 @@ import java.util.function.Supplier;
  */
 @Slf4j
 @Service
+@CacheConfig(cacheNames = SysConfigServiceImpl.CACHE_NAME)
 public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEntity> implements SysConfigService {
 
-    private static final String CACHE_NAME = "sys_config";
+    static final String CACHE_NAME = "sys_config";
 
     @Override
     public PageData<SysConfigEntity> list(String configKey, int page, int pageSize) {
@@ -38,19 +40,19 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
-    @CacheEvict(cacheNames = CACHE_NAME, key = "#key.getKey()")
+    @CacheEvict(key = "#key.getKey()")
     public <T> void put(BaseKey<T> key, T val) {
         saveOrUpdate(new SysConfigEntity(key.getKey(), key.serialization(val)));
     }
 
     @Override
-    @CacheEvict(cacheNames = CACHE_NAME, key = "#sysConfigEntity.getConfigKey()")
+    @CacheEvict(key = "#sysConfigEntity.getConfigKey()")
     public void put(SysConfigEntity sysConfigEntity) {
         saveOrUpdate(sysConfigEntity);
     }
 
     @Override
-    @Cacheable(cacheNames = CACHE_NAME, key = "#key.getKey()")
+    @Cacheable(key = "#key.getKey()")
     public <T> T get(BaseKey<T> key) {
         log.debug("select {}", key);
         SysConfigEntity entity = getById(key.getKey());
@@ -58,7 +60,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
-    @Cacheable(cacheNames = CACHE_NAME, key = "#key.getKey()")
+    @Cacheable(key = "#key.getKey()")
     public <T> T get(BaseKey<T> key, Supplier<T> valueLoad) {
         T val = get(key);
         if (val == null) {
@@ -74,7 +76,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
-    @CacheEvict(cacheNames = CACHE_NAME, key = "#key.getKey()")
+    @CacheEvict(key = "#key.getKey()")
     public void del(BaseKey<?> key) {
         removeById(key.getKey());
     }
