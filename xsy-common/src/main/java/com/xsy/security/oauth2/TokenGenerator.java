@@ -81,13 +81,14 @@ public class TokenGenerator {
      * @return
      */
     public static boolean validToken(String token) {
+        String decrypt;
         try {
-            String decrypt = decrypt(token);
-            return decrypt.startsWith(KEY_SEED);
+            decrypt = decrypt(token);
         } catch (Exception e) {
-            log.warn(e.getMessage(), e);
+            log.warn("token:{}解密失败 {}",token,e.getMessage());
             return false;
         }
+        return decrypt.startsWith(KEY_SEED);
     }
 
     /**

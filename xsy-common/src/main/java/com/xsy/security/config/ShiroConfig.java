@@ -62,10 +62,13 @@ public class ShiroConfig {
         Map<String, Filter> filters = new HashMap<>();
         filters.put("oauth2", new Oauth2Filter());
         shiroFilter.setFilters(filters);
+        Map<String, String> filterMap;
         if (baseAuthFilterMapConfig == null) {
-            baseAuthFilterMapConfig = new BaseAuthFilterMapConfig();
+            filterMap = new HashMap<>();
+        } else {
+            filterMap = baseAuthFilterMapConfig.getFilterMap();
         }
-        Map<String, String> filterMap = baseAuthFilterMapConfig.getFilterMap();
+        // 注解标注的anon接口地址添加到手动配置中
         filterMap.putAll(noAuthScan.getNoAuthMap());
         filterMap.putIfAbsent("/**", "oauth2");
         shiroFilter.setFilterChainDefinitionMap(filterMap);

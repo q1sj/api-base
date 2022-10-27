@@ -10,13 +10,17 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
+ * NoAuth注解扫描类
+ * {@link NoAuth}
+ *
  * @author Q1sj
  * @date 2022.10.27 14:10
  */
@@ -38,8 +42,8 @@ public class NoAuthScan implements ApplicationContextAware {
             Object value = entry.getValue();
             Class<?> controllerClass = AopUtils.getTargetClass(value);
             Method[] methods = controllerClass.getMethods();
+            RequestMapping classRequestMapping = AnnotatedElementUtils.findMergedAnnotation(controllerClass, RequestMapping.class);
             for (Method method : methods) {
-                RequestMapping classRequestMapping = AnnotatedElementUtils.findMergedAnnotation(controllerClass, RequestMapping.class);
                 RequestMapping methodRequestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
                 NoAuth noAuth = AnnotatedElementUtils.findMergedAnnotation(method, NoAuth.class);
                 if (methodRequestMapping == null || noAuth == null) {
@@ -54,7 +58,13 @@ public class NoAuthScan implements ApplicationContextAware {
         }
     }
 
-
+    /**
+     * 根据类,方法注解拼接完整接口路径
+     *
+     * @param classRequestMapping
+     * @param methodRequestMapping
+     * @return
+     */
     private List<String> getPaths(RequestMapping classRequestMapping, RequestMapping methodRequestMapping) {
         List<String> classPaths = new ArrayList<>();
         if (classRequestMapping != null && classRequestMapping.path().length > 0) {

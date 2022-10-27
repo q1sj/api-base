@@ -9,6 +9,7 @@
 package com.xsy.base.exception;
 
 import com.xsy.base.util.Result;
+import com.xsy.security.user.SecurityUser;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ public class GlobalExceptionHandler {
         logger.warn(e.getMessage(), e);
         return Result.error(e.getCode(), e.getMessage());
     }
+
     /**
      * 处理自定义异常
      */
@@ -83,7 +85,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public Result<?> handleException(UnauthorizedException ex) {
-        logger.warn(ex.getMessage(), ex);
+        logger.warn("userId:{} {}", SecurityUser.getUserId(), ex.getMessage());
         return Result.error("没有权限");
     }
 
@@ -95,7 +97,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Result<?> handleException(HttpRequestMethodNotSupportedException ex) {
-        logger.warn(ex.getMessage(), ex);
+        logger.warn(ex.getMessage());
         return Result.error("不支持的请求方式");
     }
 
