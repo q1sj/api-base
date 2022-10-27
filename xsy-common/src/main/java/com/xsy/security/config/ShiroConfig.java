@@ -53,7 +53,8 @@ public class ShiroConfig {
 
     @Bean("shiroFilter")
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager,
-                                             @Autowired(required = false) BaseAuthFilterMapConfig baseAuthFilterMapConfig) {
+                                             @Autowired(required = false) BaseAuthFilterMapConfig baseAuthFilterMapConfig,
+                                             NoAuthScan noAuthScan) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
 
@@ -65,6 +66,7 @@ public class ShiroConfig {
             baseAuthFilterMapConfig = new BaseAuthFilterMapConfig();
         }
         Map<String, String> filterMap = baseAuthFilterMapConfig.getFilterMap();
+        filterMap.putAll(noAuthScan.getNoAuthMap());
         filterMap.putIfAbsent("/**", "oauth2");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 

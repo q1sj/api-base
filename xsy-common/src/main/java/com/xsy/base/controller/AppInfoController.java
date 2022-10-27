@@ -1,6 +1,7 @@
 package com.xsy.base.controller;
 
 import com.xsy.base.util.Result;
+import com.xsy.security.annotation.NoAuth;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class AppInfoController {
      *
      * @return
      */
+    @NoAuth
     @GetMapping(AppInfoController.VERSION_MAPPING)
     public Result<VersionVO> version() {
         return Result.ok(versionVO);
