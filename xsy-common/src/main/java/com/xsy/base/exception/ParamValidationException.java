@@ -1,5 +1,7 @@
 package com.xsy.base.exception;
 
+import com.xsy.base.enums.ErrorCodeEnum;
+
 /**
  * 参数校验异常
  *
@@ -8,10 +10,10 @@ package com.xsy.base.exception;
  */
 public class ParamValidationException extends GlobalException {
     public ParamValidationException(String msg) {
-        super(msg);
+        super(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED, msg);
     }
 
     public ParamValidationException(String msg, Throwable e) {
-        super(msg, e);
+        super(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED, msg, e);
     }
 }

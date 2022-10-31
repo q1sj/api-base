@@ -46,5 +46,5 @@ public interface SysUserTokenService extends RenBaseService<SysUserTokenEntity> 
      *
      * @param token
      */
-    void refreshExpireDate(String token);
+    void  refreshExpireDate(SysUserTokenEntity tokenEntity);
 }

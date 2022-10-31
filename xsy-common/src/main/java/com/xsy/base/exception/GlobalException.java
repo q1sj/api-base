@@ -9,6 +9,8 @@
 package com.xsy.base.exception;
 
 
+import com.xsy.base.enums.ErrorCodeEnum;
+
 import java.util.Arrays;
 
 /**
@@ -18,13 +20,18 @@ import java.util.Arrays;
  */
 public class GlobalException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    public static final int ERROR_CODE = 500;
+    public static final ErrorCodeEnum ERROR_CODE = ErrorCodeEnum.INTERNAL_SERVER_ERROR;
 
-    private int code;
+    private final ErrorCodeEnum code;
 
     public GlobalException(String msg) {
         super(msg);
         this.code = ERROR_CODE;
+    }
+
+    public GlobalException(ErrorCodeEnum errorCodeEnum, String msg) {
+        super(msg);
+        this.code = errorCodeEnum;
     }
 
     public GlobalException(String msg, Throwable e) {
@@ -32,12 +39,13 @@ public class GlobalException extends RuntimeException {
         this.code = ERROR_CODE;
     }
 
-    public int getCode() {
-        return code;
+    public GlobalException(ErrorCodeEnum errorCodeEnum, String msg, Throwable cause) {
+        super(msg, cause);
+        this.code = errorCodeEnum;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public ErrorCodeEnum getCode() {
+        return code;
     }
 
     @Override

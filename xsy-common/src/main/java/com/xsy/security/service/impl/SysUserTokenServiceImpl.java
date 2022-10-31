@@ -35,6 +35,10 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
      * 12小时后过期
      */
     private final static long EXPIRE_MS = TimeUnit.HOURS.toMillis(12);
+    /**
+     * token过期时间小于此值 刷新
+     */
+    private final static long RESIDUE_MS = TimeUnit.HOURS.toMillis(6);
 
     private final Cache cache;
 
@@ -78,9 +82,6 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
     @Override
     @Cacheable(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserTokenCacheKey(#token)")
     public SysUserTokenEntity getByToken(String token) {
-        if (!TokenGenerator.validToken(token)) {
-            throw new IncorrectCredentialsException("token无效");
-        }
         return baseDao.getByToken(token);
     }
 
@@ -109,14 +110,16 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
     }
 
     @Override
-    @CacheEvict(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserTokenCacheKey(#token)")
-    public void refreshExpireDate(String token) {
-        SysUserTokenEntity userToken = getByToken(token);
-        if (userToken == null) {
+    public void refreshExpireDate(SysUserTokenEntity tokenEntity) {
+        String accessToken = tokenEntity.getToken();
+        long expireTime = tokenEntity.getExpireDate().getTime();
+        // 剩余时间大于RESIDUE_MS 不刷新过期时间
+        if (expireTime - System.currentTimeMillis() > RESIDUE_MS) {
             return;
         }
-        cache.evict(SecurityConstant.getSysUserTokenCacheKey(token));
-        userToken.setExpireDate(new Date(System.currentTimeMillis() + EXPIRE_MS));
-        this.updateById(userToken);
+        log.debug("刷新token:{}过期时间", accessToken);
+        tokenEntity.setExpireDate(new Date(System.currentTimeMillis() + EXPIRE_MS));
+        cache.evict(SecurityConstant.getSysUserTokenCacheKey(accessToken));
+        this.updateById(tokenEntity);
     }
 }

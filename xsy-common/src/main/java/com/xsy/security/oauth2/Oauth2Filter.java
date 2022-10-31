@@ -9,7 +9,7 @@
 package com.xsy.security.oauth2;
 
 
-import com.xsy.base.enums.ErrorCode;
+import com.xsy.base.enums.ErrorCodeEnum;
 import com.xsy.base.util.HttpContextUtils;
 import com.xsy.base.util.JsonUtils;
 import com.xsy.base.util.Result;
@@ -17,8 +17,8 @@ import com.xsy.security.enums.SecurityConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.ServletRequest;
@@ -65,7 +65,7 @@ public class Oauth2Filter extends AuthenticatingFilter {
             httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
             httpResponse.setHeader("Access-Control-Allow-Origin", HttpContextUtils.getOrigin());
 
-            String json = JsonUtils.toJsonString(Result.error(ErrorCode.UNAUTHORIZED,"UNAUTHORIZED"));
+            String json = JsonUtils.toJsonString(Result.error(ErrorCodeEnum.NO_LOGIN));
 
             httpResponse.getWriter().print(json);
 
@@ -83,9 +83,14 @@ public class Oauth2Filter extends AuthenticatingFilter {
         httpResponse.setHeader("Access-Control-Allow-Origin", HttpContextUtils.getOrigin());
         try {
             //处理登录失败的异常
-            Throwable throwable = e.getCause() == null ? e : e.getCause();
-            Result r = Result.error(HttpStatus.UNAUTHORIZED.value(), throwable.getMessage());
-
+            Result<?> r;
+            ErrorCodeEnum errorCodeEnum;
+            if (e instanceof ExpiredCredentialsException) {
+                errorCodeEnum = ErrorCodeEnum.LOGIN_EXPIRED;
+            } else {
+                errorCodeEnum = ErrorCodeEnum.AUTHENTICATE_FAIL;
+            }
+            r = Result.error(errorCodeEnum);
             String json = JsonUtils.toJsonString(r);
             httpResponse.getWriter().print(json);
         } catch (IOException e1) {

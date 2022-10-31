@@ -1,5 +1,6 @@
 package com.xsy.base.util;
 
+import com.xsy.base.enums.ErrorCodeEnum;
 import lombok.Data;
 
 import java.util.Objects;
@@ -18,11 +19,11 @@ public class Result<T> {
     /**
      * 默认失败code
      */
-    private static final int FAIL_CODE = 500;
+    private static final int FAIL_CODE = ErrorCodeEnum.INTERNAL_SERVER_ERROR.code;
     /**
      * 默认失败msg
      */
-    private static final String FAIL_MSG = "未知异常,请联系管理员";
+    private static final String FAIL_MSG = ErrorCodeEnum.INTERNAL_SERVER_ERROR.message;
     /**
      * code 0 成功 其他失败
      */
@@ -65,8 +66,16 @@ public class Result<T> {
         return new Result<T>(FAIL_CODE, FAIL_MSG);
     }
 
-    public static <T> Result<T> error(String msg) {
-        return new Result<T>(FAIL_CODE, msg);
+    public static <T> Result<T> error(ErrorCodeEnum errorCodeEnum) {
+        return new Result<>(errorCodeEnum.getValue(), errorCodeEnum.getDesc());
+    }
+
+    public static <T> Result<T> error(ErrorCodeEnum errorCodeEnum, String userTip) {
+        return new Result<>(errorCodeEnum.getValue(), userTip);
+    }
+
+    public static <T> Result<T> error(String userTip) {
+        return new Result<T>(FAIL_CODE, userTip);
     }
 
     public static <T> Result<T> error(Exception e) {
@@ -83,14 +92,5 @@ public class Result<T> {
 
     public boolean isSuccess() {
         return this.code == SUCCESS_CODE;
-    }
-
-    @Deprecated
-    public static <T> Result<T> error(int code) {
-        return new Result<>(code, FAIL_MSG);
-    }
-
-    public static <T> Result<T> error(int code, String message) {
-        return new Result<>(code, message);
     }
 }
