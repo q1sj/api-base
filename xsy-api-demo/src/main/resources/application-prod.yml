@@ -4,7 +4,7 @@ logging:
   file:
     max-size: 100MB
     max-history: 15
-    name: /var/log/${spring.application.name}/${spring.application.name}.log
+    name: /var/log/${spring.application.name}/${spring.application.name}-${spring.profiles.active}.log
 spring:
   resources:
     add-mappings: false

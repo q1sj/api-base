@@ -48,6 +48,8 @@ public class FileRecordEntity {
      */
     private Date expireTime;
 
+    private String md5;
+
     private Date createTime;
     private Date uploadTime;
     private String remark;

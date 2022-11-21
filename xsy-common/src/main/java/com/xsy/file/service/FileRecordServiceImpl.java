@@ -83,6 +83,7 @@ public class FileRecordServiceImpl implements FileRecordService {
         fileRecordEntity.setSource(source);
         fileRecordEntity.setUploadUserId(userId);
         fileRecordEntity.setUploadIp(ip);
+        fileRecordEntity.setMd5(DigestUtils.md5Hex(data));
         // expireMs < 0 不过期
         if (expireMs > 0) {
             Date expireTime = new Date(System.currentTimeMillis() + expireMs);
@@ -93,9 +94,23 @@ public class FileRecordServiceImpl implements FileRecordService {
         return fileRecordEntity;
     }
 
+    public FileRecordEntity getRecordByPath(String path) {
+        LambdaQueryWrapper<FileRecordEntity> wrapper = Wrappers.lambdaQuery(FileRecordEntity.class)
+                .eq(FileRecordEntity::getPath, path);
+        return fileRecordDao.selectOne(wrapper);
+    }
+
     @Override
     public byte[] getFileBytes(String path) throws IOException {
-        return fileStorageStrategy.getFileBytes(path);
+        FileRecordEntity record = getRecordByPath(path);
+        if (record == null) {
+            throw new IOException(path + " 不存在");
+        }
+        byte[] fileBytes = fileStorageStrategy.getFileBytes(path);
+        if (!record.getMd5().equals(DigestUtils.md5Hex(fileBytes))) {
+            throw new IOException(path + "文件已损坏");
+        }
+        return fileBytes;
     }
 
     @Override
@@ -174,7 +189,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return String.format("%s_%s_%s.%s",source,System.currentTimeMillis(), UUID.randomUUID(),getFileSuffix(originalFilename));
+        return String.format("%s_%s_%s.%s", source, System.currentTimeMillis(), UUID.randomUUID(), getFileSuffix(originalFilename));
     }
 
     @AllArgsConstructor

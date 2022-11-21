@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateKeyException.class)
     public Result<?> handleDuplicateKeyException(DuplicateKeyException ex) {
         logger.warn(ex.getMessage(), ex);
-        return Result.error(ErrorCodeEnum.DB_RECORD_EXISTS);
+        return Result.error(ErrorCodeEnum.RECORD_EXISTS);
     }
 
     @ExceptionHandler(BindException.class)
@@ -87,13 +87,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public Result<?> handleException(UnauthorizedException ex) {
         logger.warn("userId:{} {}", SecurityUser.getUserId(), ex.getMessage());
-        return Result.error(ErrorCodeEnum.UNAUTHORIZED, "没有权限");
+        return Result.error(ErrorCodeEnum.UNAUTHORIZED);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Result<?> handleException(HttpMessageNotReadableException ex) {
         logger.warn(ex.getMessage(), ex);
-        return Result.error(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED, "参数解析失败");
+        return Result.error(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

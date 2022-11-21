@@ -18,7 +18,7 @@ public enum ErrorCodeEnum implements BaseEnum<Integer, String> {
     // 输入错误 101xx;
     NOT_NULL(10101, "不能为空"),
     PARAMETER_VALIDATION_FAILED(10102, "参数校验失败"),
-    DB_RECORD_EXISTS(10103, "记录已存在"),
+    RECORD_EXISTS(10103, "记录已存在"),
     // 认证失败 104xx
     AUTHENTICATE_FAIL(10400, "认证失败"),
     NO_LOGIN(10401, "未登录"),

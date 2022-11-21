@@ -19,8 +19,12 @@ import java.util.Date;
  */
 public class LocalFileStorageStrategy implements FileStorageStrategy {
 
-    @Value("${file.localStorage.basePath:/home/file}")
     private String basePath;
+
+    @Value("${file.localStorage.basePath:/home/file}")
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
+    }
 
     @Override
     public byte[] getFileBytes(String path) throws IOException {
@@ -54,9 +58,5 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         if (!file.delete()) {
             throw new IOException(path + "删除失败");
         }
-    }
-
-    public String getBasePath() {
-        return basePath;
     }
 }
