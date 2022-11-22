@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Q1sj
@@ -104,11 +104,16 @@ public class FileRecordServiceImpl implements FileRecordService {
     public byte[] getFileBytes(String path) throws IOException {
         FileRecordEntity record = getRecordByPath(path);
         if (record == null) {
-            throw new IOException(path + " 不存在");
+            throw new FileNotFoundException(path + " 不存在");
         }
         byte[] fileBytes = fileStorageStrategy.getFileBytes(path);
-        if (!record.getMd5().equals(DigestUtils.md5Hex(fileBytes))) {
-            throw new IOException(path + "文件已损坏");
+        String recordMd5 = record.getMd5();
+        String nowMd5 = DigestUtils.md5Hex(fileBytes);
+        Integer recordFileSize = record.getFileSize();
+        int nowFileSize = fileBytes.length;
+        if (!Objects.equals(recordMd5, nowMd5)
+                || !Objects.equals(recordFileSize, nowFileSize)) {
+            throw new IOException(String.format("%s文件已损坏 recordMd5:%s now:%s recordFileSize:%s now:%s", path, recordMd5, nowMd5, recordFileSize, nowFileSize));
         }
         return fileBytes;
     }

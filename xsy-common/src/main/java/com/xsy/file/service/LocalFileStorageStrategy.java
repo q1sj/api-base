@@ -3,7 +3,6 @@ package com.xsy.file.service;
 
 import com.xsy.base.util.FileUtils;
 import com.xsy.base.util.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,7 +20,6 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
 
     private String basePath;
 
-    @Value("${file.localStorage.basePath:/home/file}")
     public void setBasePath(String basePath) {
         this.basePath = basePath;
     }
