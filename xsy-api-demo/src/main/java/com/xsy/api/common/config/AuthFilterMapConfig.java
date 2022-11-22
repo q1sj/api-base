@@ -1,6 +1,7 @@
 package com.xsy.api.common.config;
 
 import com.xsy.security.config.BaseAuthFilterMapConfig;
+import org.apache.shiro.web.filter.mgt.DefaultFilter;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -14,9 +15,10 @@ import java.util.Map;
 public class AuthFilterMapConfig extends BaseAuthFilterMapConfig {
 
     private final Map<String, String> filterMap = new LinkedHashMap<>();
+
     {
         // smart-doc
-        filterMap.put("/doc/**", "anon");
+        filterMap.put("/doc/**", DefaultFilter.anon.name());
     }
 
     @Override

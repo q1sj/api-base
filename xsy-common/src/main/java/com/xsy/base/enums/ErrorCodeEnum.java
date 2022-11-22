@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor
 public enum ErrorCodeEnum implements BaseEnum<Integer, String> {
+    SUCCESS(0, "成功"),
+
     // 客户端错误 1xxxx
     CLIENT_ERROR(10000, "用户端错误"),
     // 输入错误 101xx;

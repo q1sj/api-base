@@ -63,16 +63,18 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     @Cacheable(key = "#key.getKey()")
     public <T> T get(BaseKey<T> key, Supplier<T> valueLoad) {
         T val = get(key);
-        if (val == null) {
-            synchronized (key) {
-                val = get(key);
-                if (val == null) {
-                    val = valueLoad.get();
-                    put(key, val);
-                }
-            }
+        if (val != null) {
+            return val;
         }
-        return val;
+        synchronized (key) {
+            val = get(key);
+            if (val != null) {
+                return val;
+            }
+            val = valueLoad.get();
+            put(key, val);
+            return val;
+        }
     }
 
     @Override

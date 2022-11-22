@@ -43,7 +43,7 @@ public class PostApiLogAop {
             return resp;
         } finally {
             if (log.isInfoEnabled()) {
-                log.info("ip:{} user:{} url:{} args:{} resp:{} cost:{}ms", IpUtils.getIpAddr(request), SecurityUser.getUserId(), request.getRequestURL(), Arrays.toString(point.getArgs()), resp, System.currentTimeMillis() - startTime);
+                log.info("ip:{} user:{} url:{} args:{} resp:{} cost:{}ms", request != null ? IpUtils.getIpAddr(request) : "null", SecurityUser.getUserId(), request != null ? request.getRequestURL() : "null", Arrays.toString(point.getArgs()), resp, System.currentTimeMillis() - startTime);
             }
         }
     }

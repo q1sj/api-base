@@ -2,6 +2,7 @@ package com.xsy.security.config;
 
 import com.xsy.security.annotation.NoAuth;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.web.filter.mgt.DefaultFilter;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -52,7 +53,7 @@ public class NoAuthScan implements ApplicationContextAware {
                 List<String> paths = getPaths(classRequestMapping, methodRequestMapping);
                 log.debug("no auth method:{} paths:{}", method, paths);
                 for (String path : paths) {
-                    noAuthMap.put(path, "anon");
+                    noAuthMap.put(path, DefaultFilter.anon.name());
                 }
             }
         }
@@ -77,6 +78,7 @@ public class NoAuthScan implements ApplicationContextAware {
             methodPath = methodPath.startsWith("/") ? methodPath : "/" + methodPath;
             if (classPaths.size() > 0) {
                 for (String classPath : classPaths) {
+                    // TODO methodPath 替换占位符位{xxx}为 *
                     fullPaths.add(classPath + methodPath);
                 }
             } else {

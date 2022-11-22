@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public abstract class BaseAuthFilterMapConfig {
     /**
-     * @return key:url,val:"anon" 标识该接口地址跳过认证授权
+     * @return key:url,val:{@link org.apache.shiro.web.filter.mgt.DefaultFilter#anon}.name() 标识该接口地址跳过认证授权
      */
     public abstract Map<String, String> getFilterMap();
 }
