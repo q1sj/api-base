@@ -1,11 +1,10 @@
 package com.xsy.file.config;
 
-import com.github.tobato.fastdfs.service.FastFileStorageClient;
 import com.xsy.base.util.BizAssertUtils;
-import com.xsy.base.util.CollectionUtils;
 import com.xsy.file.service.FastDfsFileStorageStrategy;
 import com.xsy.file.service.FileStorageStrategy;
 import com.xsy.file.service.LocalFileStorageStrategy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,6 +20,7 @@ import java.util.List;
  * @author Q1sj
  * @date 2022.10.14 10:32
  */
+@Slf4j
 @Configuration
 public class FileStorageStrategyConfig {
     @Autowired
@@ -30,6 +30,7 @@ public class FileStorageStrategyConfig {
     @ConditionalOnClass(name = "com.github.tobato.fastdfs.service.FastFileStorageClient")
     @ConditionalOnProperty(name = FileStorageProperties.FAST_DFS_ENABLE, havingValue = "true")
     public FastDfsFileStorageStrategy fastDfsFileStorageStrategy() {
+        log.info("init fastDfsFileStorageStrategy");
         FileStorageProperties.FastDfs fastDfs = fileStorageProperties.getFastdfs();
         List<String> trackerList = fastDfs.getTrackerList();
         BizAssertUtils.isNotEmpty(trackerList, "trackerList不能为空");
@@ -40,6 +41,7 @@ public class FileStorageStrategyConfig {
     @Bean
     @ConditionalOnMissingBean(FileStorageStrategy.class)
     public LocalFileStorageStrategy localFileStorageStrategy() {
+        log.info("init localFileStorageStrategy");
         FileStorageProperties.Local localStorage = fileStorageProperties.getLocal();
         LocalFileStorageStrategy localFileStorageStrategy = new LocalFileStorageStrategy();
         localFileStorageStrategy.setBasePath(localStorage.getBasePath());

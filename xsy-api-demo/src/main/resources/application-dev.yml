@@ -1,10 +1,6 @@
 logging:
   level:
     com.xsy: debug
-  file:
-    max-size: 100MB
-    max-history: 15
-    name: ./log/${spring.application.name}-${spring.profiles.active}.log
 spring:
   datasource:
     druid:
@@ -43,7 +39,7 @@ file-storage:
   local:
     base-path: 'D:'
   fastdfs:
-    enable: true
+    enable: false
     tracker-list:
       - 192.168.1.1
       - 192.168.1.2

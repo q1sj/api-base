@@ -3,9 +3,9 @@ package com.xsy.file.service;
 
 import com.xsy.base.util.FileUtils;
 import com.xsy.base.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +16,7 @@ import java.util.Date;
  * @author Q1sj
  * @date 2022.8.15 14:14
  */
+@Slf4j
 public class LocalFileStorageStrategy implements FileStorageStrategy {
 
     private String basePath;
@@ -36,22 +37,20 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         String relativePathPrefix = StringUtils.isNotBlank(source) ? "/" + source : "";
         String relativePath = relativePathPrefix + "/" + dateFormat + "/" + fileName;
         String absolutePath = basePath + relativePath;
-        File parentFile = new File(absolutePath).getParentFile();
-        if (!parentFile.exists() && !parentFile.mkdirs()) {
-            throw new IOException(parentFile.getPath() + "目录创建失败");
-        }
-        try (FileOutputStream fos = new FileOutputStream(absolutePath)) {
-            fos.write(data);
-        }
+        log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(data.length), absolutePath);
+        File file = new File(absolutePath);
+        FileUtils.writeByteArrayToFile(file, data);
         return relativePath;
     }
 
     @Override
     public void delete(String path) throws IOException {
         path = basePath + path;
+        log.info("删除文件 path:{}", path);
         File file = new File(path);
         if (!file.exists()) {
-            throw new IOException(path + "文件不存在");
+            log.warn("{}文件不存在", path);
+            return;
         }
         if (!file.delete()) {
             throw new IOException(path + "删除失败");

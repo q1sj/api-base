@@ -1,7 +1,7 @@
 {
   "info": {
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_postman_id": "447ccfee-a41b-478e-a286-ae40a8ea4bee",
+    "_postman_id": "89c43168-53d8-4971-a5f7-2d457355c891",
     "name": "xsy-api-demo-1.0"
   },
   "item": [
@@ -80,7 +80,7 @@
               }
             },
             "url": {
-              "raw": "::server/log/get?names=zulciu",
+              "raw": "::server/log/get?names=uv2v01",
               "path": [
                 "log",
                 "get"
@@ -91,7 +91,7 @@
               "query": [
                 {
                   "key": "names",
-                  "value": "zulciu",
+                  "value": "uv2v01",
                   "description": "   文件名 多个逗号分割"
                 }
               ],
@@ -108,68 +108,6 @@
       "name": "文件管理",
       "item": [
         {
-          "name": "文件未找到",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/file/404",
-              "path": [
-                "file",
-                "404"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [],
-              "variable": []
-            },
-            "description": "文件未找到",
-            "header": []
-          },
-          "description": "文件未找到"
-        },
-        {
-          "name": "查看图片",
-          "request": {
-            "method": "GET",
-            "body": {
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "::server/file/img?path=0kq3m3",
-              "path": [
-                "file",
-                "img"
-              ],
-              "host": [
-                "{{server}}"
-              ],
-              "query": [
-                {
-                  "key": "path",
-                  "value": "0kq3m3",
-                  "description": "    {@link FileRecordEntity#getPath()}"
-                }
-              ],
-              "variable": []
-            },
-            "description": "查看图片",
-            "header": []
-          },
-          "description": "查看图片"
-        },
-        {
           "name": "下载文件",
           "request": {
             "method": "GET",
@@ -181,7 +119,7 @@
               }
             },
             "url": {
-              "raw": "::server/file/download?path=pkmhu4",
+              "raw": "::server/file/download?path=s7gsmt",
               "path": [
                 "file",
                 "download"
@@ -192,7 +130,7 @@
               "query": [
                 {
                   "key": "path",
-                  "value": "pkmhu4",
+                  "value": "s7gsmt",
                   "description": "    {@link FileRecordEntity#getPath()}"
                 }
               ],
@@ -214,7 +152,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"clora.beatty\",\n  \"password\": \"k7yntu\"\n}",
+              "raw": "{\n  \"username\": \"lilian.lueilwitz\",\n  \"password\": \"m1wycp\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -278,7 +216,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/config/list?configKey=yfiehr&page=1&pageSize=10",
+              "raw": "::server/sys/config/list?configKey=74k5hn&page=1&pageSize=10",
               "path": [
                 "sys",
                 "config",
@@ -290,7 +228,7 @@
               "query": [
                 {
                   "key": "configKey",
-                  "value": "yfiehr",
+                  "value": "74k5hn",
                   "description": "No comments found."
                 },
                 {
@@ -317,7 +255,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"configKey\": \"0zld3c\",\n  \"configValue\": \"lvrgsz\",\n  \"remark\": \"cwxrlp\"\n}",
+              "raw": "{\n  \"configKey\": \"6bo661\",\n  \"configValue\": \"ikzd2o\",\n  \"remark\": \"uplxpn\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -446,7 +384,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/list?type=817",
+              "raw": "::server/sys/menu/list?type=967",
               "path": [
                 "sys",
                 "menu",
@@ -458,7 +396,7 @@
               "query": [
                 {
                   "key": "type",
-                  "value": "817",
+                  "value": "967",
                   "description": "No comments found."
                 }
               ],
@@ -481,7 +419,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/508",
+              "raw": "::server/sys/menu/524",
               "path": [
                 "sys",
                 "menu",
@@ -494,7 +432,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "508",
+                  "value": "524",
                   "description": "No comments found."
                 }
               ]
@@ -510,7 +448,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 858,\n  \"pid\": 41,\n  \"name\": \"clora.beatty\",\n  \"url\": \"www.garland-schiller.org\",\n  \"type\": 272,\n  \"icon\": \"wrpqjw\",\n  \"permissions\": \"5vpye2\",\n  \"sort\": 431,\n  \"parentName\": \"clora.beatty\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 919,\n  \"pid\": 578,\n  \"name\": \"lilian.lueilwitz\",\n  \"url\": \"www.wiley-considine.biz\",\n  \"type\": 127,\n  \"icon\": \"icdgfu\",\n  \"permissions\": \"83alt9\",\n  \"sort\": 92,\n  \"parentName\": \"lilian.lueilwitz\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -541,7 +479,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 416,\n  \"pid\": 849,\n  \"name\": \"clora.beatty\",\n  \"url\": \"www.garland-schiller.org\",\n  \"type\": 836,\n  \"icon\": \"rn3deo\",\n  \"permissions\": \"6elcp7\",\n  \"sort\": 822,\n  \"parentName\": \"clora.beatty\"\n}",
+              "raw": "{\n  \"children\": [\n    {\n      \"$ref\": \"..\"\n    }\n  ],\n  \"id\": 432,\n  \"pid\": 229,\n  \"name\": \"lilian.lueilwitz\",\n  \"url\": \"www.wiley-considine.biz\",\n  \"type\": 454,\n  \"icon\": \"tidy5l\",\n  \"permissions\": \"x6v0hn\",\n  \"sort\": 942,\n  \"parentName\": \"lilian.lueilwitz\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -578,7 +516,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/menu/652",
+              "raw": "::server/sys/menu/234",
               "path": [
                 "sys",
                 "menu",
@@ -591,7 +529,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "652",
+                  "value": "234",
                   "description": "No comments found."
                 }
               ]
@@ -647,7 +585,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/role/page?params=",
+              "raw": "::server/sys/role/page?page=1&pageSize=10&name=lilian.lueilwitz",
               "path": [
                 "sys",
                 "role",
@@ -658,9 +596,19 @@
               ],
               "query": [
                 {
-                  "key": "any object",
-                  "value": "",
-                  "description": "any object."
+                  "key": "page",
+                  "value": "1",
+                  "description": "当前页"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "name",
+                  "value": "lilian.lueilwitz",
+                  "description": "角色名称"
                 }
               ],
               "variable": []
@@ -682,7 +630,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/role/list",
+              "raw": "::server/sys/role/list?page=1&pageSize=10&name=lilian.lueilwitz",
               "path": [
                 "sys",
                 "role",
@@ -691,7 +639,23 @@
               "host": [
                 "{{server}}"
               ],
-              "query": [],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "当前页"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "name",
+                  "value": "lilian.lueilwitz",
+                  "description": "角色名称"
+                }
+              ],
               "variable": []
             },
             "description": "列表",
@@ -711,7 +675,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/role/851",
+              "raw": "::server/sys/role/686",
               "path": [
                 "sys",
                 "role",
@@ -724,8 +688,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "851",
-                  "description": "No comments found."
+                  "value": "686",
+                  "description": "角色id"
                 }
               ]
             },
@@ -740,7 +704,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 425,\n  \"name\": \"clora.beatty\",\n  \"remark\": \"z2ef90\",\n  \"menuIdList\": [\n    71\n  ]\n}",
+              "raw": "{\n  \"id\": 330,\n  \"name\": \"lilian.lueilwitz\",\n  \"remark\": \"p0ktg3\",\n  \"menuIdList\": [\n    882\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -771,7 +735,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 730,\n  \"name\": \"clora.beatty\",\n  \"remark\": \"ojn4kz\",\n  \"menuIdList\": [\n    849\n  ]\n}",
+              "raw": "{\n  \"id\": 626,\n  \"name\": \"lilian.lueilwitz\",\n  \"remark\": \"jezgd2\",\n  \"menuIdList\": [\n    370\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -802,7 +766,7 @@
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"kjbcmj\"\n]",
+              "raw": "[\n  \"522p1i\"\n]",
               "options": {
                 "raw": {
                   "language": "json"
@@ -844,7 +808,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/user/page?params=",
+              "raw": "::server/sys/user/page?page=1&pageSize=10&username=lilian.lueilwitz",
               "path": [
                 "sys",
                 "user",
@@ -855,9 +819,19 @@
               ],
               "query": [
                 {
-                  "key": "any object",
-                  "value": "",
-                  "description": "any object."
+                  "key": "page",
+                  "value": "1",
+                  "description": "当前页"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "每页条数"
+                },
+                {
+                  "key": "username",
+                  "value": "lilian.lueilwitz",
+                  "description": "用户名"
                 }
               ],
               "variable": []
@@ -879,7 +853,7 @@
               }
             },
             "url": {
-              "raw": "::server/sys/user/551",
+              "raw": "::server/sys/user/19",
               "path": [
                 "sys",
                 "user",
@@ -892,7 +866,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "551",
+                  "value": "19",
                   "description": "No comments found."
                 }
               ]
@@ -937,7 +911,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"password\": \"9t1gpg\",\n  \"newPassword\": \"4rj5ej\"\n}",
+              "raw": "{\n  \"password\": \"nf6lao\",\n  \"newPassword\": \"dfzu9t\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -968,7 +942,7 @@
             "method": "POST",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 358,\n  \"username\": \"clora.beatty\",\n  \"password\": \"pmn5go\",\n  \"realName\": \"clora.beatty\",\n  \"headUrl\": \"www.garland-schiller.org\",\n  \"gender\": 0,\n  \"email\": \"lucrecia.yost@hotmail.com\",\n  \"mobile\": \"785.570.2945\",\n  \"deptId\": 357,\n  \"status\": 636,\n  \"roleIdList\": [\n    186\n  ]\n}",
+              "raw": "{\n  \"id\": 624,\n  \"username\": \"lilian.lueilwitz\",\n  \"password\": \"gchzpq\",\n  \"realName\": \"lilian.lueilwitz\",\n  \"headUrl\": \"www.wiley-considine.biz\",\n  \"gender\": 0,\n  \"email\": \"pinkie.bosco@hotmail.com\",\n  \"mobile\": \"404-812-7152\",\n  \"status\": 433,\n  \"roleIdList\": [\n    896\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -999,7 +973,7 @@
             "method": "PUT",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 213,\n  \"username\": \"clora.beatty\",\n  \"password\": \"99ssse\",\n  \"realName\": \"clora.beatty\",\n  \"headUrl\": \"www.garland-schiller.org\",\n  \"gender\": 0,\n  \"email\": \"lucrecia.yost@hotmail.com\",\n  \"mobile\": \"785.570.2945\",\n  \"deptId\": 978,\n  \"status\": 861,\n  \"roleIdList\": [\n    696\n  ]\n}",
+              "raw": "{\n  \"id\": 208,\n  \"username\": \"lilian.lueilwitz\",\n  \"password\": \"8pqaev\",\n  \"realName\": \"lilian.lueilwitz\",\n  \"headUrl\": \"www.wiley-considine.biz\",\n  \"gender\": 0,\n  \"email\": \"pinkie.bosco@hotmail.com\",\n  \"mobile\": \"404-812-7152\",\n  \"status\": 765,\n  \"roleIdList\": [\n    3\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1030,7 +1004,7 @@
             "method": "DELETE",
             "body": {
               "mode": "raw",
-              "raw": "[\n  \"ayfldm\"\n]",
+              "raw": "[\n  \"herwd9\"\n]",
               "options": {
                 "raw": {
                   "language": "json"

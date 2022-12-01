@@ -71,6 +71,7 @@ public class FileRecordServiceImpl implements FileRecordService {
 
     @Override
     public FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+        BizAssertUtils.isNotBlank(source, "source不能为空");
         // 判断source是否包含不允许字符
         illegalCharactersInDirectoryNames.forEach(s -> BizAssertUtils.isFalse(source.contains(s), "source中不允许出现的符号:" + s));
         // 持久化文件
