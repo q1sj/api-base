@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Q1sj
@@ -72,9 +73,19 @@ public class TestExportController {
 
     @Autowired
     private SysUserService sysUserService;
+
     @Export
     @GetMapping("/test6")
     public PageData<SysUserDTO> tset6(UserListQuery query) {
         return this.sysUserService.page(query);
+    }
+
+    @Export(resultExpression = "#result.get().get()")
+    @GetMapping("/test7")
+    public Optional<Optional<SysUserEntity>> test7() {
+        SysUserEntity userEntity = new SysUserEntity();
+        userEntity.setId(1L);
+        userEntity.setUsername("test");
+        return  Optional.of(Optional.of(userEntity));
     }
 }

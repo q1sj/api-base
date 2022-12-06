@@ -13,4 +13,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Export {
     String filename() default "";
+    /**
+     * spel表达式 #reseult.getData()
+     *
+     * @return
+     */
+    String resultExpression() default "";
+
+    Class<?>[] exportClass() default {};
 }
