@@ -1,5 +1,7 @@
 package com.xsy.security.config;
 
+import com.xsy.base.util.CollectionUtils;
+import com.xsy.base.util.RequestMappingUtils;
 import com.xsy.security.annotation.NoAuth;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.web.filter.mgt.DefaultFilter;
@@ -43,48 +45,21 @@ public class NoAuthScan implements ApplicationContextAware {
             Object value = entry.getValue();
             Class<?> controllerClass = AopUtils.getTargetClass(value);
             Method[] methods = controllerClass.getMethods();
-            RequestMapping classRequestMapping = AnnotatedElementUtils.findMergedAnnotation(controllerClass, RequestMapping.class);
             for (Method method : methods) {
-                RequestMapping methodRequestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
                 NoAuth noAuth = AnnotatedElementUtils.findMergedAnnotation(method, NoAuth.class);
-                if (methodRequestMapping == null || noAuth == null) {
+                if (noAuth == null) {
                     continue;
                 }
-                List<String> paths = getPaths(classRequestMapping, methodRequestMapping);
+                List<String> paths = RequestMappingUtils.getPaths(method);
+                if (CollectionUtils.isEmpty(paths)) {
+                    log.warn("method:{} path为空 @NoAuth无效", method);
+                    continue;
+                }
                 log.debug("no auth method:{} paths:{}", method, paths);
                 for (String path : paths) {
                     noAuthMap.put(path, DefaultFilter.anon.name());
                 }
             }
         }
-    }
-
-    /**
-     * 根据类,方法注解拼接完整接口路径
-     *
-     * @param classRequestMapping
-     * @param methodRequestMapping
-     * @return
-     */
-    private List<String> getPaths(RequestMapping classRequestMapping, RequestMapping methodRequestMapping) {
-        List<String> classPaths = new ArrayList<>();
-        if (classRequestMapping != null && classRequestMapping.path().length > 0) {
-            for (String path : classRequestMapping.path()) {
-                classPaths.add(path.startsWith("/") ? path : "/" + path);
-            }
-        }
-        List<String> fullPaths = new ArrayList<>();
-        for (String methodPath : methodRequestMapping.path()) {
-            methodPath = methodPath.startsWith("/") ? methodPath : "/" + methodPath;
-            if (classPaths.size() > 0) {
-                for (String classPath : classPaths) {
-                    // TODO methodPath 替换占位符位{xxx}为 *
-                    fullPaths.add(classPath + methodPath);
-                }
-            } else {
-                fullPaths.add(methodPath);
-            }
-        }
-        return fullPaths;
     }
 }

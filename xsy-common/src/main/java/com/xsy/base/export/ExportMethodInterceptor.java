@@ -36,6 +36,25 @@ public class ExportMethodInterceptor implements MethodInterceptor {
         if (result == null || export == null) {
             return result;
         }
+        List list = parseList(result, export);
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletResponse response = servletRequestAttributes.getResponse();
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        Class exportClass = CollectionUtils.isEmpty(export.exportClass()) ? list.get(0).getClass() : export.exportClass()[0];
+        ExcelUtils.excelDown(response, exportClass, list, StringUtils.isNotBlank(export.filename()) ? export.filename() : UUID.randomUUID().toString());
+        return null;
+    }
+
+    /**
+     * 解析列表
+     *
+     * @param result
+     * @param export
+     * @return {@link List}
+     */
+    private List parseList(Object result, Export export) {
         List list = null;
         Object data = result;
         if (StringUtils.isNotBlank(export.resultExpression())) {
@@ -54,13 +73,6 @@ public class ExportMethodInterceptor implements MethodInterceptor {
         } else {
             list = Collections.singletonList(data);
         }
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletResponse response = servletRequestAttributes.getResponse();
-        if (CollectionUtils.isEmpty(list)) {
-            return null;
-        }
-        Class exportClass = export.exportClass().length == 0 ? list.get(0).getClass() : export.exportClass()[0];
-        ExcelUtils.excelDown(response, exportClass, list, StringUtils.isNotBlank(export.filename()) ? export.filename() : UUID.randomUUID().toString());
-        return null;
+        return list;
     }
 }

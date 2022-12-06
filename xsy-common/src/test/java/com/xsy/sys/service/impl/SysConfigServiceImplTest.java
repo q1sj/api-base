@@ -1,18 +1,23 @@
 package com.xsy.sys.service.impl;
 
 import org.junit.Test;
+import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SysConfigServiceImplTest {
-    String startSymbol = "${" ;
-    String endSymbol = "}" ;
+    String startSymbol = "${";
+    String endSymbol = "}";
     Map<String, String> map = new HashMap<>();
 
     {
         map.put("xxx_api", "http://${ip}:${port}/api/xxx");
-        map.put("aaa_api", "http://${ip}:${port}/api/aaa");
+        map.put("aaa_api", "http://${host}/api/aaa");
+        map.put("host", "${ip}:${port}");
         map.put("ip", "192.168.1.1");
         map.put("port", "8080");
     }
@@ -21,6 +26,24 @@ public class SysConfigServiceImplTest {
     public void test() {
         String xxx_api = getValue("xxx_api");
         String aaa_api = getValue("aaa_api");
+    }
+
+    @Test
+    public void testRegex() {
+        String val = "http://${ip}:${port}/api/xxx";
+        Pattern pattern = Pattern.compile("\\$\\{(.*?)}");
+        Matcher matcher = pattern.matcher(val);
+        while (matcher.find()) {
+            System.out.println(matcher.group(0));
+        }
+    }
+
+    @Test
+    public void testPropertyPlaceholderHelper() {
+        PropertyPlaceholderHelper helper = new PropertyPlaceholderHelper("${", "}", ":", false);
+        PropertyPlaceholderHelper.PlaceholderResolver resolver = map::get;
+        String str = helper.replacePlaceholders(map.get("aaa_api"), resolver);
+        String str2 = helper.replacePlaceholders("${abc:123}", resolver);
     }
 
     public String getValue(String key) {
@@ -47,7 +70,7 @@ public class SysConfigServiceImplTest {
     private String getOriginalValue(String key) {
         String val = map.get(key);
         if (val == null) {
-            return "" ;
+            return "";
         }
         return val;
     }

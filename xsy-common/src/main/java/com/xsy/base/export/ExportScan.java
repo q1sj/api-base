@@ -3,6 +3,7 @@ package com.xsy.base.export;
 import com.xsy.base.exception.GlobalException;
 import com.xsy.base.util.CollectionUtils;
 import com.xsy.base.util.ExcelUtils;
+import com.xsy.base.util.RequestMappingUtils;
 import com.xsy.base.util.Result;
 import com.xsy.security.annotation.NoAuth;
 import lombok.extern.slf4j.Slf4j;
@@ -52,11 +53,14 @@ public class ExportScan implements ApplicationContextAware {
             Method[] methods = controllerClass.getMethods();
             // cglib增强
             Object exportController = null;
-            RequestMapping classRequestMapping = AnnotatedElementUtils.findMergedAnnotation(controllerClass, RequestMapping.class);
             for (Method method : methods) {
-                RequestMapping methodRequestMapping = AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
                 Export export = AnnotatedElementUtils.findMergedAnnotation(method, Export.class);
-                if (methodRequestMapping == null || export == null) {
+                if (export == null) {
+                    continue;
+                }
+                List<String> paths = RequestMappingUtils.getPaths(method);
+                if (CollectionUtils.isEmpty(paths)) {
+                    log.warn("method:{} path为空 @Export无效", method);
                     continue;
                 }
                 if (exportController == null) {
@@ -67,7 +71,6 @@ public class ExportScan implements ApplicationContextAware {
                         continue;
                     }
                 }
-                List<String> paths = getPaths(classRequestMapping, methodRequestMapping);
                 log.debug("export method:{} paths:{}", method, paths);
                 // 注册
                 for (String path : paths) {
@@ -86,32 +89,4 @@ public class ExportScan implements ApplicationContextAware {
         return enhancer.create();
     }
 
-    /**
-     * 根据类,方法注解拼接完整接口路径
-     *
-     * @param classRequestMapping
-     * @param methodRequestMapping
-     * @return
-     */
-    private List<String> getPaths(RequestMapping classRequestMapping, RequestMapping methodRequestMapping) {
-        List<String> classPaths = new ArrayList<>();
-        if (classRequestMapping != null && classRequestMapping.path().length > 0) {
-            for (String path : classRequestMapping.path()) {
-                classPaths.add(path.startsWith("/") ? path : "/" + path);
-            }
-        }
-        List<String> fullPaths = new ArrayList<>();
-        for (String methodPath : methodRequestMapping.path()) {
-            methodPath = methodPath.startsWith("/") ? methodPath : "/" + methodPath;
-            if (classPaths.size() > 0) {
-                for (String classPath : classPaths) {
-                    // TODO methodPath 替换占位符位{xxx}为 *
-                    fullPaths.add(classPath + methodPath);
-                }
-            } else {
-                fullPaths.add(methodPath);
-            }
-        }
-        return fullPaths;
-    }
 }

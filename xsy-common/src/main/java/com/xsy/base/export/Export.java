@@ -12,13 +12,26 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Export {
-    String filename() default "";
     /**
-     * spel表达式 #reseult.getData()
+     * excel文件名 默认uuid
+     *
+     * @return
+     */
+    String filename() default "";
+
+    /**
+     * 获取要导出数据的spel表达式 例如#reseult.getData()
+     * #reseult为返回值
+     * 表达式为空时使用默认方法解析返回值
      *
      * @return
      */
     String resultExpression() default "";
 
+    /**
+     * 导出表头class 默认List第0个元素的class
+     *
+     * @return
+     */
     Class<?>[] exportClass() default {};
 }
