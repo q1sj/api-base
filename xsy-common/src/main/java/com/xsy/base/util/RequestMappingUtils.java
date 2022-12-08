@@ -37,7 +37,6 @@ public class RequestMappingUtils {
             methodPath = methodPath.startsWith("/") ? methodPath : "/" + methodPath;
             if (classPaths.size() > 0) {
                 for (String classPath : classPaths) {
-                    // TODO methodPath 替换占位符位{xxx}为 *
                     fullPaths.add(classPath + methodPath);
                 }
             } else {

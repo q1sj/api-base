@@ -1,16 +1,9 @@
 package com.xsy.base.export;
 
-import com.xsy.base.exception.GlobalException;
 import com.xsy.base.util.CollectionUtils;
-import com.xsy.base.util.ExcelUtils;
 import com.xsy.base.util.RequestMappingUtils;
-import com.xsy.base.util.Result;
-import com.xsy.security.annotation.NoAuth;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-import org.apache.shiro.web.filter.mgt.DefaultFilter;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +12,17 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
- * NoAuth注解扫描类
- * {@link NoAuth}
+ * Export注解扫描类
+ * {@link Export}
  *
  * @author Q1sj
  * @date 2022.10.27 14:10

@@ -1,6 +1,6 @@
 package com.xsy.base.util;
 
-import com.xsy.base.enums.ErrorCodeEnum;
+import com.xsy.base.enums.ResultCodeEnum;
 import lombok.Data;
 
 import java.util.Objects;
@@ -14,16 +14,16 @@ public class Result<T> {
     /**
      * 成功code
      */
-    private static final int SUCCESS_CODE = ErrorCodeEnum.SUCCESS.code;
+    private static final int SUCCESS_CODE = ResultCodeEnum.SUCCESS.code;
     private static final String SUCCESS_MSG = "操作成功";
     /**
      * 默认失败code
      */
-    private static final int FAIL_CODE = ErrorCodeEnum.INTERNAL_SERVER_ERROR.code;
+    private static final int FAIL_CODE = ResultCodeEnum.INTERNAL_SERVER_ERROR.code;
     /**
      * 默认失败msg
      */
-    private static final String FAIL_MSG = ErrorCodeEnum.INTERNAL_SERVER_ERROR.message;
+    private static final String FAIL_MSG = ResultCodeEnum.INTERNAL_SERVER_ERROR.message;
     /**
      * code 0 成功 其他失败
      */
@@ -66,12 +66,12 @@ public class Result<T> {
         return new Result<T>(FAIL_CODE, FAIL_MSG);
     }
 
-    public static <T> Result<T> error(ErrorCodeEnum errorCodeEnum) {
-        return new Result<>(errorCodeEnum.getValue(), errorCodeEnum.getDesc());
+    public static <T> Result<T> error(ResultCodeEnum resultCodeEnum) {
+        return new Result<>(resultCodeEnum.getValue(), resultCodeEnum.getDesc());
     }
 
-    public static <T> Result<T> error(ErrorCodeEnum errorCodeEnum, String userTip) {
-        return new Result<>(errorCodeEnum.getValue(), userTip);
+    public static <T> Result<T> error(ResultCodeEnum resultCodeEnum, String userTip) {
+        return new Result<>(resultCodeEnum.getValue(), userTip);
     }
 
     public static <T> Result<T> error(String userTip) {

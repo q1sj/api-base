@@ -11,6 +11,7 @@
 
     <artifactId>xsy-common</artifactId>
     <version>1.0.2</version>
+    <url>https://gitee.com/Q1sj/base-api</url>
 
     <dependencies>
         <dependency>

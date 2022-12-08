@@ -12,13 +12,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * NoAuth注解扫描类
@@ -32,6 +32,7 @@ import java.util.Map;
 public class NoAuthScan implements ApplicationContextAware {
 
     private final Map<String, String> noAuthMap = new LinkedHashMap<>();
+    private final Pattern pattern = Pattern.compile("\\{(.*?)}");
 
     public Map<String, String> getNoAuthMap() {
         return noAuthMap;
@@ -57,6 +58,11 @@ public class NoAuthScan implements ApplicationContextAware {
                 }
                 log.debug("no auth method:{} paths:{}", method, paths);
                 for (String path : paths) {
+                    // {xxx}占位符替换为**
+                    Matcher matcher = pattern.matcher(path);
+                    if (matcher.find()) {
+                        path = matcher.replaceAll("**");
+                    }
                     noAuthMap.put(path, DefaultFilter.anon.name());
                 }
             }

@@ -9,7 +9,7 @@
 package com.xsy.base.exception;
 
 
-import com.xsy.base.enums.ErrorCodeEnum;
+import com.xsy.base.enums.ResultCodeEnum;
 
 import java.util.Arrays;
 
@@ -20,18 +20,18 @@ import java.util.Arrays;
  */
 public class GlobalException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    public static final ErrorCodeEnum ERROR_CODE = ErrorCodeEnum.INTERNAL_SERVER_ERROR;
+    public static final ResultCodeEnum ERROR_CODE = ResultCodeEnum.INTERNAL_SERVER_ERROR;
 
-    private final ErrorCodeEnum code;
+    private final ResultCodeEnum code;
 
     public GlobalException(String msg) {
         super(msg);
         this.code = ERROR_CODE;
     }
 
-    public GlobalException(ErrorCodeEnum errorCodeEnum, String msg) {
+    public GlobalException(ResultCodeEnum resultCodeEnum, String msg) {
         super(msg);
-        this.code = errorCodeEnum;
+        this.code = resultCodeEnum;
     }
 
     public GlobalException(String msg, Throwable e) {
@@ -39,12 +39,12 @@ public class GlobalException extends RuntimeException {
         this.code = ERROR_CODE;
     }
 
-    public GlobalException(ErrorCodeEnum errorCodeEnum, String msg, Throwable cause) {
+    public GlobalException(ResultCodeEnum resultCodeEnum, String msg, Throwable cause) {
         super(msg, cause);
-        this.code = errorCodeEnum;
+        this.code = resultCodeEnum;
     }
 
-    public ErrorCodeEnum getCode() {
+    public ResultCodeEnum getCode() {
         return code;
     }
 

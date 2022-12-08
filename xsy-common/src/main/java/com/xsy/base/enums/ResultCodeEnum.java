@@ -3,7 +3,7 @@ package com.xsy.base.enums;
 import lombok.AllArgsConstructor;
 
 /**
- * 错误码
+ * 返回状态码
  * 错误码以不断追加的方式进行兼容。错误等级由日志和错误码本身的释义来决定。
  * 错误码使用者避免随意定义新的错误码。
  * 尽可能在原有错误码附表中找到语义相同或者相近的错误码在代码中使用即可。
@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
  * @date 2022.10.20 15:40
  */
 @AllArgsConstructor
-public enum ErrorCodeEnum implements BaseEnum<Integer, String> {
+public enum ResultCodeEnum implements BaseEnum<Integer, String> {
     // 默认
     SUCCESS(0, "成功"),
 

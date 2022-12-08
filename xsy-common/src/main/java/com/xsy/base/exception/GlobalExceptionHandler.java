@@ -8,7 +8,7 @@
 
 package com.xsy.base.exception;
 
-import com.xsy.base.enums.ErrorCodeEnum;
+import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.util.Result;
 import com.xsy.security.user.SecurityUser;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ParamValidationException.class)
     public Result<?> handleParamValidationException(ParamValidationException e) {
         logger.warn(e.getMessage(), e);
-        return Result.error(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED, e.getMessage());
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, e.getMessage());
     }
 
     /**
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateKeyException.class)
     public Result<?> handleDuplicateKeyException(DuplicateKeyException ex) {
         logger.warn(ex.getMessage(), ex);
-        return Result.error(ErrorCodeEnum.RECORD_EXISTS);
+        return Result.error(ResultCodeEnum.RECORD_EXISTS);
     }
 
     @ExceptionHandler(BindException.class)
@@ -68,14 +68,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Result<?> handleAuthorizationException(MissingServletRequestParameterException e) {
         logger.warn(e.getMessage(), e);
-        return Result.error(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED, "缺少参数:" + e.getParameterName());
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "缺少参数:" + e.getParameterName());
     }
 
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public Result<?> handleException(DataIntegrityViolationException e) {
         logger.warn(e.getMessage(), e);
-        return Result.error(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -87,19 +87,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public Result<?> handleException(UnauthorizedException ex) {
         logger.warn("userId:{} {}", SecurityUser.getUserId(), ex.getMessage());
-        return Result.error(ErrorCodeEnum.UNAUTHORIZED);
+        return Result.error(ResultCodeEnum.UNAUTHORIZED);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Result<?> handleException(HttpMessageNotReadableException ex) {
         logger.warn(ex.getMessage(), ex);
-        return Result.error(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Result<?> handleException(HttpRequestMethodNotSupportedException ex) {
         logger.warn(ex.getMessage());
-        return Result.error(ErrorCodeEnum.CLIENT_ERROR, "不支持的请求方式");
+        return Result.error(ResultCodeEnum.CLIENT_ERROR, "不支持的请求方式");
     }
 
     @ExceptionHandler(Exception.class)
@@ -114,6 +114,6 @@ public class GlobalExceptionHandler {
             errorMessage.append(fieldError.getField()).append(fieldError.getDefaultMessage()).append(" ");
         }
         logger.warn(errorMessage.toString(), e);
-        return Result.error(ErrorCodeEnum.PARAMETER_VALIDATION_FAILED, errorMessage.toString());
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, errorMessage.toString());
     }
 }

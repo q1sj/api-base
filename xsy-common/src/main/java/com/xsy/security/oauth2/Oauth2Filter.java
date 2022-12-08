@@ -9,7 +9,7 @@
 package com.xsy.security.oauth2;
 
 
-import com.xsy.base.enums.ErrorCodeEnum;
+import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.util.HttpContextUtils;
 import com.xsy.base.util.JsonUtils;
 import com.xsy.base.util.Result;
@@ -65,7 +65,7 @@ public class Oauth2Filter extends AuthenticatingFilter {
             httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
             httpResponse.setHeader("Access-Control-Allow-Origin", HttpContextUtils.getOrigin());
 
-            String json = JsonUtils.toJsonString(Result.error(ErrorCodeEnum.NO_LOGIN));
+            String json = JsonUtils.toJsonString(Result.error(ResultCodeEnum.NO_LOGIN));
 
             httpResponse.getWriter().print(json);
 
@@ -84,13 +84,13 @@ public class Oauth2Filter extends AuthenticatingFilter {
         try {
             //处理登录失败的异常
             Result<?> r;
-            ErrorCodeEnum errorCodeEnum;
+            ResultCodeEnum resultCodeEnum;
             if (e instanceof ExpiredCredentialsException) {
-                errorCodeEnum = ErrorCodeEnum.LOGIN_EXPIRED;
+                resultCodeEnum = ResultCodeEnum.LOGIN_EXPIRED;
             } else {
-                errorCodeEnum = ErrorCodeEnum.AUTHENTICATE_FAIL;
+                resultCodeEnum = ResultCodeEnum.AUTHENTICATE_FAIL;
             }
-            r = Result.error(errorCodeEnum);
+            r = Result.error(resultCodeEnum);
             String json = JsonUtils.toJsonString(r);
             httpResponse.getWriter().print(json);
         } catch (IOException e1) {
