@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,7 +28,12 @@ public class HttpUtils {
         HttpUtils.restTemplate = restTemplate;
     }
 
-    public static <T> T exchange(String url, HttpMethod httpMethod, HttpEntity<Object> body, TypeReference<T> respType) throws GlobalException {
+    public static <T> T exchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) throws GlobalException {
+        BizAssertUtils.isNotNull(restTemplate, "restTemplate未初始化");
+        BizAssertUtils.isNotBlank(url, "url不能为空");
+        BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
+        BizAssertUtils.isNotNull(respType, "respType不能为空");
+
         long startTime = System.currentTimeMillis();
         String respBody = null;
         try {
@@ -38,11 +44,11 @@ public class HttpUtils {
         } catch (Exception e) {
             throw new GlobalException(url + "请求失败", e);
         } finally {
-            log.info("{} url:{} body:{} resp:{} cost:{}ms", httpMethod.toString(), url, body, respBody, System.currentTimeMillis() - startTime);
+            log.info("{} url:{} body:{} resp:{} cost:{}ms", httpMethod, url, body, respBody, System.currentTimeMillis() - startTime);
         }
     }
 
-    public static <T> Future<T> asyncExchange(String url, HttpMethod httpMethod, HttpEntity<Object> body, TypeReference<T> respType) {
+    public static <T> Future<T> asyncExchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) {
         return threadPool.submit(() -> exchange(url, httpMethod, body, respType));
     }
 }
