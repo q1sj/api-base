@@ -44,7 +44,7 @@ public class HttpUtils {
         } catch (Exception e) {
             throw new GlobalException(url + "请求失败", e);
         } finally {
-            log.info("{} url:{} body:{} resp:{} cost:{}ms", httpMethod, url, body, respBody, System.currentTimeMillis() - startTime);
+            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body, respBody);
         }
     }
 

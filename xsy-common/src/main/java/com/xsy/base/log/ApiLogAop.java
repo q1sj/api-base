@@ -22,11 +22,11 @@ import java.util.Arrays;
 @Slf4j
 @Aspect
 @Component
-public class PostApiLogAop {
+public class ApiLogAop {
     @Autowired(required = false)
     private HttpServletRequest request;
 
-    @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping)")
+    @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping) || @annotation(com.xsy.base.log.ApiLog)")
     public void pointcut() {
     }
 
