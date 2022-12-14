@@ -21,8 +21,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -48,7 +47,7 @@ public class GlobalExceptionHandler {
      * 处理自定义异常
      */
     @ExceptionHandler(GlobalException.class)
-    public Result<?> handleRenException(GlobalException ex) {
+    public Result<?> handleException(GlobalException ex) {
         logger.error(ex.getMessage(), ex);
         return Result.error(ex.getCode(), ex.getMessage());
     }
@@ -60,17 +59,34 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BindException.class)
-    public Result<?> handleAuthorizationException(BindException e) {
+    public Result<?> handleException(BindException e) {
         BindingResult bindingResult = e.getBindingResult();
         return getResult(e, bindingResult);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public Result<?> handleAuthorizationException(MissingServletRequestParameterException e) {
+    public Result<?> handleException(MissingServletRequestParameterException e) {
         logger.warn(e.getMessage(), e);
         return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "缺少参数:" + e.getParameterName());
     }
 
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public Result<?> handleException(MissingRequestHeaderException e) {
+        logger.warn(e.getMessage(), e);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "缺少header参数:" + e.getHeaderName());
+    }
+
+    @ExceptionHandler(MissingPathVariableException.class)
+    public Result<?> handleException(MissingPathVariableException e) {
+        logger.warn(e.getMessage(), e);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "缺少pathVariable:" + e.getVariableName());
+    }
+
+    @ExceptionHandler(MissingRequestCookieException.class)
+    public Result<?> handleException(MissingRequestCookieException e) {
+        logger.warn(e.getMessage(), e);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "缺少cookie:" + e.getCookieName());
+    }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public Result<?> handleException(DataIntegrityViolationException e) {

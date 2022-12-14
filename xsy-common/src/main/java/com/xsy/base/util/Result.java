@@ -15,7 +15,7 @@ public class Result<T> {
      * 成功code
      */
     private static final int SUCCESS_CODE = ResultCodeEnum.SUCCESS.code;
-    private static final String SUCCESS_MSG = "操作成功";
+    private static final String SUCCESS_MSG = ResultCodeEnum.SUCCESS.message;
     /**
      * 默认失败code
      */

@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum ResultCodeEnum implements BaseEnum<Integer, String> {
     // 默认
-    SUCCESS(0, "成功"),
+    SUCCESS(0, "操作成功"),
 
     // 客户端错误 1xxxx
     CLIENT_ERROR(10000, "用户端错误"),
