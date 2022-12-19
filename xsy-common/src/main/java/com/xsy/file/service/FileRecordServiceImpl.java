@@ -109,14 +109,16 @@ public class FileRecordServiceImpl implements FileRecordService {
         if (record == null) {
             throw new FileNotFoundException(path + " 不存在");
         }
-        InputStream inputStream = fileStorageStrategy.getInputStream(path);
         String recordDigest = record.getDigest();
         String nowDigest = fileStorageStrategy.digest(path);
+        if (!Objects.equals(recordDigest, nowDigest)) {
+            throw new IOException(path + "文件已损坏 recordDigest:" + recordDigest + " now:" + nowDigest);
+        }
+        InputStream inputStream = fileStorageStrategy.getInputStream(path);
         Integer recordFileSize = record.getFileSize();
         int nowFileSize = inputStream.available();
-        if (!Objects.equals(recordDigest, nowDigest)
-                || !Objects.equals(recordFileSize, nowFileSize)) {
-            throw new IOException(String.format("%s文件已损坏 recordDigest:%s now:%s recordFileSize:%s now:%s", path, recordDigest, nowDigest, recordFileSize, nowFileSize));
+        if (!Objects.equals(recordFileSize, nowFileSize)) {
+            throw new IOException(path + "文件已损坏 recordFileSize:" + recordFileSize + " now:" + nowFileSize);
         }
         return inputStream;
     }
