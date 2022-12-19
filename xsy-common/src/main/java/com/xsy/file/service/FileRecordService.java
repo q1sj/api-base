@@ -44,7 +44,9 @@ public interface FileRecordService {
      * @return
      */
     default FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
-        return save(new ByteArrayInputStream(data), originalFilename, source, userId, ip, expireMs);
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
+            return save(bis, originalFilename, source, userId, ip, expireMs);
+        }
     }
 
     FileRecordEntity save(InputStream data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException;
@@ -58,8 +60,9 @@ public interface FileRecordService {
      * @throws IOException
      */
     default byte[] getFileBytes(String path) throws IOException {
-        InputStream is = getInputStream(path);
-        return IOUtils.readFully(is, is.available());
+        try (InputStream is = getInputStream(path)) {
+            return IOUtils.readFully(is, is.available());
+        }
     }
 
     /**

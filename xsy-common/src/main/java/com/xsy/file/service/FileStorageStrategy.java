@@ -19,13 +19,15 @@ public interface FileStorageStrategy {
     /**
      * 获取文件内容
      * 容易导致oom 尽量使用{@link #getInputStream(String)}
+     *
      * @param path 相对路径
      * @return
      * @throws IOException
      */
     default byte[] getFileBytes(String path) throws IOException {
-        InputStream is = getInputStream(path);
-        return IOUtils.readFully(is, is.available());
+        try (InputStream is = getInputStream(path)) {
+            return IOUtils.readFully(is, is.available());
+        }
     }
 
     /**
@@ -48,10 +50,13 @@ public interface FileStorageStrategy {
      * @throws IOException
      */
     default String saveFile(byte[] data, String fileName, String source) throws IOException {
-        return saveFile(new ByteArrayInputStream(data), fileName, source);
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
+            return saveFile(bis, fileName, source);
+        }
     }
 
     String saveFile(InputStream data, String fileName, String source) throws IOException;
+
     /**
      * 删除文件
      *

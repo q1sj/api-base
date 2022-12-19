@@ -33,12 +33,7 @@ public class BigFileController {
         try (ServletOutputStream os = response.getOutputStream();
              FileInputStream fis = new FileInputStream(path);
         ) {
-            int size = 1024;
-            byte[] buffer = new byte[size];
-            int read;
-            while ((read = IOUtils.read(fis, buffer, 0, size)) > 0) {
-                os.write(buffer, 0, read);
-            }
+            IOUtils.copy(fis, os);
             os.flush();
         }
     }
