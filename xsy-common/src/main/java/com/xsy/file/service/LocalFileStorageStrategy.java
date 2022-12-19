@@ -46,8 +46,9 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(data.available()), absolutePath);
         File file = new File(absolutePath);
         FileUtils.forceMkdirParent(file);
-        FileOutputStream fos = new FileOutputStream(file);
-        IOUtils.copy(data, fos);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            IOUtils.copy(data, fos);
+        }
         return relativePath;
     }
 
