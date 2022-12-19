@@ -35,7 +35,7 @@ public class FileStorageStrategyConfig {
         List<String> trackerList = fastDfs.getTrackerList();
         BizAssertUtils.isNotEmpty(trackerList, "trackerList不能为空");
         //TODO
-        return null;
+        return new FastDfsFileStorageStrategy();
     }
 
     @Bean

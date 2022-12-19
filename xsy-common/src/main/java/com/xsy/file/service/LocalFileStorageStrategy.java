@@ -1,12 +1,13 @@
 package com.xsy.file.service;
 
 
+import com.xsy.base.util.DigestUtils;
 import com.xsy.base.util.FileUtils;
+import com.xsy.base.util.IOUtils;
 import com.xsy.base.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,20 +27,27 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
     }
 
     @Override
-    public byte[] getFileBytes(String path) throws IOException {
-        return FileUtils.readFileToByteArray(new File(basePath + path));
+    public String digest(String path) throws IOException {
+        return DigestUtils.md5Hex(getInputStream(path));
     }
 
     @Override
-    public String saveFile(byte[] data, String fileName, String source) throws IOException {
+    public InputStream getInputStream(String path) throws IOException {
+        return new FileInputStream(basePath + path);
+    }
+
+    @Override
+    public String saveFile(InputStream data, String fileName, String source) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String dateFormat = sdf.format(new Date());
         String relativePathPrefix = StringUtils.isNotBlank(source) ? "/" + source : "";
         String relativePath = relativePathPrefix + "/" + dateFormat + "/" + fileName;
         String absolutePath = basePath + relativePath;
-        log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(data.length), absolutePath);
+        log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(data.available()), absolutePath);
         File file = new File(absolutePath);
-        FileUtils.writeByteArrayToFile(file, data);
+        FileUtils.forceMkdirParent(file);
+        FileOutputStream fos = new FileOutputStream(file);
+        IOUtils.copy(data, fos);
         return relativePath;
     }
 

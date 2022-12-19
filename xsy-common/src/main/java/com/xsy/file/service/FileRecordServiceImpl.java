@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -70,21 +71,22 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     @Override
-    public FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+    public FileRecordEntity save(InputStream data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
         BizAssertUtils.isNotBlank(source, "source不能为空");
         // 判断source是否包含不允许字符
         illegalCharactersInDirectoryNames.forEach(s -> BizAssertUtils.isFalse(source.contains(s), "source中不允许出现的符号:" + s));
         // 持久化文件
+        int fileSize = data.available();
         String path = fileStorageStrategy.saveFile(data, generateFilename(originalFilename, source), source);
         FileRecordEntity fileRecordEntity = new FileRecordEntity();
         fileRecordEntity.setName(originalFilename);
         fileRecordEntity.setPath(path);
         fileRecordEntity.setFileType(getFileSuffix(originalFilename));
-        fileRecordEntity.setFileSize(data.length);
+        fileRecordEntity.setFileSize(fileSize);
         fileRecordEntity.setSource(source);
         fileRecordEntity.setUploadUserId(userId);
         fileRecordEntity.setUploadIp(ip);
-        fileRecordEntity.setMd5(DigestUtils.md5Hex(data));
+        fileRecordEntity.setDigest(fileStorageStrategy.digest(path));
         // expireMs < 0 不过期
         if (expireMs > 0) {
             Date expireTime = new Date(System.currentTimeMillis() + expireMs);
@@ -102,21 +104,21 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     @Override
-    public byte[] getFileBytes(String path) throws IOException {
+    public InputStream getInputStream(String path) throws IOException {
         FileRecordEntity record = getRecordByPath(path);
         if (record == null) {
             throw new FileNotFoundException(path + " 不存在");
         }
-        byte[] fileBytes = fileStorageStrategy.getFileBytes(path);
-        String recordMd5 = record.getMd5();
-        String nowMd5 = DigestUtils.md5Hex(fileBytes);
+        InputStream inputStream = fileStorageStrategy.getInputStream(path);
+        String recordDigest = record.getDigest();
+        String nowDigest = fileStorageStrategy.digest(path);
         Integer recordFileSize = record.getFileSize();
-        int nowFileSize = fileBytes.length;
-        if (!Objects.equals(recordMd5, nowMd5)
+        int nowFileSize = inputStream.available();
+        if (!Objects.equals(recordDigest, nowDigest)
                 || !Objects.equals(recordFileSize, nowFileSize)) {
-            throw new IOException(String.format("%s文件已损坏 recordMd5:%s now:%s recordFileSize:%s now:%s", path, recordMd5, nowMd5, recordFileSize, nowFileSize));
+            throw new IOException(String.format("%s文件已损坏 recordDigest:%s now:%s recordFileSize:%s now:%s", path, recordDigest, nowDigest, recordFileSize, nowFileSize));
         }
-        return fileBytes;
+        return inputStream;
     }
 
     @Override
@@ -195,7 +197,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return String.format("%s_%s_%s.%s", source, System.currentTimeMillis(), UUID.randomUUID(), getFileSuffix(originalFilename));
+        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + getFileSuffix(originalFilename);
     }
 
     @AllArgsConstructor

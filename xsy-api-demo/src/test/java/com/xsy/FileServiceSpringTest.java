@@ -4,14 +4,16 @@ import com.xsy.base.util.FileUtils;
 import com.xsy.file.entity.FileRecordEntity;
 import com.xsy.file.service.FileRecordService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.ServletOutputStream;
+import java.io.*;
 
 /**
  * @author Q1sj
@@ -27,11 +29,13 @@ public class FileServiceSpringTest {
     @Test
     public void save() throws IOException {
         File file = new File("C:\\Users\\Q1sj\\Pictures\\1.png");
-        FileRecordEntity recordEntity = fileRecordService.save(FileUtils.readFileToByteArray(file), "1.png", "test", "", "", -1);
+        FileRecordEntity recordEntity = fileRecordService.save(new FileInputStream(file), "1.png", "test", "", "", -1);
     }
 
     @Test
     public void getBytes() throws Exception {
-        byte[] fileBytes = fileRecordService.getFileBytes("/test/20221121/test_1669015927560_ab31c04c-9432-4fe8-b1ab-5f99e177ed32.png");
+        String path = "/test/20221219/test_1671418905720_a0bde801-87f9-4003-93cf-db1c9970da0f.png";
+        byte[] fileBytes = fileRecordService.getFileBytes(path);
+        InputStream inputStream = fileRecordService.getInputStream(path);
     }
 }

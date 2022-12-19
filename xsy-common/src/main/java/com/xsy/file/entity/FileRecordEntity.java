@@ -47,8 +47,10 @@ public class FileRecordEntity {
      * 过期时间 为空永不过期
      */
     private Date expireTime;
-
-    private String md5;
+    /**
+     * 摘要
+     */
+    private String digest;
 
     private Date createTime;
     private Date uploadTime;

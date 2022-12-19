@@ -1,6 +1,7 @@
 package com.xsy.file.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * TODO FastDfs存储策略
@@ -9,12 +10,17 @@ import java.io.IOException;
  */
 public class FastDfsFileStorageStrategy implements FileStorageStrategy{
     @Override
-    public byte[] getFileBytes(String path) throws IOException {
-        return new byte[0];
+    public String digest(String path) throws IOException {
+        return "";
     }
 
     @Override
-    public String saveFile(byte[] data, String fileName, String source) throws IOException {
+    public InputStream getInputStream(String path) throws IOException {
+        return null;
+    }
+
+    @Override
+    public String saveFile(InputStream data, String fileName, String source) throws IOException {
         return null;
     }
 

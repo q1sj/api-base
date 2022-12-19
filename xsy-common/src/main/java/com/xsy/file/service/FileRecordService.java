@@ -1,11 +1,14 @@
 package com.xsy.file.service;
 
+import com.xsy.base.util.IOUtils;
 import com.xsy.file.controller.FileRecordController;
 import com.xsy.file.entity.FileRecordEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -16,6 +19,7 @@ public interface FileRecordService {
     /**
      * 上传文件
      * controller demo {@link FileRecordController#upload}
+     *
      * @param file
      * @param source        数据来源
      * @param expireMs      文件过期时间
@@ -29,6 +33,7 @@ public interface FileRecordService {
 
     /**
      * 保存文件
+     * 容易导致oom 尽量使用{@link #save(InputStream, String, String, String, String, long)}
      *
      * @param data             文件内容
      * @param originalFilename 原始文件名
@@ -38,7 +43,24 @@ public interface FileRecordService {
      * @param expireMs         过期毫秒值
      * @return
      */
-    FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException;
+    default FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+        return save(new ByteArrayInputStream(data), originalFilename, source, userId, ip, expireMs);
+    }
+
+    FileRecordEntity save(InputStream data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException;
+
+    /**
+     * 获取文件内容
+     * 容易导致oom 尽量使用{@link #getInputStream(String)}
+     *
+     * @param path {@link FileRecordEntity#getPath()}
+     * @return
+     * @throws IOException
+     */
+    default byte[] getFileBytes(String path) throws IOException {
+        InputStream is = getInputStream(path);
+        return IOUtils.readFully(is, is.available());
+    }
 
     /**
      * 获取文件内容
@@ -47,7 +69,7 @@ public interface FileRecordService {
      * @return
      * @throws IOException
      */
-    byte[] getFileBytes(String path) throws IOException;
+    InputStream getInputStream(String path) throws IOException;
 
     /**
      * 删除文件

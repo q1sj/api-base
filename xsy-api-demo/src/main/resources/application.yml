@@ -11,8 +11,8 @@ spring:
     basename: i18n/messages
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: 1000MB
+      max-request-size: 1000MB
       enabled: true
 # Tomcat
 server:
