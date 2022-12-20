@@ -40,5 +40,6 @@ public class FileServiceSpringTest {
         try (FileOutputStream fos = new FileOutputStream("D:/" + System.currentTimeMillis() + ".png")) {
             IOUtils.copy(inputStream, fos);
         }
+
     }
 }

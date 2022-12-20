@@ -2,14 +2,13 @@ package com.xsy.file.service;
 
 import com.xsy.base.util.IOUtils;
 import com.xsy.file.controller.FileRecordController;
+import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
-import org.springframework.web.multipart.MultipartFile;
+import com.xsy.file.entity.UploadFileDTO;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * @author Q1sj
@@ -21,15 +20,10 @@ public interface FileRecordService {
      * controller demo {@link FileRecordController#upload}
      *
      * @param file
-     * @param source        数据来源
-     * @param expireMs      文件过期时间
-     * @param maxSize       文件最大阈值 单位:byte
-     * @param fileExtension 合法文件后缀名
      * @return
      * @throws IOException
      */
-    FileRecordEntity upload(MultipartFile file, String source, long expireMs,
-                            long maxSize, List<String> fileExtension) throws IOException;
+    FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException;
 
     /**
      * 保存文件
@@ -74,6 +68,14 @@ public interface FileRecordService {
      */
     InputStream getInputStream(String path) throws IOException;
 
+    /**
+     * 获取文件内容
+     *
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    FileRecordDTO getFileRecord(String path) throws IOException;
     /**
      * 删除文件
      *

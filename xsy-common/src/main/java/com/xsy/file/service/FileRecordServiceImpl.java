@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.util.*;
 import com.xsy.file.dao.FileRecordDao;
+import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
+import com.xsy.file.entity.UploadFileDTO;
 import com.xsy.security.user.SecurityUser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -61,13 +64,17 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     @Override
-    public FileRecordEntity upload(MultipartFile file, String source, long expireMs,
-                                   long maxSize, List<String> fileExtension) throws IOException {
+    public FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException {
+        MultipartFile file = uploadFileDTO.getFile();
         long size = file.getSize();
+        long maxSize = uploadFileDTO.getMaxSize();
         BizAssertUtils.isTrue(size <= maxSize, "文件过大 阈值:" + FileUtils.byteCountToDisplaySize(maxSize) + "实际:" + FileUtils.byteCountToDisplaySize(size));
         String originalFilename = file.getOriginalFilename();
-        BizAssertUtils.isTrue(fileExtension.contains(getFileSuffix(originalFilename)), "后缀名不合法");
-        return save(file.getBytes(), originalFilename, source, Objects.toString(SecurityUser.getUserId()), IpUtils.getIpAddr(request), expireMs);
+        List<String> fileExtension = uploadFileDTO.getFileExtension();
+        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(getFileSuffix(originalFilename)), "文件类型不合法");
+        try (InputStream is = file.getInputStream()) {
+            return save(is, originalFilename, uploadFileDTO.getSource(), Objects.toString(SecurityUser.getUserId()), IpUtils.getIpAddr(request), uploadFileDTO.getExpireMs());
+        }
     }
 
     @Override
@@ -104,7 +111,7 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     @Override
-    public InputStream getInputStream(String path) throws IOException {
+    public FileRecordDTO getFileRecord(String path) throws IOException {
         FileRecordEntity record = getRecordByPath(path);
         if (record == null) {
             throw new FileNotFoundException(path + " 不存在");
@@ -120,7 +127,15 @@ public class FileRecordServiceImpl implements FileRecordService {
         if (!Objects.equals(recordFileSize, nowFileSize)) {
             throw new IOException(path + "文件已损坏 recordFileSize:" + recordFileSize + " now:" + nowFileSize);
         }
-        return inputStream;
+        FileRecordDTO dto = new FileRecordDTO();
+        BeanUtils.copyProperties(record, dto);
+        dto.setContent(inputStream);
+        return dto;
+    }
+
+    @Override
+    public InputStream getInputStream(String path) throws IOException {
+        return getFileRecord(path).getContent();
     }
 
     @Override
@@ -141,12 +156,13 @@ public class FileRecordServiceImpl implements FileRecordService {
     /**
      * 过期文件记录
      *
+     * @param expireTime 过期时间小于此时间的
      * @return
      */
-    private List<FileRecordEntity> expiredList() {
+    private List<FileRecordEntity> expiredList(Date expireTime) {
         LambdaQueryWrapper<FileRecordEntity> wrapper = Wrappers.lambdaQuery(FileRecordEntity.class)
                 .ne(FileRecordEntity::getRemark, null)
-                .lt(FileRecordEntity::getExpireTime, new Date());
+                .lt(FileRecordEntity::getExpireTime, expireTime);
         return fileRecordDao.selectList(wrapper);
     }
 
@@ -158,15 +174,14 @@ public class FileRecordServiceImpl implements FileRecordService {
         long start = System.currentTimeMillis();
         log.info("开始删除过期文件...");
         // 删除已过期文件(防止因为重启延迟队列任务丢失)
-        List<FileRecordEntity> expiredList = expiredList();
+        Date now = new Date();
+        List<FileRecordEntity> expiredList = expiredList(now);
         for (FileRecordEntity fileRecordEntity : expiredList) {
             delete(fileRecordEntity.getPath());
         }
         // 24小时内过期文件加入延迟队列
-        LambdaQueryWrapper<FileRecordEntity> wrapper = Wrappers.lambdaQuery(FileRecordEntity.class)
-                .lt(FileRecordEntity::getExpireTime, DateUtils.addHours(new Date(), 24));
-        List<FileRecordEntity> list = this.fileRecordDao.selectList(wrapper);
-        list.forEach(f -> deleteFileDelayQueue.add(new DeleteFileDelayed(f.getPath(), f.getExpireTime())));
+        List<FileRecordEntity> after24HourExpiredList = this.expiredList(DateUtils.addHours(now, 24));
+        after24HourExpiredList.forEach(f -> deleteFileDelayQueue.add(new DeleteFileDelayed(f.getPath(), f.getExpireTime())));
         log.info("结束删除过期文件...耗时:{}ms", System.currentTimeMillis() - start);
     }
 
@@ -199,7 +214,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + getFileSuffix(originalFilename);
+        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + getFileSuffix(originalFilename);
     }
 
     @AllArgsConstructor

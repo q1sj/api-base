@@ -43,7 +43,14 @@ public class ApiLogAop {
             return resp;
         } finally {
             if (log.isInfoEnabled()) {
-                log.info("{} ip:{} user:{} url:{} args:{} resp:{} cost:{}ms", point.getSignature(), request != null ? IpUtils.getIpAddr(request) : "null", SecurityUser.getUserId(), request != null ? request.getRequestURL() : "null", Arrays.toString(point.getArgs()), resp, System.currentTimeMillis() - startTime);
+                log.info("method:{} ip:{} user:{} url:{} args:{} resp:{} cost:{}ms",
+                        point.getSignature(),
+                        request != null ? IpUtils.getIpAddr(request) : "null",
+                        SecurityUser.getUserId(),
+                        request != null ? request.getRequestURL() : "null",
+                        Arrays.toString(point.getArgs()),
+                        resp,
+                        System.currentTimeMillis() - startTime);
             }
         }
     }
