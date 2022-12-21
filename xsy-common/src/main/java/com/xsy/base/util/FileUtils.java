@@ -19,11 +19,26 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
      * @return
      * @throws IOException
      */
-    public static byte[] readClassPathResourceFile(String path) throws IOException {
+    public static InputStream readClassPathResourceFile(String path) throws IOException {
         BizAssertUtils.isNotBlank(path, "path not blank");
         ClassPathResource classPathResource = new ClassPathResource(path);
-        try (InputStream inputStream = classPathResource.getInputStream()) {
-            return IOUtils.readFully(inputStream, inputStream.available());
+        return classPathResource.getInputStream();
+    }
+
+    /**
+     * 获取文件扩展名
+     *
+     * @param fileName
+     * @return
+     */
+    public static String getFileExtName(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return "";
         }
+        String[] split = fileName.split("\\.");
+        if (split.length > 1) {
+            return split[split.length - 1].toLowerCase();
+        }
+        return "";
     }
 }

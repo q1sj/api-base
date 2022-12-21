@@ -34,7 +34,7 @@ public class FileServiceSpringTest {
 
     @Test
     public void getBytes() throws Exception {
-        String path = "/test/20221219/test_1671418905720_a0bde801-87f9-4003-93cf-db1c9970da0f.png";
+        String path = "group1/M00/00/D1/wKgCGGOiriKAYs5DAACAhLcuCRc385.png";
 //        byte[] fileBytes = fileRecordService.getFileBytes(path);
         InputStream inputStream = fileRecordService.getInputStream(path);
         try (FileOutputStream fos = new FileOutputStream("D:/" + System.currentTimeMillis() + ".png")) {

@@ -71,7 +71,7 @@ public class FileRecordServiceImpl implements FileRecordService {
         BizAssertUtils.isTrue(size <= maxSize, "文件过大 阈值:" + FileUtils.byteCountToDisplaySize(maxSize) + "实际:" + FileUtils.byteCountToDisplaySize(size));
         String originalFilename = file.getOriginalFilename();
         List<String> fileExtension = uploadFileDTO.getFileExtension();
-        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(getFileSuffix(originalFilename)), "文件类型不合法");
+        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getFileExtName(originalFilename)), "文件类型不合法");
         try (InputStream is = file.getInputStream()) {
             return save(is, originalFilename, uploadFileDTO.getSource(), Objects.toString(SecurityUser.getUserId()), IpUtils.getIpAddr(request), uploadFileDTO.getExpireMs());
         }
@@ -88,7 +88,7 @@ public class FileRecordServiceImpl implements FileRecordService {
         FileRecordEntity fileRecordEntity = new FileRecordEntity();
         fileRecordEntity.setName(originalFilename);
         fileRecordEntity.setPath(path);
-        fileRecordEntity.setFileType(getFileSuffix(originalFilename));
+        fileRecordEntity.setFileType(FileUtils.getFileExtName(originalFilename));
         fileRecordEntity.setFileSize(fileSize);
         fileRecordEntity.setSource(source);
         fileRecordEntity.setUploadUserId(userId);
@@ -116,17 +116,7 @@ public class FileRecordServiceImpl implements FileRecordService {
         if (record == null) {
             throw new FileNotFoundException(path + " 不存在");
         }
-        String recordDigest = record.getDigest();
-        String nowDigest = fileStorageStrategy.digest(path);
-        if (!Objects.equals(recordDigest, nowDigest)) {
-            throw new IOException(path + "文件已损坏 recordDigest:" + recordDigest + " now:" + nowDigest);
-        }
         InputStream inputStream = fileStorageStrategy.getInputStream(path);
-        Integer recordFileSize = record.getFileSize();
-        int nowFileSize = inputStream.available();
-        if (!Objects.equals(recordFileSize, nowFileSize)) {
-            throw new IOException(path + "文件已损坏 recordFileSize:" + recordFileSize + " now:" + nowFileSize);
-        }
         FileRecordDTO dto = new FileRecordDTO();
         BeanUtils.copyProperties(record, dto);
         dto.setContent(inputStream);
@@ -161,7 +151,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      */
     private List<FileRecordEntity> expiredList(Date expireTime) {
         LambdaQueryWrapper<FileRecordEntity> wrapper = Wrappers.lambdaQuery(FileRecordEntity.class)
-                .ne(FileRecordEntity::getRemark, null)
+                .isNull(FileRecordEntity::getRemark)
                 .lt(FileRecordEntity::getExpireTime, expireTime);
         return fileRecordDao.selectList(wrapper);
     }
@@ -186,27 +176,6 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     /**
-     * 获取文件后缀名
-     *
-     * @param fileName
-     * @return
-     */
-    private String getFileSuffix(String fileName) {
-        /**
-         * 未知文件类型
-         */
-        String unknownFileType = "unknown";
-        if (StringUtils.isBlank(fileName)) {
-            return unknownFileType;
-        }
-        String[] split = fileName.split("\\.");
-        if (split.length > 1) {
-            return split[split.length - 1];
-        }
-        return unknownFileType;
-    }
-
-    /**
      * 生成存储文件名 业务名_时间戳_随机字符串.后缀名
      *
      * @param originalFilename 原始文件名
@@ -214,7 +183,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + getFileSuffix(originalFilename);
+        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + FileUtils.getFileExtName(originalFilename);
     }
 
     @AllArgsConstructor

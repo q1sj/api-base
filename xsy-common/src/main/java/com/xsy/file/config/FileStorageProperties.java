@@ -1,12 +1,8 @@
 package com.xsy.file.config;
 
 import lombok.Data;
-import lombok.experimental.FieldNameConstants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Q1sj
@@ -25,8 +21,16 @@ public class FileStorageProperties {
 
     @Data
     public static class FastDfs {
-        private Boolean enable = false;
-        private List<String> trackerList = new ArrayList<>();
+        /**
+         * 是否启用
+         * 依赖存在 且 enable=true则使用fastdfs存储
+         * <dependency>
+         * <groupId>com.github.tobato</groupId>
+         * <artifactId>fastdfs-client</artifactId>
+         * <version>${fastdfs-client.version}</version>
+         * </dependency>
+         */
+        private Boolean enable = true;
     }
 
     @Data

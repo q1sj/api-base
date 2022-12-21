@@ -28,12 +28,9 @@ public class FileStorageStrategyConfig {
 
     @Bean
     @ConditionalOnClass(name = "com.github.tobato.fastdfs.service.FastFileStorageClient")
-    @ConditionalOnProperty(name = FileStorageProperties.FAST_DFS_ENABLE, havingValue = "true")
+    @ConditionalOnProperty(name = FileStorageProperties.FAST_DFS_ENABLE, havingValue = "true",matchIfMissing = true)
     public FastDfsFileStorageStrategy fastDfsFileStorageStrategy() {
         log.info("init fastDfsFileStorageStrategy");
-        FileStorageProperties.FastDfs fastDfs = fileStorageProperties.getFastdfs();
-        List<String> trackerList = fastDfs.getTrackerList();
-        BizAssertUtils.isNotEmpty(trackerList, "trackerList不能为空");
         //TODO
         return new FastDfsFileStorageStrategy();
     }

@@ -28,7 +28,9 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
 
     @Override
     public String digest(String path) throws IOException {
-        return DigestUtils.md5Hex(getInputStream(path));
+        try (InputStream is = getInputStream(path)){
+            return DigestUtils.md5Hex(is);
+        }
     }
 
     @Override
