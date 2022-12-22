@@ -28,20 +28,20 @@ public class FileStorageStrategyConfig {
 
     @Bean
     @ConditionalOnClass(name = "com.github.tobato.fastdfs.service.FastFileStorageClient")
-    @ConditionalOnProperty(name = FileStorageProperties.FAST_DFS_ENABLE, havingValue = "true",matchIfMissing = true)
+    @ConditionalOnProperty(name = FileStorageProperties.FAST_DFS_ENABLE, havingValue = "true", matchIfMissing = true)
     public FastDfsFileStorageStrategy fastDfsFileStorageStrategy() {
         log.info("init fastDfsFileStorageStrategy");
-        //TODO
         return new FastDfsFileStorageStrategy();
     }
 
     @Bean
     @ConditionalOnMissingBean(FileStorageStrategy.class)
     public LocalFileStorageStrategy localFileStorageStrategy() {
-        log.info("init localFileStorageStrategy");
         FileStorageProperties.Local localStorage = fileStorageProperties.getLocal();
+        String basePath = localStorage.getBasePath();
+        log.info("init localFileStorageStrategy basePath={}", basePath);
         LocalFileStorageStrategy localFileStorageStrategy = new LocalFileStorageStrategy();
-        localFileStorageStrategy.setBasePath(localStorage.getBasePath());
+        localFileStorageStrategy.setBasePath(basePath);
         return localFileStorageStrategy;
     }
 }

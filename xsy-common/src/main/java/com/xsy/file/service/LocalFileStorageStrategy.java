@@ -19,7 +19,7 @@ import java.util.Date;
  */
 @Slf4j
 public class LocalFileStorageStrategy implements FileStorageStrategy {
-
+    private final String separator = "/";
     private String basePath;
 
     public void setBasePath(String basePath) {
@@ -28,23 +28,23 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
 
     @Override
     public String digest(String path) throws IOException {
-        try (InputStream is = getInputStream(path)){
+        try (InputStream is = getInputStream(path)) {
             return DigestUtils.md5Hex(is);
         }
     }
 
     @Override
     public InputStream getInputStream(String path) throws IOException {
-        return new FileInputStream(basePath + path);
+        return new FileInputStream(getAbsolutePath(path));
     }
 
     @Override
     public String saveFile(InputStream data, String fileName, String source) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String dateFormat = sdf.format(new Date());
-        String relativePathPrefix = StringUtils.isNotBlank(source) ? "/" + source : "";
-        String relativePath = relativePathPrefix + "/" + dateFormat + "/" + fileName;
-        String absolutePath = basePath + relativePath;
+        String relativePathPrefix = StringUtils.isNotBlank(source) ? separator + source : "";
+        String relativePath = relativePathPrefix + separator + dateFormat + separator + fileName;
+        String absolutePath = getAbsolutePath(relativePath);
         log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(data.available()), absolutePath);
         File file = new File(absolutePath);
         FileUtils.forceMkdirParent(file);
@@ -56,7 +56,7 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
 
     @Override
     public void delete(String path) throws IOException {
-        path = basePath + path;
+        path = getAbsolutePath(path);
         log.info("删除文件 path:{}", path);
         File file = new File(path);
         if (!file.exists()) {
@@ -66,5 +66,16 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         if (!file.delete()) {
             throw new IOException(path + "删除失败");
         }
+    }
+
+    private String getAbsolutePath(String relativePath) {
+        if (basePath.endsWith(separator)) {
+            return relativePath.startsWith(separator)
+                    ? basePath + relativePath.substring(1)
+                    : basePath + relativePath;
+        }
+        return relativePath.startsWith(separator)
+                ? basePath + relativePath
+                : basePath + separator + relativePath;
     }
 }
