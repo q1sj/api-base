@@ -2,6 +2,7 @@ package com.xsy.base.util;
 
 import com.xsy.base.enums.BaseEnum;
 import com.xsy.base.pojo.ChartDTO;
+import org.springframework.lang.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,7 @@ public class EnumUtils {
         D desc = getDescByValue(enumClass, value);
         return desc != null ? desc : defaultDesc;
     }
-
+    @Nullable
     public static <E extends BaseEnum<V, D>, V, D> D getDescByValue(Class<E> enumClass, V value) {
         E e = getByValue(enumClass, value);
         if (e == null) {
@@ -26,6 +27,7 @@ public class EnumUtils {
         return e.getDesc();
     }
 
+    @Nullable
     public static <E extends BaseEnum<V, D>, V, D> V getValueByDesc(Class<E> enumClass, D desc) {
         E e = getByDesc(enumClass, desc);
         if (e == null) {
@@ -34,6 +36,7 @@ public class EnumUtils {
         return e.getValue();
     }
 
+    @Nullable
     public static <E extends BaseEnum<V, D>, V, D> E getByValue(Class<E> enumClass, V value) {
         if (enumClass.isEnum()) {
             for (E baseEnum : enumClass.getEnumConstants()) {
@@ -45,6 +48,7 @@ public class EnumUtils {
         return null;
     }
 
+    @Nullable
     public static <E extends BaseEnum<V, D>, V, D> E getByDesc(Class<E> enumClass, D desc) {
         if (enumClass.isEnum()) {
             for (E baseEnum : enumClass.getEnumConstants()) {

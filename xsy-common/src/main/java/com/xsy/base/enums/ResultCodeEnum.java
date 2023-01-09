@@ -28,10 +28,10 @@ public enum ResultCodeEnum implements BaseEnum<Integer, String> {
     LOGIN_EXPIRED(10402, "用户登陆已过期"),
     // 授权失败 105xx
     UNAUTHORIZED(10500, "授权失败"),
-    // 服务内部错误 2xxxx,
-    INTERNAL_SERVER_ERROR(20000, "服务内部错误"),
     // 第三方服务错误 3xxxx,
     THIRD_PARTY_SERVICES_ERROR(30000, "调用第三方服务出错"),
+    // 服务内部错误 5xxxx,
+    INTERNAL_SERVER_ERROR(50000, "服务内部错误"),
     ;
     public final int code;
     public final String message;

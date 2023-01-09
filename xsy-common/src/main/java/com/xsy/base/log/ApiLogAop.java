@@ -38,18 +38,23 @@ public class ApiLogAop {
     public Object around(ProceedingJoinPoint point) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object resp = null;
+        Throwable throwable = null;
         try {
             resp = point.proceed();
             return resp;
+        } catch (Throwable t) {
+            throwable = t;
+            throw t;
         } finally {
             if (log.isInfoEnabled()) {
-                log.info("method:{} ip:{} user:{} url:{} args:{} resp:{} cost:{}ms",
+                log.info("method:{} ip:{} user:{} url:{} args:{} resp:{} throwable:{} cost:{}ms",
                         point.getSignature(),
                         request != null ? IpUtils.getIpAddr(request) : "null",
                         SecurityUser.getUserId(),
                         request != null ? request.getRequestURL() : "null",
-                        Arrays.toString(point.getArgs()),
+                        Arrays.toString(point.getArgs()),// TODO 方法执行后参数对象的成员变量可能已被修改
                         resp,
+                        throwable,
                         System.currentTimeMillis() - startTime);
             }
         }

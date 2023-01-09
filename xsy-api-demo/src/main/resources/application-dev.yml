@@ -36,8 +36,8 @@ spring:
           config:
             multi-statement-allow: true
 file-storage:
-  local:
-    base-path: 'D:'
+#  local:
+#    base-path: 'D:'
   fastdfs:
     enable: false
 #fastdfs配置
