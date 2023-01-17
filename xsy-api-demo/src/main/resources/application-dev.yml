@@ -9,32 +9,6 @@ spring:
       url: jdbc:mysql://192.168.2.24:3306/web_base_demo?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
       username: root
       password: xiangsuyuan
-      initial-size: 10
-      max-active: 100
-      min-idle: 10
-      max-wait: 6000
-      pool-prepared-statements: true
-      max-pool-prepared-statement-per-connection-size: 20
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
-      #Oracle需要打开注释
-      #      validation-query: SELECT 1 FROM DUAL
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-      stat-view-servlet:
-        enabled: true
-        url-pattern: /druid/*
-        #login-username: admin
-        #login-password: admin
-      filter:
-        stat:
-          log-slow-sql: true
-          slow-sql-millis: 1000
-          merge-sql: false
-        wall:
-          config:
-            multi-statement-allow: true
 file-storage:
 #  local:
 #    base-path: 'D:'
@@ -42,18 +16,6 @@ file-storage:
     enable: false
 #fastdfs配置
 fdfs:
-  # 读取时间
-  soTimeout: 1500
-  # 连接超时时间
-  connectTimeout: 1500
-  # 编码默认UTF-8，charset属性不能自定义
-  # charset: UTF-8
-  # 缩略图
-  thumbImage:
-    # 宽
-    width: 150
-    # 高
-    height: 150
     # tracker列表
   trackerList:
     - 192.168.2.24:22122
