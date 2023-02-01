@@ -24,11 +24,13 @@ public class FileStorageProperties {
         /**
          * 是否启用
          * 依赖存在 且 enable=true则使用fastdfs存储
+         * <pre>{@code
          * <dependency>
-         * <groupId>com.github.tobato</groupId>
-         * <artifactId>fastdfs-client</artifactId>
-         * <version>${fastdfs-client.version}</version>
+         *      <groupId>com.github.tobato</groupId>
+         *      <artifactId>fastdfs-client</artifactId>
+         *      <version>${fastdfs-client.version}</version>
          * </dependency>
+         * }</pre>
          */
         private Boolean enable = true;
     }

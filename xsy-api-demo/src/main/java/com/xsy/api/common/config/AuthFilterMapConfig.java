@@ -19,6 +19,7 @@ public class AuthFilterMapConfig extends BaseAuthFilterMapConfig {
     {
         // smart-doc
         filterMap.put("/doc/**", DefaultFilter.anon.name());
+        filterMap.put("/actuator/**", DefaultFilter.anon.name());
     }
 
     @Override
