@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.util.Date;
@@ -18,17 +19,21 @@ import java.util.Date;
  */
 @Data
 @TableName("sys_config")
+@Entity(name = "sys_config")
 @NoArgsConstructor
 public class SysConfigEntity {
     /**
      * 键
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @TableId(type = IdType.INPUT)
     @NotNull
     private String configKey;
     /**
      * 值
      */
+    @Column(columnDefinition = "text")
     private String configValue;
     /**
      * 备注

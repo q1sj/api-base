@@ -3,7 +3,9 @@ package com.xsy.file.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -12,47 +14,61 @@ import java.util.Date;
  */
 @Data
 @TableName("file_record")
+@Entity(name = "file_record")
 public class FileRecordEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @TableId
     private Long id;
     /**
      * 原始文件名
      */
+    @Column(nullable = false)
     private String name;
     /**
      * 路径 本地存储返回相对路径,其他存储策略返回url或fileId
      */
+    @Column(nullable = false,length = 512)
     private String path;
     /**
      * 文件类型
      */
+    @Column(nullable = false,length = 16)
     private String fileType;
     /**
      * 文件大小
      */
+    @Column(nullable = false)
     private Integer fileSize;
     /**
      * 文件来源
      */
+    @Column(nullable = false,length = 16)
     private String source;
     /**
      * 上传用户id
      */
+    @Column(nullable = false,length = 64)
     private String uploadUserId;
     /**
      * 上传ip
      */
+    @Column(nullable = false)
     private String uploadIp;
+    /**
+     * 摘要
+     */
+    @Column(nullable = false)
+    private String digest;
     /**
      * 过期时间 为空永不过期
      */
     private Date expireTime;
-    /**
-     * 摘要
-     */
-    private String digest;
-
+    @Column(nullable = false)
+    @ColumnDefault("CURRENT_TIMESTAMP(6)")
     private Date createTime;
+
     private Date uploadTime;
+
     private String remark;
 }
