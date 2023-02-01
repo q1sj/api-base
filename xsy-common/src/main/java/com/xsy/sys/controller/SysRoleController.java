@@ -8,20 +8,25 @@
 
 package com.xsy.sys.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xsy.base.enums.AddGroup;
 import com.xsy.base.enums.UpdateGroup;
-import com.xsy.base.util.*;
+import com.xsy.base.pojo.PageQuery;
+import com.xsy.base.util.BizAssertUtils;
+import com.xsy.base.util.PageData;
+import com.xsy.base.util.Result;
+import com.xsy.base.util.ValidatorUtils;
+import com.xsy.sys.dto.RoleListQuery;
 import com.xsy.sys.dto.SysRoleDTO;
 import com.xsy.sys.service.SysRoleMenuService;
 import com.xsy.sys.service.SysRoleService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.groups.Default;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 角色管理
@@ -39,14 +44,13 @@ public class SysRoleController {
     /**
      * 分页查询
      *
-     * @param params
+     * @param query
      * @return
      */
     @GetMapping("page")
     @RequiresPermissions("sys:role:page")
-    public Result<PageData<SysRoleDTO>> page(@RequestParam Map<String, Object> params) {
-        PageData<SysRoleDTO> page = sysRoleService.page(params);
-
+    public Result<PageData<SysRoleDTO>> page(RoleListQuery query) {
+        PageData<SysRoleDTO> page = sysRoleService.page(query);
         return Result.ok(page);
     }
 
@@ -57,16 +61,15 @@ public class SysRoleController {
      */
     @GetMapping("list")
     @RequiresPermissions("sys:role:list")
-    public Result<List<SysRoleDTO>> list() {
-        List<SysRoleDTO> data = sysRoleService.list(new HashMap<>(1));
-
+    public Result<List<SysRoleDTO>> list(RoleListQuery query) {
+        List<SysRoleDTO> data = sysRoleService.list(query);
         return Result.ok(data);
     }
 
     /**
      * 根据id查询
      *
-     * @param id
+     * @param id 角色id
      * @return
      */
     @GetMapping("{id}")

@@ -1,12 +1,14 @@
 package com.xsy.file.service;
 
+import com.xsy.base.util.IOUtils;
 import com.xsy.file.controller.FileRecordController;
+import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
-import org.springframework.web.multipart.MultipartFile;
+import com.xsy.file.entity.UploadFileDTO;
 
-import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
 
 /**
  * @author Q1sj
@@ -16,19 +18,16 @@ public interface FileRecordService {
     /**
      * 上传文件
      * controller demo {@link FileRecordController#upload}
+     *
      * @param file
-     * @param source        数据来源
-     * @param expireMs      文件过期时间
-     * @param maxSize       文件最大阈值 单位:byte
-     * @param fileExtension 合法文件后缀名
      * @return
      * @throws IOException
      */
-    FileRecordEntity upload(MultipartFile file, String source, long expireMs,
-                            long maxSize, List<String> fileExtension) throws IOException;
+    FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException;
 
     /**
      * 保存文件
+     * 容易导致oom 尽量使用{@link #save(InputStream, String, String, String, String, long)}
      *
      * @param data             文件内容
      * @param originalFilename 原始文件名
@@ -38,7 +37,27 @@ public interface FileRecordService {
      * @param expireMs         过期毫秒值
      * @return
      */
-    FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException;
+    default FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(data)) {
+            return save(bis, originalFilename, source, userId, ip, expireMs);
+        }
+    }
+
+    FileRecordEntity save(InputStream data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException;
+
+    /**
+     * 获取文件内容
+     * 容易导致oom 尽量使用{@link #getInputStream(String)}
+     *
+     * @param path {@link FileRecordEntity#getPath()}
+     * @return
+     * @throws IOException
+     */
+    default byte[] getFileBytes(String path) throws IOException {
+        try (InputStream is = getInputStream(path)) {
+            return IOUtils.readFully(is, is.available());
+        }
+    }
 
     /**
      * 获取文件内容
@@ -47,8 +66,16 @@ public interface FileRecordService {
      * @return
      * @throws IOException
      */
-    byte[] getFileBytes(String path) throws IOException;
+    InputStream getInputStream(String path) throws IOException;
 
+    /**
+     * 获取文件内容
+     *
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    FileRecordDTO getFileRecord(String path) throws IOException;
     /**
      * 删除文件
      *

@@ -6,7 +6,7 @@
  * 版权所有，侵权必究！
  */
 
-package com.xsy.security.config;
+package com.xsy.base.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsy.base.util.JsonUtils;

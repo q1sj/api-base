@@ -1,6 +1,8 @@
 package ${package}.${projectName}.${moduleName}.pojo.dto;
 
+import com.xsy.base.pojo.PageQuery;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 #if(${hasBigDecimal})
 import java.math.BigDecimal;
@@ -14,14 +16,7 @@ import java.util.Date;
  * @since ${version} ${date}
  */
 @Data
-public class ${className}Query {
-	/**
-	* 当前页
-	*/
-	private Integer page;
-	/**
-	* 每页条数
-	*/
-	private Integer pageSize;
+@EqualsAndHashCode(callSuper = true)
+public class ${className}Query extends PageQuery{
 	// TODO 添加业务字段
 }

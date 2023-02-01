@@ -17,6 +17,7 @@ import com.xsy.security.user.SecurityUser;
 import com.xsy.security.user.UserDetail;
 import com.xsy.sys.dto.PasswordDTO;
 import com.xsy.sys.dto.SysUserDTO;
+import com.xsy.sys.dto.UserListQuery;
 import com.xsy.sys.service.SysRoleUserService;
 import com.xsy.sys.service.SysUserService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.groups.Default;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户管理
@@ -44,14 +44,13 @@ public class SysUserController {
     /**
      * 分页查询
      *
-     * @param params
+     * @param query
      * @return
      */
     @GetMapping("page")
     @RequiresPermissions("sys:user:page")
-    public Result<PageData<SysUserDTO>> page(@RequestParam Map<String, Object> params) {
-        PageData<SysUserDTO> page = sysUserService.page(params);
-
+    public Result<PageData<SysUserDTO>> page(UserListQuery query) {
+        PageData<SysUserDTO> page = sysUserService.page(query);
         return Result.ok(page);
     }
 
@@ -65,7 +64,9 @@ public class SysUserController {
     @RequiresPermissions("sys:user:info")
     public Result<SysUserDTO> get(@PathVariable("id") Long id) {
         SysUserDTO data = sysUserService.get(id);
-
+        if (data == null) {
+            return Result.error("用户不存在");
+        }
         //用户角色列表
         List<Long> roleIdList = sysRoleUserService.getRoleIdList(id);
         data.setRoleIdList(roleIdList);

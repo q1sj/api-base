@@ -4,25 +4,26 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.util.*;
 import com.xsy.file.dao.FileRecordDao;
+import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
+import com.xsy.file.entity.UploadFileDTO;
 import com.xsy.security.user.SecurityUser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Q1sj
@@ -63,29 +64,36 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     @Override
-    public FileRecordEntity upload(MultipartFile file, String source, long expireMs,
-                                   long maxSize, List<String> fileExtension) throws IOException {
+    public FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException {
+        MultipartFile file = uploadFileDTO.getFile();
         long size = file.getSize();
+        long maxSize = uploadFileDTO.getMaxSize();
         BizAssertUtils.isTrue(size <= maxSize, "文件过大 阈值:" + FileUtils.byteCountToDisplaySize(maxSize) + "实际:" + FileUtils.byteCountToDisplaySize(size));
         String originalFilename = file.getOriginalFilename();
-        BizAssertUtils.isTrue(fileExtension.contains(getFileSuffix(originalFilename)), "后缀名不合法");
-        return save(file.getBytes(), originalFilename, source, Objects.toString(SecurityUser.getUserId()), IpUtils.getIpAddr(request), expireMs);
+        List<String> fileExtension = uploadFileDTO.getFileExtension();
+        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getFileExtName(originalFilename)), "文件类型不合法");
+        try (InputStream is = file.getInputStream()) {
+            return save(is, originalFilename, uploadFileDTO.getSource(), Objects.toString(SecurityUser.getUserId()), IpUtils.getIpAddr(request), uploadFileDTO.getExpireMs());
+        }
     }
 
     @Override
-    public FileRecordEntity save(byte[] data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+    public FileRecordEntity save(InputStream data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+        BizAssertUtils.isNotBlank(source, "source不能为空");
         // 判断source是否包含不允许字符
         illegalCharactersInDirectoryNames.forEach(s -> BizAssertUtils.isFalse(source.contains(s), "source中不允许出现的符号:" + s));
         // 持久化文件
+        int fileSize = data.available();
         String path = fileStorageStrategy.saveFile(data, generateFilename(originalFilename, source), source);
         FileRecordEntity fileRecordEntity = new FileRecordEntity();
         fileRecordEntity.setName(originalFilename);
         fileRecordEntity.setPath(path);
-        fileRecordEntity.setFileType(getFileSuffix(originalFilename));
-        fileRecordEntity.setFileSize(data.length);
+        fileRecordEntity.setFileType(FileUtils.getFileExtName(originalFilename));
+        fileRecordEntity.setFileSize(fileSize);
         fileRecordEntity.setSource(source);
         fileRecordEntity.setUploadUserId(userId);
         fileRecordEntity.setUploadIp(ip);
+        fileRecordEntity.setDigest(fileStorageStrategy.digest(path));
         // expireMs < 0 不过期
         if (expireMs > 0) {
             Date expireTime = new Date(System.currentTimeMillis() + expireMs);
@@ -96,9 +104,28 @@ public class FileRecordServiceImpl implements FileRecordService {
         return fileRecordEntity;
     }
 
+    public FileRecordEntity getRecordByPath(String path) {
+        LambdaQueryWrapper<FileRecordEntity> wrapper = Wrappers.lambdaQuery(FileRecordEntity.class)
+                .eq(FileRecordEntity::getPath, path);
+        return fileRecordDao.selectOne(wrapper);
+    }
+
     @Override
-    public byte[] getFileBytes(String path) throws IOException {
-        return fileStorageStrategy.getFileBytes(path);
+    public FileRecordDTO getFileRecord(String path) throws IOException {
+        FileRecordEntity record = getRecordByPath(path);
+        if (record == null) {
+            throw new FileNotFoundException(path + " 不存在");
+        }
+        InputStream inputStream = fileStorageStrategy.getInputStream(path);
+        FileRecordDTO dto = new FileRecordDTO();
+        BeanUtils.copyProperties(record, dto);
+        dto.setContent(inputStream);
+        return dto;
+    }
+
+    @Override
+    public InputStream getInputStream(String path) throws IOException {
+        return getFileRecord(path).getContent();
     }
 
     @Override
@@ -119,12 +146,13 @@ public class FileRecordServiceImpl implements FileRecordService {
     /**
      * 过期文件记录
      *
+     * @param expireTime 过期时间小于此时间的
      * @return
      */
-    private List<FileRecordEntity> expiredList() {
+    private List<FileRecordEntity> expiredList(Date expireTime) {
         LambdaQueryWrapper<FileRecordEntity> wrapper = Wrappers.lambdaQuery(FileRecordEntity.class)
-                .ne(FileRecordEntity::getRemark, null)
-                .lt(FileRecordEntity::getExpireTime, new Date());
+                .isNull(FileRecordEntity::getRemark)
+                .lt(FileRecordEntity::getExpireTime, expireTime);
         return fileRecordDao.selectList(wrapper);
     }
 
@@ -136,37 +164,15 @@ public class FileRecordServiceImpl implements FileRecordService {
         long start = System.currentTimeMillis();
         log.info("开始删除过期文件...");
         // 删除已过期文件(防止因为重启延迟队列任务丢失)
-        List<FileRecordEntity> expiredList = expiredList();
+        Date now = new Date();
+        List<FileRecordEntity> expiredList = expiredList(now);
         for (FileRecordEntity fileRecordEntity : expiredList) {
             delete(fileRecordEntity.getPath());
         }
         // 24小时内过期文件加入延迟队列
-        LambdaQueryWrapper<FileRecordEntity> wrapper = Wrappers.lambdaQuery(FileRecordEntity.class)
-                .lt(FileRecordEntity::getExpireTime, DateUtils.addHours(new Date(), 24));
-        List<FileRecordEntity> list = this.fileRecordDao.selectList(wrapper);
-        list.forEach(f -> deleteFileDelayQueue.add(new DeleteFileDelayed(f.getPath(), f.getExpireTime())));
+        List<FileRecordEntity> after24HourExpiredList = this.expiredList(DateUtils.addHours(now, 24));
+        after24HourExpiredList.forEach(f -> deleteFileDelayQueue.add(new DeleteFileDelayed(f.getPath(), f.getExpireTime())));
         log.info("结束删除过期文件...耗时:{}ms", System.currentTimeMillis() - start);
-    }
-
-    /**
-     * 获取文件后缀名
-     *
-     * @param fileName
-     * @return
-     */
-    private String getFileSuffix(String fileName) {
-        /**
-         * 未知文件类型
-         */
-        String unknownFileType = "unknown";
-        if (StringUtils.isBlank(fileName)) {
-            return unknownFileType;
-        }
-        String[] split = fileName.split("\\.");
-        if (split.length > 1) {
-            return split[split.length - 1];
-        }
-        return unknownFileType;
     }
 
     /**
@@ -177,25 +183,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return String.format("%s_%s_%s.%s",source,System.currentTimeMillis(),count(),getFileSuffix(originalFilename));
-    }
-
-    private final AtomicInteger accumulator = new AtomicInteger();
-
-    /**
-     * 文件名累加数 防止文件重名
-     *
-     * @return
-     */
-    private int count() {
-        int countMax = 100;
-        int expect = accumulator.get();
-        int update = expect < countMax ? expect + 1 : 1;
-        while (!accumulator.compareAndSet(expect, update)) {
-            expect = accumulator.get();
-            update = expect < countMax ? expect + 1 : 1;
-        }
-        return update;
+        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + FileUtils.getFileExtName(originalFilename);
     }
 
     @AllArgsConstructor

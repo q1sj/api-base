@@ -8,20 +8,21 @@
 
 package com.xsy.sys.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.xsy.base.enums.RenConstant;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.PageData;
+import com.xsy.base.util.StringUtils;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.sys.dao.SysRoleDao;
+import com.xsy.sys.dto.RoleListQuery;
 import com.xsy.sys.dto.SysRoleDTO;
 import com.xsy.sys.entity.SysRoleEntity;
 import com.xsy.sys.service.SysRoleMenuService;
 import com.xsy.sys.service.SysRoleService;
 import com.xsy.sys.service.SysRoleUserService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 角色
@@ -45,29 +45,18 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
 
 
     @Override
-    public PageData<SysRoleDTO> page(Map<String, Object> params) {
+    public PageData<SysRoleDTO> page(RoleListQuery query) {
         IPage<SysRoleEntity> page = baseDao.selectPage(
-                getPage(params, RenConstant.CREATE_DATE, false),
-                getWrapper(params)
+                query.initPage(),
+                getWrapper(query)
         );
-
         return getPageData(page, SysRoleDTO.class);
     }
 
     @Override
-    public List<SysRoleDTO> list(Map<String, Object> params) {
-        List<SysRoleEntity> entityList = baseDao.selectList(getWrapper(params));
-
+    public List<SysRoleDTO> list(RoleListQuery query) {
+        List<SysRoleEntity> entityList = baseDao.selectList(getWrapper(query));
         return ConvertUtils.sourceToTarget(entityList, SysRoleDTO.class);
-    }
-
-    private QueryWrapper<SysRoleEntity> getWrapper(Map<String, Object> params) {
-        String name = (String) params.get("name");
-
-        QueryWrapper<SysRoleEntity> wrapper = new QueryWrapper<>();
-        wrapper.like(StringUtils.isNotBlank(name), "name", name);
-
-        return wrapper;
     }
 
     @Override
@@ -115,4 +104,8 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
         sysRoleMenuService.deleteByRoleIds(ids);
     }
 
+    private LambdaQueryWrapper<SysRoleEntity> getWrapper(RoleListQuery query) {
+        return Wrappers.lambdaQuery(SysRoleEntity.class)
+                .like(StringUtils.isNotBlank(query.getName()), SysRoleEntity::getName, query.getName());
+    }
 }

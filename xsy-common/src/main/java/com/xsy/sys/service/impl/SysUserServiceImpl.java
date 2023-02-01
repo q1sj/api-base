@@ -8,7 +8,9 @@
 
 package com.xsy.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.cache.CacheManagerWrapper;
 import com.xsy.base.cache.CacheWrapper;
 import com.xsy.base.enums.RenConstant;
@@ -19,12 +21,14 @@ import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.password.PasswordUtils;
 import com.xsy.sys.dao.SysUserDao;
 import com.xsy.sys.dto.SysUserDTO;
+import com.xsy.sys.dto.UserListQuery;
 import com.xsy.sys.entity.SysUserEntity;
 import com.xsy.sys.enums.SuperAdminEnum;
 import com.xsy.sys.service.SysRoleUserService;
 import com.xsy.sys.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -33,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -42,6 +45,7 @@ import java.util.Map;
  * @author Mark sunlightcs@gmail.com
  */
 @Service
+@CacheConfig(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME)
 public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEntity> implements SysUserService {
     @Autowired
     private SysRoleUserService sysRoleUserService;
@@ -49,17 +53,10 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     private CacheManagerWrapper cacheManagerWrapper;
 
     @Override
-    public PageData<SysUserDTO> page(Map<String, Object> params) {
-        //转换成like
-        paramsToLike(params, "username");
-
-        //分页
-        IPage<SysUserEntity> page = getPage(params, RenConstant.CREATE_DATE, false);
-
-        //查询
-        List<SysUserEntity> list = baseDao.getList(params);
-
-        return getPageData(list, page.getTotal(), SysUserDTO.class);
+    public PageData<SysUserDTO> page(UserListQuery query) {
+        LambdaQueryWrapper<SysUserEntity> wrapper = getWrapper(query);
+        IPage<SysUserEntity> iPage = baseDao.selectPage(query.initPage(), wrapper);
+        return getPageData(iPage, SysUserDTO.class);
     }
 
     @Override
@@ -75,14 +72,6 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     @Override
-    public List<SysUserDTO> list(Map<String, Object> params) {
-
-        List<SysUserEntity> entityList = baseDao.getList(params);
-
-        return ConvertUtils.sourceToTarget(entityList, SysUserDTO.class);
-    }
-
-    @Override
     public SysUserDTO get(Long id) {
 
         SysUserEntity entity = this.selectById(id);
@@ -91,7 +80,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     @Override
-    @Cacheable(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#id)")
+    @Cacheable(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#id)")
     public SysUserEntity selectById(Serializable id) {
         return baseDao.selectById(id);
     }
@@ -121,7 +110,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
+    @CacheEvict(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
     public void update(SysUserDTO dto) {
         SysUserEntity entity = ConvertUtils.sourceToTarget(dto, SysUserEntity.class);
         // 清除用户权限缓存
@@ -143,7 +132,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     @Override
-    @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
+    @CacheEvict(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
     public void delete(Long[] ids) {
         // 清除用户权限缓存
         CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME);
@@ -165,14 +154,8 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         baseDao.updatePassword(id, newPassword);
     }
 
-    @Override
-    public int getCountByDeptId(Long deptId) {
-        return baseDao.getCountByDeptId(deptId);
+    private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {
+        return Wrappers.lambdaQuery(SysUserEntity.class)
+                .like(StringUtils.isNotBlank(query.getUsername()), SysUserEntity::getUsername, query.getUsername());
     }
-
-    @Override
-    public List<Long> getUserIdListByDeptId(List<Long> deptIdList) {
-        return baseDao.getUserIdListByDeptId(deptIdList);
-    }
-
 }

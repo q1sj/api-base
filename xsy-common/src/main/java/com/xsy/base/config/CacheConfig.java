@@ -10,16 +10,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
+
+/**
+ * 缓存配置
+ *
+ * @author Q1sj
+ */
 @Slf4j
 @Component
 @Configuration
 public class CacheConfig {
     /**
-     * 缓存过期天数
+     * 缓存过期时间
      */
     @Value("${cache.expire:1}")
     private Integer expire;
-    @Value(("${cache.expireTimeUnit:HOUR}"))
+    /**
+     * 缓存过期时间单位
+     */
+    @Value(("${cache.expireTimeUnit:HOURS}"))
     private String expireTimeUnit;
     /**
      * 缓存最大大小
@@ -32,7 +41,7 @@ public class CacheConfig {
      *
      * @return 缓存管理器
      */
-    @Bean("cacheManager")
+    @Bean
     public CacheManager cacheManager() {
         TimeUnit timeUnit = null;
         try {

@@ -13,6 +13,7 @@ package com.xsy.sys.service;
 import com.xsy.base.service.RenBaseService;
 import com.xsy.base.util.PageData;
 import com.xsy.sys.dto.SysUserDTO;
+import com.xsy.sys.dto.UserListQuery;
 import com.xsy.sys.entity.SysUserEntity;
 
 import java.util.List;
@@ -26,9 +27,7 @@ import java.util.Map;
  */
 public interface SysUserService extends RenBaseService<SysUserEntity> {
 
-	PageData<SysUserDTO> page(Map<String, Object> params);
-
-	List<SysUserDTO> list(Map<String, Object> params);
+	PageData<SysUserDTO> page(UserListQuery query);
 
 	SysUserDTO get(Long id);
 
@@ -46,15 +45,5 @@ public interface SysUserService extends RenBaseService<SysUserEntity> {
 	 * @param newPassword  新密码
 	 */
 	void updatePassword(Long id, String newPassword);
-
-	/**
-	 * 根据部门ID，查询用户数
-	 */
-	int getCountByDeptId(Long deptId);
-
-	/**
-	 * 根据部门ID,查询用户Id列表
-	 */
-	List<Long> getUserIdListByDeptId(List<Long> deptIdList);
 
 }

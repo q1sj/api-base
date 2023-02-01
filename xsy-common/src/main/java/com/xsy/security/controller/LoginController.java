@@ -10,6 +10,7 @@ package com.xsy.security.controller;
 
 import com.xsy.base.util.Result;
 import com.xsy.base.util.ValidatorUtils;
+import com.xsy.security.annotation.NoAuth;
 import com.xsy.security.dto.LoginDTO;
 import com.xsy.security.dto.TokenDTO;
 import com.xsy.security.password.PasswordUtils;
@@ -43,6 +44,7 @@ public class LoginController {
      * @param login
      * @return
      */
+    @NoAuth
     @PostMapping(LoginController.LOGIN_MAPPING)
     public Result<TokenDTO> login(@RequestBody LoginDTO login) {
         //效验数据

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 特殊情况忽略统一日志打印
- * {@link PostApiLogAop}
+ * {@link ApiLogAop}
  *
  * @author Q1sj
  * @date 2022.9.22 15:10

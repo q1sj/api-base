@@ -2,8 +2,8 @@ package ${package}.${projectName}.${moduleName}.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import ${package}.base.util.PageData;
 import ${package}.${projectName}.${moduleName}.dao.${className}Dao;
@@ -27,7 +27,7 @@ public class ${className}ServiceImpl extends ServiceImpl<${className}Dao, ${clas
     public PageData<${className}Entity> page(${className}Query query) {
         LambdaQueryWrapper<${className}Entity> wrapper = Wrappers.lambdaQuery(${className}Entity.class);
         // TODO 添加业务逻辑
-        Page<${className}Entity> page = page(new Page<>(query.getPage(), query.getPageSize()), wrapper);
+        IPage<${className}Entity> page = getBaseMapper().selectPage(query.initPage(), wrapper);
         return new PageData<>(page);
     }
 

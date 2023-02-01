@@ -1,5 +1,7 @@
 package com.xsy.base.pojo;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
 
 /**
@@ -8,7 +10,25 @@ import lombok.Data;
  */
 @Data
 public class PageQuery {
-    private Integer page;
+    /**
+     * 默认页码
+     */
+    public static final int DEFAULT_PAGE = 1;
+    /**
+     * 默认每页条数
+     */
+    public static final int DEFAULT_PAGE_SIZE = 10;
 
+    /**
+     * 当前页
+     */
+    private Integer page;
+    /**
+     * 每页条数
+     */
     private Integer pageSize;
+
+    public <T> IPage<T> initPage() {
+        return new Page<>(page == null ? DEFAULT_PAGE : page, pageSize == null ? DEFAULT_PAGE_SIZE : pageSize);
+    }
 }

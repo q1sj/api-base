@@ -305,7 +305,7 @@ public class EventConfigKeyConstant {
 版本号
 发布时间
 新增功能
-增强功能
+优化功能
 bug修复
 开发人员
 服务器部署环境有调整的 记录sh脚本

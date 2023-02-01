@@ -22,11 +22,11 @@ import java.util.Arrays;
 @Slf4j
 @Aspect
 @Component
-public class PostApiLogAop {
+public class ApiLogAop {
     @Autowired(required = false)
     private HttpServletRequest request;
 
-    @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping)")
+    @Pointcut("@annotation(org.springframework.web.bind.annotation.PostMapping) || @annotation(com.xsy.base.log.ApiLog)")
     public void pointcut() {
     }
 
@@ -38,12 +38,24 @@ public class PostApiLogAop {
     public Object around(ProceedingJoinPoint point) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object resp = null;
+        Throwable throwable = null;
         try {
             resp = point.proceed();
             return resp;
+        } catch (Throwable t) {
+            throwable = t;
+            throw t;
         } finally {
             if (log.isInfoEnabled()) {
-                log.info("ip:{} user:{} url:{} args:{} resp:{} cost:{}ms", IpUtils.getIpAddr(request), SecurityUser.getUserId(), request.getRequestURL(), Arrays.toString(point.getArgs()), resp, System.currentTimeMillis() - startTime);
+                log.info("method:{} ip:{} user:{} url:{} args:{} resp:{} throwable:{} cost:{}ms",
+                        point.getSignature(),
+                        request != null ? IpUtils.getIpAddr(request) : "null",
+                        SecurityUser.getUserId(),
+                        request != null ? request.getRequestURL() : "null",
+                        Arrays.toString(point.getArgs()),// TODO 方法执行后参数对象的成员变量可能已被修改
+                        resp,
+                        throwable,
+                        System.currentTimeMillis() - startTime);
             }
         }
     }

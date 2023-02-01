@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 认证
@@ -68,10 +67,13 @@ public class Oauth2Realm extends AuthorizingRealm {
         String accessToken = (String) token.getPrincipal();
 
         //根据accessToken，查询用户信息
+        if (!TokenGenerator.validToken(accessToken)) {
+            throw new IncorrectCredentialsException();
+        }
         SysUserTokenEntity tokenEntity = authService.getByToken(accessToken);
         //token失效
         if (tokenEntity == null || tokenEntity.getExpireDate().getTime() < System.currentTimeMillis()) {
-            throw new IncorrectCredentialsException("token失效");
+            throw new ExpiredCredentialsException();
         }
 
         //查询用户信息
@@ -84,14 +86,7 @@ public class Oauth2Realm extends AuthorizingRealm {
         if (userDetail.getStatus() == UserStatusEnum.DISABLE.value()) {
             throw new LockedAccountException("账号锁定");
         }
-
-        long expireTime = tokenEntity.getExpireDate().getTime();
-        // 剩余时间小于1小时 刷新过期时间
-        long residueMs = TimeUnit.HOURS.toMillis(6);
-        if (expireTime - System.currentTimeMillis() < residueMs) {
-            log.debug("刷新token:{}过期时间", accessToken);
-            sysUserTokenService.refreshExpireDate(accessToken);
-        }
+        sysUserTokenService.refreshExpireDate(tokenEntity);
         return new SimpleAuthenticationInfo(userDetail, accessToken, getName());
     }
 

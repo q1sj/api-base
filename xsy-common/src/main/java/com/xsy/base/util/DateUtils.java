@@ -1,7 +1,9 @@
 package com.xsy.base.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -9,6 +11,9 @@ import java.util.Date;
  * @date 2022.9.7 16:58
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
+
+    public static final ZoneId ZONE_ID = ZoneId.systemDefault();
+
     /**
      * 获取年月日 时分秒毫秒清零
      *
@@ -16,12 +21,19 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return
      */
     public static Date getDate(Date datetime) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            return sdf.parse(sdf.format(datetime));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        return toDate(toLocalDate(datetime));
+    }
+
+    public static int getYear(Date date) {
+        return toZonedDateTime(date).getYear();
+    }
+
+    public static int getMonth(Date date) {
+        return toZonedDateTime(date).getMonthValue();
+    }
+
+    public static int getDayOfMonth(Date date) {
+        return toZonedDateTime(date).getDayOfMonth();
     }
 
     /**
@@ -31,7 +43,27 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return
      */
     public static int getHour(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH");
-        return Integer.parseInt(sdf.format(date));
+        return toZonedDateTime(date).getHour();
+    }
+
+    public static Date toDate(LocalDate localDate) {
+        return toDate(localDate.atStartOfDay());
+    }
+
+    public static Date toDate(LocalDateTime localDateTime) {
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZONE_ID);
+        return Date.from(zonedDateTime.toInstant());
+    }
+
+    private static ZonedDateTime toZonedDateTime(Date date) {
+        return date.toInstant().atZone(ZONE_ID);
+    }
+
+    public static LocalDate toLocalDate(Date date) {
+        return toZonedDateTime(date).toLocalDate();
+    }
+
+    public static LocalDateTime toLocalDateTime(Date date) {
+        return toZonedDateTime(date).toLocalDateTime();
     }
 }
