@@ -125,7 +125,7 @@ public class FileRecordServiceImpl implements FileRecordService {
 
     @Override
     public InputStream getInputStream(String path) throws IOException {
-        return getFileRecord(path).getContent();
+        return fileStorageStrategy.getInputStream(path);
     }
 
     @Override
@@ -135,9 +135,11 @@ public class FileRecordServiceImpl implements FileRecordService {
             fileStorageStrategy.delete(path);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            FileRecordEntity recordEntity = fileRecordDao.selectOne(Wrappers.lambdaQuery(FileRecordEntity.class).eq(FileRecordEntity::getPath, path));
-            recordEntity.setRemark(e.getMessage());
-            fileRecordDao.updateById(recordEntity);
+            FileRecordEntity record = fileRecordDao.selectOne(Wrappers.lambdaQuery(FileRecordEntity.class).eq(FileRecordEntity::getPath, path));
+            if (record != null) {
+                record.setRemark(e.getMessage());
+                fileRecordDao.updateById(record);
+            }
             return false;
         }
         return fileRecordDao.delete(Wrappers.lambdaQuery(FileRecordEntity.class).eq(FileRecordEntity::getPath, path)) > 0;
