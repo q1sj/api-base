@@ -1,5 +1,6 @@
 package com.xsy.base.util;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
@@ -35,14 +36,8 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
      * @param fileName
      * @return
      */
-    public static String getFileExtName(String fileName) {
-        if (StringUtils.isBlank(fileName)) {
-            return "";
-        }
-        String[] split = fileName.split("\\.");
-        if (split.length > 1) {
-            return split[split.length - 1].toLowerCase();
-        }
-        return "";
+    public static String getExtension(String fileName) {
+        String extension = FilenameUtils.getExtension(fileName);
+        return extension == null ? "" : extension;
     }
 }

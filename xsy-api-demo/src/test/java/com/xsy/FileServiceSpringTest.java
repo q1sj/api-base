@@ -1,6 +1,5 @@
 package com.xsy;
 
-import com.xsy.base.util.FileUtils;
 import com.xsy.file.entity.FileRecordEntity;
 import com.xsy.file.service.FileRecordService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +8,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.servlet.ServletOutputStream;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 /**
  * @author Q1sj
@@ -29,7 +30,7 @@ public class FileServiceSpringTest {
     @Test
     public void save() throws IOException {
         File file = new File("C:\\Users\\Q1sj\\Pictures\\1.png");
-        FileRecordEntity recordEntity = fileRecordService.save(new FileInputStream(file), "1.png", "test", "", "", -1);
+        FileRecordEntity recordEntity = fileRecordService.save(Files.newInputStream(file.toPath()), file.length(), "1.png", "test", -1);
     }
 
     @Test
