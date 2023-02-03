@@ -27,16 +27,22 @@ import com.xsy.sys.enums.SuperAdminEnum;
 import com.xsy.sys.service.SysRoleUserService;
 import com.xsy.sys.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -157,5 +163,32 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {
         return Wrappers.lambdaQuery(SysUserEntity.class)
                 .like(StringUtils.isNotBlank(query.getUsername()), SysUserEntity::getUsername, query.getUsername());
+    }
+
+    @Component
+    class UserInit implements CommandLineRunner {
+        @Autowired
+        private JdbcTemplate jdbcTemplate;
+        @Autowired
+        private SysUserDao sysUserDao;
+        Logger log = LoggerFactory.getLogger(getClass());
+
+        @Override
+        public void run(String... args) throws Exception {
+            new Thread(() -> {
+                try {
+                    // 等待jpa初始化表结构
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Long count = sysUserDao.selectCount(Wrappers.emptyWrapper());
+                if (count > 0) {
+                    return;
+                }
+                log.info("初始化管理员用户 用户名/密码:admin");
+                jdbcTemplate.execute("INSERT INTO `sys_user` (id,username,`password`,real_name,head_url,gender,email,mobile,super_admin,`status`,creator,create_date,updater,update_date ) VALUES(1067246875800000001,'admin','$2a$10$012Kx2ba5jzqr9gLlG4MX.bnQJTD9UWqF57XDo2N3.fPtLne02u/m','管理员',NULL,0,'root@renren.io','13612345678',1,1,1067246875800000001,'2022-08-30 10:38:59',1067246875800000001,'2022-08-30 10:38:59' );");
+            }, "user-init").start();
+        }
     }
 }
