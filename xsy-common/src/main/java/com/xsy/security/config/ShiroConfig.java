@@ -17,13 +17,13 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Shiro的配置文件
@@ -53,7 +53,7 @@ public class ShiroConfig {
 
     @Bean("shiroFilter")
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager,
-                                             @Autowired(required = false) BaseAuthFilterMapConfig baseAuthFilterMapConfig,
+                                             Optional<BaseAuthFilterMapConfig> baseAuthFilterMapConfig,
                                              NoAuthScan noAuthScan) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
@@ -62,12 +62,7 @@ public class ShiroConfig {
         Map<String, Filter> filters = new HashMap<>();
         filters.put("oauth2", new Oauth2Filter());
         shiroFilter.setFilters(filters);
-        Map<String, String> filterMap;
-        if (baseAuthFilterMapConfig == null) {
-            filterMap = new HashMap<>();
-        } else {
-            filterMap = baseAuthFilterMapConfig.getFilterMap();
-        }
+        Map<String, String> filterMap =baseAuthFilterMapConfig.map(BaseAuthFilterMapConfig::getFilterMap).orElse(new HashMap<>(1));
         // 注解标注的anon接口地址添加到手动配置中
         filterMap.putAll(noAuthScan.getNoAuthMap());
         filterMap.putIfAbsent("/**", "oauth2");

@@ -15,7 +15,7 @@ server:
         http-only: true
 spring:
   application:
-    name: bay-parking-api
+    name: xsy-base-demo
   # 环境 dev|test|prod
   profiles:
     active: dev

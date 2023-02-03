@@ -1,6 +1,7 @@
 package com.xsy.base.log;
 
 import com.xsy.base.util.FileUtils;
+import com.xsy.base.util.IOUtils;
 import com.xsy.base.util.Result;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,20 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.InputStream;
 import java.net.URLEncoder;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * 日志下载
@@ -69,44 +68,21 @@ public class LogController {
      * 日志下载
      *
      * @param response
-     * @param names    文件名 多个逗号分割
+     * @param name    文件名 多个逗号分割
      */
     @GetMapping("/get")
-    public void get(HttpServletResponse response, @RequestParam String names) {
+    public void get(HttpServletResponse response, @RequestParam String name) {
         File logFile = new File(logFileName);
-        try (ServletOutputStream os = response.getOutputStream()) {
-            List<File> fileList = new ArrayList<>();
-            String delimiter = ",";
-            for (String name : names.split(delimiter)) {
-                String logPath = logFile.getParentFile().getPath() + "/" + name;
-                fileList.add(new File(logPath));
-            }
-            byte[] bytes = zipFile(fileList);
+        String logPath = logFile.getParentFile().getPath() + "/" + name;
+        try (ServletOutputStream os = response.getOutputStream();
+             InputStream is = Files.newInputStream(Paths.get(logPath))) {
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-            response.setContentLength(bytes.length);
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode("log.zip", StandardCharsets.UTF_8.displayName()));
-            os.write(bytes);
+            response.setContentLength(is.available());
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(name, StandardCharsets.UTF_8.displayName()));
+            IOUtils.copy(is, os);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
-    }
-
-    public static byte[] zipFile(List<File> files) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream);
-             WritableByteChannel writableByteChannel = Channels.newChannel(zipOut)) {
-            for (File file : files) {
-                zipOut.putNextEntry(new ZipEntry(file.getName()));
-                //内存中的映射文件
-                RandomAccessFile raFile = new RandomAccessFile(file.getAbsoluteFile(), "r");
-                MappedByteBuffer mappedByteBuffer = raFile.getChannel()
-                        .map(FileChannel.MapMode.READ_ONLY, 0, raFile.length());
-                writableByteChannel.write(mappedByteBuffer);
-            }
-        } catch (Exception e) {
-            log.error("日志文件压缩失败 {}", e.getMessage(), e);
-        }
-        return byteArrayOutputStream.toByteArray();
     }
 
     @Data

@@ -7,7 +7,12 @@ import com.xsy.base.util.IOUtils;
 import com.xsy.base.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,15 +40,12 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
 
     @Override
     public InputStream getInputStream(String path) throws IOException {
-        return new FileInputStream(getAbsolutePath(path));
+        return Files.newInputStream(Paths.get(getAbsolutePath(path)));
     }
 
     @Override
     public String saveFile(InputStream data, String fileName, String source) throws IOException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String dateFormat = sdf.format(new Date());
-        String relativePathPrefix = StringUtils.isNotBlank(source) ? separator + source : "";
-        String relativePath = relativePathPrefix + separator + dateFormat + separator + fileName;
+        String relativePath = getRelativePath(fileName, source);
         String absolutePath = getAbsolutePath(relativePath);
         log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(data.available()), absolutePath);
         File file = new File(absolutePath);
@@ -68,7 +70,29 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         }
     }
 
+    /**
+     * 获取相对路径
+     *
+     * @param fileName
+     * @param source
+     * @return
+     */
+    private String getRelativePath(String fileName, String source) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateFormat = sdf.format(new Date());
+        String relativePathPrefix = StringUtils.isNotBlank(source) ? separator + source : "";
+        // 固定前缀 方便nginx反向代理
+        return "/file-storage" + relativePathPrefix + separator + dateFormat + separator + fileName;
+    }
+
+    /**
+     * 获取绝对路径
+     *
+     * @param relativePath
+     * @return
+     */
     private String getAbsolutePath(String relativePath) {
+        // 删除多余的分隔符
         if (basePath.endsWith(separator)) {
             return relativePath.startsWith(separator)
                     ? basePath + relativePath.substring(1)

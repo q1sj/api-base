@@ -29,7 +29,7 @@ public class TestReadResourceController {
         response.setCharacterEncoding("UTF-8");
         String[] split = path.replace("\\", "/").split("/");
         response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(split[split.length - 1], StandardCharsets.UTF_8.displayName()));
-        try (InputStream is = FileUtils.readClassPathResourceFile(path);
+        try (InputStream is = FileUtils.readResourceFile(path);
              ServletOutputStream os = response.getOutputStream()) {
             IOUtils.copy(is, os);
         }
