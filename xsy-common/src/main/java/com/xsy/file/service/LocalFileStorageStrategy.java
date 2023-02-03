@@ -44,14 +44,14 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
     }
 
     @Override
-    public String saveFile(InputStream data, String fileName, String source) throws IOException {
+    public String saveFile(InputStream data, long size, String fileName, String source) throws IOException {
         String relativePath = getRelativePath(fileName, source);
         String absolutePath = getAbsolutePath(relativePath);
-        log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(data.available()), absolutePath);
         File file = new File(absolutePath);
         FileUtils.forceMkdirParent(file);
         try (FileOutputStream fos = new FileOutputStream(file)) {
-            IOUtils.copy(data, fos);
+            size = IOUtils.copyLarge(data, fos);
+            log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(size), absolutePath);
         }
         return relativePath;
     }

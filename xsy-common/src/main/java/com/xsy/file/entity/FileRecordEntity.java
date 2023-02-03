@@ -15,6 +15,7 @@ import java.util.Date;
 @Data
 @TableName("file_record")
 @Entity(name = "file_record")
+@Table(indexes = {@Index(name = "uk_path", columnList = "path", unique = true)})
 public class FileRecordEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,27 +29,27 @@ public class FileRecordEntity {
     /**
      * 路径 本地存储返回相对路径,其他存储策略返回url或fileId
      */
-    @Column(nullable = false,length = 512)
+    @Column(nullable = false, length = 512)
     private String path;
     /**
      * 文件类型
      */
-    @Column(nullable = false,length = 16)
+    @Column(nullable = false, length = 16)
     private String fileType;
     /**
      * 文件大小
      */
     @Column(nullable = false)
-    private Integer fileSize;
+    private Long fileSize;
     /**
      * 文件来源
      */
-    @Column(nullable = false,length = 16)
+    @Column(nullable = false, length = 16)
     private String source;
     /**
      * 上传用户id
      */
-    @Column(nullable = false,length = 64)
+    @Column(nullable = false, length = 64)
     private String uploadUserId;
     /**
      * 上传ip

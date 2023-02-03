@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
@@ -71,28 +73,32 @@ public class FileRecordServiceImpl implements FileRecordService {
         BizAssertUtils.isTrue(size <= maxSize, "文件过大 阈值:" + FileUtils.byteCountToDisplaySize(maxSize) + "实际:" + FileUtils.byteCountToDisplaySize(size));
         String originalFilename = file.getOriginalFilename();
         List<String> fileExtension = uploadFileDTO.getFileExtension();
-        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getFileExtName(originalFilename)), "文件类型不合法");
+        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getExtension(originalFilename)), "文件类型不合法");
         try (InputStream is = file.getInputStream()) {
-            return save(is, originalFilename, uploadFileDTO.getSource(), Objects.toString(SecurityUser.getUserId()), IpUtils.getIpAddr(request), uploadFileDTO.getExpireMs());
+            return save(is, size, originalFilename, uploadFileDTO.getSource(), uploadFileDTO.getExpireMs());
         }
     }
 
     @Override
-    public FileRecordEntity save(InputStream data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+    public FileRecordEntity save(File file, String source, long expireMs) throws IOException {
+        return save(Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
+    }
+
+    @Override
+    public FileRecordEntity save(InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException {
         BizAssertUtils.isNotBlank(source, "source不能为空");
         // 判断source是否包含不允许字符
         illegalCharactersInDirectoryNames.forEach(s -> BizAssertUtils.isFalse(source.contains(s), "source中不允许出现的符号:" + s));
         // 持久化文件
-        int fileSize = data.available();
-        String path = fileStorageStrategy.saveFile(data, generateFilename(originalFilename, source), source);
+        String path = fileStorageStrategy.saveFile(data, fileSize, generateFilename(originalFilename, source), source);
         FileRecordEntity fileRecordEntity = new FileRecordEntity();
         fileRecordEntity.setName(originalFilename);
         fileRecordEntity.setPath(path);
-        fileRecordEntity.setFileType(FileUtils.getFileExtName(originalFilename));
+        fileRecordEntity.setFileType(FileUtils.getExtension(originalFilename));
         fileRecordEntity.setFileSize(fileSize);
         fileRecordEntity.setSource(source);
-        fileRecordEntity.setUploadUserId(userId);
-        fileRecordEntity.setUploadIp(ip);
+        fileRecordEntity.setUploadUserId(Objects.toString(SecurityUser.getUserId()));
+        fileRecordEntity.setUploadIp(IpUtils.getIpAddr(request));
         fileRecordEntity.setDigest(fileStorageStrategy.digest(path));
         // expireMs < 0 不过期
         if (expireMs > 0) {
@@ -185,7 +191,7 @@ public class FileRecordServiceImpl implements FileRecordService {
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + FileUtils.getFileExtName(originalFilename);
+        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + FileUtils.getExtension(originalFilename);
     }
 
     @AllArgsConstructor

@@ -68,7 +68,7 @@ public class LogController {
      * 日志下载
      *
      * @param response
-     * @param name    文件名 多个逗号分割
+     * @param name     文件名
      */
     @GetMapping("/get")
     public void get(HttpServletResponse response, @RequestParam String name) {
