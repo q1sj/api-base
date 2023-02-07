@@ -82,42 +82,4 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     public void del(BaseKey<?> key) {
         removeById(key.getKey());
     }
-
-    //demo
-    /*
-    public static void main(String[] args) throws Exception {
-
-        SysConfigServiceImpl service = new SysConfigServiceImpl();
-        service.put(ConfigKeyConstant.INT_DEMO, 123);
-        Integer a = service.get(ConfigKeyConstant.INT_DEMO);
-        service.put(ConfigKeyConstant.BOOLEAN_DEMO, true);
-        Boolean b = service.get(ConfigKeyConstant.BOOLEAN_DEMO);
-        service.put(ConfigKeyConstant.STR_DEMO, "aaaaa");
-        String s = service.get(ConfigKeyConstant.STR_DEMO);
-        SysUserDTO u = new SysUserDTO();
-        u.setId(9999L);
-        service.put(ConfigKeyConstant.OBJ_DEMO, u);
-        SysUserDTO userDTO = service.get(ConfigKeyConstant.OBJ_DEMO);
-        Boolean d = service.get(ConfigKeyConstant.DEFAULT_VAL_DEMO);
-        Boolean d2 = service.get(ConfigKeyConstant.DEFAULT_VAL_DEMO);
-        service.put(ConfigKeyConstant.LIST_DEMO, Arrays.asList(1, 2, 3));
-        List<Integer> l = service.get(ConfigKeyConstant.LIST_DEMO);
-        service.put(ConfigKeyConstant.getDynamicKey("1"), "d1");
-        service.put(ConfigKeyConstant.getDynamicKey("2"), "d2");
-        String d1 = service.get(ConfigKeyConstant.getDynamicKey("1"));
-    }
-
-    public static class ConfigKeyConstant {
-        // demo
-        public static final IntConfigKey INT_DEMO = new IntConfigKey("i");
-        public static final BooleanConfigKey BOOLEAN_DEMO = new BooleanConfigKey("b");
-        public static final StringConfigKey STR_DEMO = new StringConfigKey("s");
-        public static final BooleanConfigKey DEFAULT_VAL_DEMO = new BooleanConfigKey("d", false);
-        public static final ObjectConfigKey<SysUserDTO> OBJ_DEMO = new ObjectConfigKey<>("u", SysUserDTO.class);
-        public static final ListConfigKey<Integer> LIST_DEMO = new ListConfigKey<>("l", Integer.class);
-
-        public static StringConfigKey getDynamicKey(String keyPrefix) {
-            return new StringConfigKey(keyPrefix + "dynamicKey");
-        }
-    }*/
 }

@@ -11,6 +11,15 @@ public abstract class BaseKey<T> {
     @Nullable
     private T defaultValue;
 
+    public BaseKey(String key) {
+        this.key = key;
+    }
+
+    public BaseKey(String key, @Nullable T defaultValue) {
+        this.key = key;
+        this.defaultValue = defaultValue;
+    }
+
     /**
      * val对象转换为string
      *
@@ -49,15 +58,6 @@ public abstract class BaseKey<T> {
      */
     protected abstract T deserializationNotNull(String val);
 
-    public BaseKey(String key) {
-        this.key = key;
-    }
-
-    public BaseKey(String key, @Nullable T defaultValue) {
-        this.key = key;
-        this.defaultValue = defaultValue;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,5 +70,13 @@ public abstract class BaseKey<T> {
     @Override
     public int hashCode() {
         return Objects.hash(key, defaultValue);
+    }
+
+    @Override
+    public String toString() {
+        return "BaseKey{" +
+                "key='" + key + '\'' +
+                ", defaultValue=" + defaultValue +
+                '}';
     }
 }
