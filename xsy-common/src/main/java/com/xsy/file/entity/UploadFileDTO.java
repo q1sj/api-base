@@ -3,6 +3,7 @@ package com.xsy.file.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -36,6 +37,7 @@ public class UploadFileDTO {
     /**
      * 合法文件后缀名
      */
+    @Nullable
     private List<String> fileExtension;
 
 }

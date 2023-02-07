@@ -1,6 +1,7 @@
 package com.xsy.file.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
@@ -71,5 +72,10 @@ public class FileRecordEntity {
 
     private Date uploadTime;
 
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    @TableLogic
+    private Boolean isDelete;
+    @Column(length = 2048)
     private String remark;
 }

@@ -42,9 +42,9 @@ public class FastDfsFileStorageStrategy implements FileStorageStrategy {
     }
 
     @Override
-    public String saveFile(InputStream data, long size, String fileName, String source) throws IOException {
+    public String saveFile(InputStream data, long length, String fileName, String source) throws IOException {
         try (InputStream is = data) {
-            StorePath storePath = fastFileStorageClient.uploadFile(is, size, FileUtils.getExtension(fileName), null);
+            StorePath storePath = fastFileStorageClient.uploadFile(is, length, FileUtils.getExtension(fileName), null);
             return storePath.getFullPath();
         } catch (FdfsException e) {
             throw new IOException(e);

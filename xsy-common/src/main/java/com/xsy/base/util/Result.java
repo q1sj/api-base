@@ -79,8 +79,12 @@ public class Result<T> {
     }
 
     public static <T> Result<T> error(Exception e) {
+        return error(FAIL_MSG, e);
+    }
+
+    public static <T> Result<T> error(String msg, Exception e) {
         Objects.requireNonNull(e);
-        Result<T> result = new Result<>(FAIL_CODE, FAIL_MSG);
+        Result<T> result = new Result<>(FAIL_CODE, msg);
         result.setException(e.getClass().getName());
         return result;
     }

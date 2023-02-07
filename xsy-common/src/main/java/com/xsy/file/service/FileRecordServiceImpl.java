@@ -34,16 +34,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 public class FileRecordServiceImpl implements FileRecordService {
+    private final List<String> illegalCharactersInDirectoryNames = Arrays.asList("*", ".", "\"", "[", "]", ":", ";", "|", "=");
+    private final FileRecordDao fileRecordDao;
+    private final FileStorageStrategy fileStorageStrategy;
+    private final DelayQueue<DeleteFileDelayed> deleteFileDelayQueue = new DelayQueue<>();
     @Autowired(required = false)
     private HttpServletRequest request;
-
-    private final List<String> illegalCharactersInDirectoryNames = Arrays.asList("*", ".", "\"", "[", "]", ":", ";", "|", "=");
-
-    private final FileRecordDao fileRecordDao;
-
-    private final FileStorageStrategy fileStorageStrategy;
-
-    private final DelayQueue<DeleteFileDelayed> deleteFileDelayQueue = new DelayQueue<>();
 
     {
         String threadName = "delete-file-thread";
@@ -67,6 +63,7 @@ public class FileRecordServiceImpl implements FileRecordService {
 
     @Override
     public FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException {
+        Objects.requireNonNull(uploadFileDTO.getFile());
         MultipartFile file = uploadFileDTO.getFile();
         long size = file.getSize();
         long maxSize = uploadFileDTO.getMaxSize();
@@ -137,18 +134,21 @@ public class FileRecordServiceImpl implements FileRecordService {
     @Override
     public boolean delete(String path) {
         log.info("delete {}", path);
+        FileRecordEntity record = this.getRecordByPath(path);
+        if (record == null) {
+            log.warn("path:{} 不存在", path);
+            return false;
+        }
         try {
             fileStorageStrategy.delete(path);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            FileRecordEntity record = fileRecordDao.selectOne(Wrappers.lambdaQuery(FileRecordEntity.class).eq(FileRecordEntity::getPath, path));
-            if (record != null) {
-                record.setRemark(e.getMessage());
-                fileRecordDao.updateById(record);
-            }
-            return false;
+            record.setIsDelete(true);
+            record.setRemark(e.getClass().getName() + ":" + e.getMessage());
+            fileRecordDao.updateById(record);
+            return true;
         }
-        return fileRecordDao.delete(Wrappers.lambdaQuery(FileRecordEntity.class).eq(FileRecordEntity::getPath, path)) > 0;
+        return fileRecordDao.deleteById(record.getId()) > 0;
     }
 
     /**

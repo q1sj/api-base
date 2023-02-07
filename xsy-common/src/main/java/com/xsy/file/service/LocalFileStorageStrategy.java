@@ -7,10 +7,7 @@ import com.xsy.base.util.IOUtils;
 import com.xsy.base.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -44,14 +41,14 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
     }
 
     @Override
-    public String saveFile(InputStream data, long size, String fileName, String source) throws IOException {
+    public String saveFile(InputStream data, long length, String fileName, String source) throws IOException {
         String relativePath = getRelativePath(fileName, source);
         String absolutePath = getAbsolutePath(relativePath);
         File file = new File(absolutePath);
         FileUtils.forceMkdirParent(file);
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            size = IOUtils.copyLarge(data, fos);
-            log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(size), absolutePath);
+        try (OutputStream os = Files.newOutputStream(file.toPath())) {
+            IOUtils.copyLarge(data, os, 0, length, new byte[(int) FileUtils.ONE_MB]);
+            log.info("写入文件 size:{} path:{}", FileUtils.byteCountToDisplaySize(length), absolutePath);
         }
         return relativePath;
     }
@@ -62,8 +59,7 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         log.info("删除文件 path:{}", path);
         File file = new File(path);
         if (!file.exists()) {
-            log.warn("{}文件不存在", path);
-            return;
+            throw new FileNotFoundException(path);
         }
         if (!file.delete()) {
             throw new IOException(path + "删除失败");

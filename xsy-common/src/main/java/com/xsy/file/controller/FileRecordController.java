@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -34,11 +33,13 @@ import java.util.concurrent.TimeUnit;
 @RestController
 public class FileRecordController {
     public static final String REQUEST_MAPPING = "/file";
+    public static final String DOWNLOAD_MAPPING = "/download";
     @Autowired
     private FileRecordService fileRecordService;
 
     /**
      * 上传文件 demo
+     * <p>
      * 根据具体业务单独编写接口 设置文件大小阈值,合法后缀名
      *
      * @param file
@@ -61,8 +62,6 @@ public class FileRecordController {
             return Result.error("上传失败");
         }
     }
-
-    public static final String DOWNLOAD_MAPPING = "/download";
 
     /**
      * 下载文件

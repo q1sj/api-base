@@ -24,7 +24,7 @@ public class IpUtils {
         if (request == null) {
             return unknown;
         }
-        String ip = null;
+        String ip = unknown;
         try {
             ip = request.getHeader("x-forwarded-for");
             if (StringUtils.isEmpty(ip) || unknown.equalsIgnoreCase(ip)) {
