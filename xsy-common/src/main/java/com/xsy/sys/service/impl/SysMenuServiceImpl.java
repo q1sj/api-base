@@ -131,7 +131,7 @@ public class SysMenuServiceImpl extends RenBaseServiceImpl<SysMenuDao, SysMenuEn
     }
 
     @Component
-    class MenuInit implements CommandLineRunner {
+    static class MenuInit implements CommandLineRunner {
         Logger log = LoggerFactory.getLogger(getClass());
 
         String[] sqls = {
@@ -176,7 +176,7 @@ public class SysMenuServiceImpl extends RenBaseServiceImpl<SysMenuDao, SysMenuEn
                     log.info("{}", sql);
                     jdbcTemplate.execute(sql);
                 }
-            }, "init-menu").start();
+            }, "menu-init").start();
         }
     }
 }

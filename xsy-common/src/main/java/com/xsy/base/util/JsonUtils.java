@@ -10,7 +10,9 @@ import com.xsy.base.exception.GlobalException;
 import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * JSON 工具类
@@ -18,11 +20,10 @@ import java.util.*;
  * @author Mark sunlightcs@gmail.com
  */
 public class JsonUtils {
-    private static final ObjectMapper objectMapper;
+    private static final ObjectMapper OBJECT_MAPPER;
 
     static {
-        objectMapper = new ObjectMapper();
-        init(objectMapper);
+        OBJECT_MAPPER = init(new ObjectMapper());
     }
 
     public static ObjectMapper init(ObjectMapper objectMapper) {
@@ -43,18 +44,15 @@ public class JsonUtils {
 
     public static String toJsonString(Object object) {
         try {
-            return objectMapper.writeValueAsString(object);
+            return OBJECT_MAPPER.writeValueAsString(object);
         } catch (Exception e) {
             throw new GlobalException("json序列化失败", e);
         }
     }
 
     public static <T> T parseObject(String text, Class<T> clazz) {
-        if (StringUtils.isEmpty(text)) {
-            return null;
-        }
         try {
-            return objectMapper.readValue(text, clazz);
+            return OBJECT_MAPPER.readValue(text, clazz);
         } catch (Exception e) {
             throw new GlobalException("json反序列化失败", e);
         }
@@ -62,7 +60,7 @@ public class JsonUtils {
 
     public static <T> T parseObject(String text, TypeReference<T> typeReference) {
         try {
-            return objectMapper.readValue(text, typeReference);
+            return OBJECT_MAPPER.readValue(text, typeReference);
         } catch (Exception e) {
             throw new GlobalException("json反序列化失败", e);
         }
@@ -73,7 +71,7 @@ public class JsonUtils {
             return new ArrayList<>();
         }
         try {
-            return objectMapper.readValue(text, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (Exception e) {
             throw new GlobalException("json反序列化失败", e);
         }

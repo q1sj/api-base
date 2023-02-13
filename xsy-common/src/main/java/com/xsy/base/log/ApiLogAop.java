@@ -39,6 +39,7 @@ public class ApiLogAop {
         long startTime = System.currentTimeMillis();
         Object resp = null;
         Throwable throwable = null;
+        String argsStr = Arrays.toString(point.getArgs());
         try {
             resp = point.proceed();
             return resp;
@@ -52,7 +53,7 @@ public class ApiLogAop {
                         request != null ? IpUtils.getIpAddr(request) : "null",
                         SecurityUser.getUserId(),
                         request != null ? request.getRequestURL() : "null",
-                        Arrays.toString(point.getArgs()),// TODO 方法执行后参数对象的成员变量可能已被修改
+                        argsStr,
                         resp,
                         throwable,
                         System.currentTimeMillis() - startTime);

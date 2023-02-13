@@ -13,7 +13,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.cache.CacheManagerWrapper;
 import com.xsy.base.cache.CacheWrapper;
-import com.xsy.base.enums.RenConstant;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.PageData;
@@ -166,7 +165,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     @Component
-    class UserInit implements CommandLineRunner {
+    static class UserInit implements CommandLineRunner {
         @Autowired
         private JdbcTemplate jdbcTemplate;
         @Autowired
@@ -175,6 +174,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
         @Override
         public void run(String... args) throws Exception {
+
             new Thread(() -> {
                 try {
                     // 等待jpa初始化表结构

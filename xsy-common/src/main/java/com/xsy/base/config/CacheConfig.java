@@ -66,27 +66,12 @@ public class CacheConfig {
         return cacheManager;
     }
 
-    private long expireMs() {
-        TimeUnit timeUnit = null;
-        try {
-            timeUnit = TimeUnit.valueOf(expireTimeUnit);
-        } catch (IllegalArgumentException e) {
-            timeUnit = TimeUnit.HOURS;
-            expire = 1;
-            log.warn("expireTimeUnit:{}无效 使用默认过期时间{} {}", expireTimeUnit, expire, timeUnit.name());
-        }
-        return timeUnit.toMillis(expire);
-    }
-
+    /**
+     * redis
+     */
     @Configuration
     @ConditionalOnClass(RedisCacheManager.class)
     class RedisConfig {
-        /**
-         * redis
-         *
-         * @param factory
-         * @return
-         */
         @Bean
         public CacheManager redisCacheManager(ObjectProvider<RedisConnectionFactory> factory) {
             log.info("init redisCacheManager...");
@@ -102,5 +87,20 @@ public class CacheConfig {
                     .cacheDefaults(cacheConfiguration)
                     .build();
         }
+    }
+
+    /**
+     * 缓存过期时间
+     */
+    private long expireMs() {
+        TimeUnit timeUnit = null;
+        try {
+            timeUnit = TimeUnit.valueOf(expireTimeUnit);
+        } catch (IllegalArgumentException e) {
+            timeUnit = TimeUnit.HOURS;
+            expire = 1;
+            log.warn("expireTimeUnit:{}无效 使用默认过期时间{} {}", expireTimeUnit, expire, timeUnit.name());
+        }
+        return timeUnit.toMillis(expire);
     }
 }

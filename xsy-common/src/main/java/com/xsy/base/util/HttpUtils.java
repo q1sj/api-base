@@ -27,15 +27,14 @@ public class HttpUtils {
             new LinkedBlockingQueue<>(10),
             new CustomizableThreadFactory("async-http-"),
             new ThreadPoolExecutor.CallerRunsPolicy());
-
-    private static RestTemplate restTemplate;
+    private static RestTemplate restTemplate = new RestTemplate();
 
     public HttpUtils(RestTemplate restTemplate) {
+        // Spring实例化 覆盖默认restTemplate
         HttpUtils.restTemplate = restTemplate;
     }
 
     public static <T> T exchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) throws GlobalException {
-        BizAssertUtils.isNotNull(restTemplate, "restTemplate未初始化");
         BizAssertUtils.isNotBlank(url, "url不能为空");
         BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
         BizAssertUtils.isNotNull(respType, "respType不能为空");
@@ -55,47 +54,6 @@ public class HttpUtils {
     }
 
     public static <T> Future<T> asyncExchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) {
-        return new Future<>(THREAD_POOL.submit(() -> exchange(url, httpMethod, body, respType)));
-    }
-
-    public static class Future<V> implements java.util.concurrent.Future<V> {
-        java.util.concurrent.Future<V> d;
-
-        public Future(java.util.concurrent.Future<V> future) {
-            this.d = future;
-        }
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return d.cancel(mayInterruptIfRunning);
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return d.isCancelled();
-        }
-
-        @Override
-        public boolean isDone() {
-            return d.isDone();
-        }
-
-        @Override
-        public V get() {
-            try {
-                return d.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new GlobalException(e.getMessage(), e);
-            }
-        }
-
-        @Override
-        public V get(long timeout, TimeUnit unit) {
-            try {
-                return d.get(timeout, unit);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                throw new GlobalException(e.getMessage(), e);
-            }
-        }
+        return THREAD_POOL.submit(() -> exchange(url, httpMethod, body, respType));
     }
 }

@@ -10,6 +10,7 @@ package com.xsy.base.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xsy.base.util.JsonUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -19,12 +20,20 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+    @Autowired
+    private TraceHandlerInterceptor traceHandlerInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(traceHandlerInterceptor).addPathPatterns("/**");
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -41,8 +50,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         converters.add(new StringHttpMessageConverter());
         converters.add(new ResourceHttpMessageConverter());
         converters.add(new AllEncompassingFormHttpMessageConverter());
-        converters.add(new StringHttpMessageConverter());
-//        converters.add(jackson2HttpMessageConverter());
     }
 
     @Bean

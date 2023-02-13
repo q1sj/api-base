@@ -143,10 +143,8 @@ public class FileRecordServiceImpl implements FileRecordService {
             fileStorageStrategy.delete(path);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            record.setIsDelete(true);
             record.setRemark(e.getClass().getName() + ":" + e.getMessage());
             fileRecordDao.updateById(record);
-            return true;
         }
         return fileRecordDao.deleteById(record.getId()) > 0;
     }

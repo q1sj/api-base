@@ -45,6 +45,8 @@ public class Result<T> {
      */
     private Long timestamp;
 
+    private String traceId;
+
     public Result() {
     }
 
