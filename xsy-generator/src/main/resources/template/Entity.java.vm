@@ -31,6 +31,6 @@ public class ${className}Entity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @TableId
 #end
-	private $column.attrType $column.attrname;
+    private $column.attrType $column.attrname;
 #end
 }
