@@ -1,4 +1,4 @@
-package ${package}.${projectName}.${moduleName}. pojo.po;
+package ${package}.${projectName}.${moduleName}.pojo.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -22,15 +22,15 @@ import javax.persistence.*;
 @Entity(name = "${tableName}")
 public class ${className}Entity {
 
-    #foreach ($column in $columns)
-        /**
-         * $column.comments
-         */
-        #if($column.columnName == $pk.columnName)
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @TableId
-        #end
+#foreach ($column in $columns)
+    /**
+     * $column.comments
+     */
+#if($column.columnName == $pk.columnName)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId
+#end
 	private $column.attrType $column.attrname;
 #end
 }
