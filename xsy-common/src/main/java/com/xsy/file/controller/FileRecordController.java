@@ -1,5 +1,6 @@
 package com.xsy.file.controller;
 
+import com.xsy.base.exception.GlobalException;
 import com.xsy.base.util.FileUtils;
 import com.xsy.base.util.IOUtils;
 import com.xsy.base.util.Result;
@@ -81,8 +82,14 @@ public class FileRecordController {
                 IOUtils.copy(is, os);
             }
         } catch (IOException e) {
-            log.warn("文件下载失败", e);
+            throw new GlobalException("文件下载失败 " + path, e);
         }
+    }
+
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestParam String path) {
+        boolean delete = fileRecordService.delete(path);
+        return delete ? Result.ok() : Result.error("删除失败");
     }
 }
 

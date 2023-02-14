@@ -64,6 +64,8 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         if (!file.delete()) {
             throw new IOException(path + "删除失败");
         }
+        // 如果父目录为空 删除
+        file.getParentFile().delete();
     }
 
     /**

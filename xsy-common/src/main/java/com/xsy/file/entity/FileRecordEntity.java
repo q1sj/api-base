@@ -57,6 +57,8 @@ public class FileRecordEntity {
      */
     @Column(nullable = false)
     private String uploadIp;
+
+    private Date uploadTime;
     /**
      * 摘要
      */
@@ -69,8 +71,6 @@ public class FileRecordEntity {
     @Column(nullable = false)
     @ColumnDefault("CURRENT_TIMESTAMP(6)")
     private Date createTime;
-
-    private Date uploadTime;
 
     @Column(nullable = false)
     @ColumnDefault("0")

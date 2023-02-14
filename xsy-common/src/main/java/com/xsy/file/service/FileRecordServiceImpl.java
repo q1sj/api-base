@@ -2,13 +2,15 @@ package com.xsy.file.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.xsy.base.util.*;
+import com.xsy.base.util.BizAssertUtils;
+import com.xsy.base.util.CollectionUtils;
+import com.xsy.base.util.FileUtils;
+import com.xsy.base.util.IpUtils;
 import com.xsy.file.dao.FileRecordDao;
 import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
 import com.xsy.file.entity.UploadFileDTO;
 import com.xsy.security.user.SecurityUser;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Q1sj
@@ -37,24 +36,9 @@ public class FileRecordServiceImpl implements FileRecordService {
     private final List<String> illegalCharactersInDirectoryNames = Arrays.asList("*", ".", "\"", "[", "]", ":", ";", "|", "=");
     private final FileRecordDao fileRecordDao;
     private final FileStorageStrategy fileStorageStrategy;
-    private final DelayQueue<DeleteFileDelayed> deleteFileDelayQueue = new DelayQueue<>();
+
     @Autowired(required = false)
     private HttpServletRequest request;
-
-    {
-        String threadName = "delete-file-thread";
-        log.info("init {}", threadName);
-        new Thread(() -> {
-            while (true) {
-                try {
-                    DeleteFileDelayed deleteFileDelayed = deleteFileDelayQueue.take();
-                    this.delete(deleteFileDelayed.path);
-                } catch (InterruptedException e) {
-                    log.warn(e.getMessage(), e);
-                }
-            }
-        }, threadName).start();
-    }
 
     public FileRecordServiceImpl(FileRecordDao fileRecordDao, FileStorageStrategy fileStorageStrategy) {
         this.fileRecordDao = fileRecordDao;
@@ -96,6 +80,7 @@ public class FileRecordServiceImpl implements FileRecordService {
         fileRecordEntity.setSource(source);
         fileRecordEntity.setUploadUserId(Objects.toString(SecurityUser.getUserId()));
         fileRecordEntity.setUploadIp(IpUtils.getIpAddr(request));
+        fileRecordEntity.setUploadTime(new Date());
         fileRecordEntity.setDigest(fileStorageStrategy.digest(path));
         // expireMs < 0 不过期
         if (expireMs > 0) {
@@ -165,20 +150,20 @@ public class FileRecordServiceImpl implements FileRecordService {
     /**
      * 定时删除过期
      */
-    @Scheduled(cron = "${file.delete-task.cron:0 0 1 * * ?}")
+    @Scheduled(cron = "${file.delete-task.cron:0 1 * * * ?}")
     public void deleteTask() {
         long start = System.currentTimeMillis();
         log.info("开始删除过期文件...");
-        // 删除已过期文件(防止因为重启延迟队列任务丢失)
         Date now = new Date();
         List<FileRecordEntity> expiredList = expiredList(now);
+        int deleteFileCount = 0;
         for (FileRecordEntity fileRecordEntity : expiredList) {
-            delete(fileRecordEntity.getPath());
+            boolean delete = delete(fileRecordEntity.getPath());
+            if (delete) {
+                deleteFileCount++;
+            }
         }
-        // 24小时内过期文件加入延迟队列
-        List<FileRecordEntity> after24HourExpiredList = this.expiredList(DateUtils.addHours(now, 24));
-        after24HourExpiredList.forEach(f -> deleteFileDelayQueue.add(new DeleteFileDelayed(f.getPath(), f.getExpireTime())));
-        log.info("结束删除过期文件...耗时:{}ms", System.currentTimeMillis() - start);
+        log.info("结束删除过期文件...删除:{}个文件 耗时:{}ms", deleteFileCount, System.currentTimeMillis() - start);
     }
 
     /**
@@ -190,23 +175,5 @@ public class FileRecordServiceImpl implements FileRecordService {
      */
     private String generateFilename(String originalFilename, String source) {
         return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + FileUtils.getExtension(originalFilename);
-    }
-
-    @AllArgsConstructor
-    private static class DeleteFileDelayed implements Delayed {
-
-        private final String path;
-        private final Date expireTime;
-
-        @Override
-        public long getDelay(TimeUnit unit) {
-            return unit.convert(expireTime.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-        }
-
-        @Override
-        public int compareTo(Delayed o) {
-            TimeUnit timeUnit = TimeUnit.MILLISECONDS;
-            return Long.compare(this.getDelay(timeUnit), o.getDelay(timeUnit));
-        }
     }
 }

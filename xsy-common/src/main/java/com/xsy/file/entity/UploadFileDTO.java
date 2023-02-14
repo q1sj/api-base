@@ -1,5 +1,6 @@
 package com.xsy.file.entity;
 
+import com.xsy.base.util.FileUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Q1sj
@@ -29,11 +31,11 @@ public class UploadFileDTO {
     /**
      * 文件过期时间
      */
-    private long expireMs;
+    private long expireMs = TimeUnit.DAYS.toMillis(1);
     /**
      * 文件最大阈值 单位:byte
      */
-    private long maxSize;
+    private long maxSize = FileUtils.ONE_GB;
     /**
      * 合法文件后缀名
      */
