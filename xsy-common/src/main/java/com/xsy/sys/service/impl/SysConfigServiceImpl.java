@@ -12,11 +12,13 @@ import com.xsy.sys.entity.SysConfigEntity;
 import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.function.Supplier;
 
 /**
@@ -29,6 +31,9 @@ import java.util.function.Supplier;
 public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEntity> implements SysConfigService {
 
     static final String CACHE_NAME = "sys_config";
+
+    @Autowired
+    private SysConfigServiceImpl _this;
 
     @Override
     public PageData<SysConfigEntity> list(String configKey, int page, int pageSize) {
@@ -52,15 +57,12 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
-    @Cacheable(key = "#key.getKey()")
     public <T> T get(BaseKey<T> key) {
-        log.debug("select {}", key);
-        SysConfigEntity entity = getById(key.getKey());
+        SysConfigEntity entity = _this.getById(key.getKey());
         return entity != null ? key.deserialization(entity.getConfigValue()) : key.getDefaultValue();
     }
 
     @Override
-    @Cacheable(key = "#key.getKey()")
     public <T> T get(BaseKey<T> key, Supplier<T> valueLoad) {
         T val = get(key);
         if (val != null) {
@@ -81,5 +83,12 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     @CacheEvict(key = "#key.getKey()")
     public void del(BaseKey<?> key) {
         removeById(key.getKey());
+    }
+
+    @Override
+    @Cacheable(key = "#id")
+    public SysConfigEntity getById(Serializable id) {
+        log.debug("select id:{}", id);
+        return super.getById(id);
     }
 }

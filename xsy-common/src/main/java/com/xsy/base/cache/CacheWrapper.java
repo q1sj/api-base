@@ -33,7 +33,14 @@ public class CacheWrapper implements Cache {
     @Nullable
     public <T> T get(BaseKey<T> key) {
         Cache.ValueWrapper valueWrapper = cache.get(key.getKey());
-        return valueWrapper != null ? (T) valueWrapper.get() : null;
+        if (valueWrapper == null || valueWrapper.get() == null) {
+            return null;
+        }
+        // 修复redis Jackson2JsonRedisSerializer 序列化long 反序列化变为int
+        if (valueWrapper.get() instanceof Number) {
+            return key.deserialization(valueWrapper.get().toString());
+        }
+        return (T) valueWrapper.get();
     }
 
     @Nullable
