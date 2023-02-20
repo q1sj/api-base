@@ -13,9 +13,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.cache.CacheManagerWrapper;
 import com.xsy.base.cache.CacheWrapper;
+import com.xsy.base.exception.GlobalException;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.PageData;
+import com.xsy.security.dto.LoginDTO;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.password.PasswordUtils;
 import com.xsy.sys.dao.SysUserDao;
@@ -23,11 +25,13 @@ import com.xsy.sys.dto.SysUserDTO;
 import com.xsy.sys.dto.UserListQuery;
 import com.xsy.sys.entity.SysUserEntity;
 import com.xsy.sys.enums.SuperAdminEnum;
+import com.xsy.sys.enums.UserStatusEnum;
 import com.xsy.sys.service.SysRoleUserService;
 import com.xsy.sys.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.annotation.CacheConfig;
@@ -157,6 +161,33 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         newPassword = PasswordUtils.encode(newPassword);
 
         baseDao.updatePassword(id, newPassword);
+    }
+
+    @Override
+    public SysUserDTO validLogin(LoginDTO login) throws GlobalException {
+        // 根据用户名获取用户
+        //用户信息
+        SysUserEntity user = baseDao.getByUsername(login.getUsername());
+        if (user == null) {
+            throw new GlobalException("用户名或密码错误");
+        }
+        //账号停用
+        if (userIsDisable(user)) {
+            throw new GlobalException("账户锁定");
+        }
+        // 密码错误
+        if (!PasswordUtils.matches(login.getPassword(), user.getPassword())) {
+            // TODO 密码连续错误锁定账号
+            throw new GlobalException("用户名或密码错误");
+        }
+        SysUserDTO dto = new SysUserDTO();
+        BeanUtils.copyProperties(user, dto);
+        return dto;
+    }
+
+    public boolean userIsDisable(SysUserEntity user) {
+        // TODO 加入锁定过期时间
+        return user.getStatus() == UserStatusEnum.DISABLE.value();
     }
 
     private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {

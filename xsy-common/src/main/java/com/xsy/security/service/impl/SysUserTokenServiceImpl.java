@@ -16,11 +16,12 @@ import com.xsy.security.entity.SysUserTokenEntity;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.oauth2.TokenGenerator;
 import com.xsy.security.service.SysUserTokenService;
+import com.xsy.sys.entity.LongKey;
+import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +32,13 @@ import java.util.concurrent.TimeUnit;
 @Service
 @CacheConfig(cacheNames = SecurityConstant.SYS_USER_TOKEN_CACHE_NAME)
 public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
-    /**
-     * 12小时后过期
-     */
-    private final static long EXPIRE_MS = TimeUnit.HOURS.toMillis(12);
+    @Autowired
+    private SysConfigService sysConfigService;
+    private static final LongKey EXPIRE_HOURS_KEY = new LongKey("EXPIRE_HOURS_KEY", 12L);
     /**
      * token过期时间小于此值 刷新
      */
-    private final static long RESIDUE_MS = TimeUnit.HOURS.toMillis(6);
+    private static final LongKey REFRESH_HOURS_KEY = new LongKey("REFRESH_HOURS_KEY", 6L);
 
     private final Cache cache;
 
@@ -54,7 +54,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
         //当前时间
         Date now = new Date();
         //过期时间
-        Date expireTime = new Date(now.getTime() + EXPIRE_MS);
+        Date expireTime = new Date(now.getTime() + getExpireMs());
 
         //判断是否生成过token
         SysUserTokenEntity tokenEntity = baseDao.getByUserId(userId);
@@ -75,7 +75,7 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
             //更新token
             this.updateById(tokenEntity);
         }
-        return new TokenDTO(token, EXPIRE_MS);
+        return new TokenDTO(token, getExpireMs());
     }
 
 
@@ -114,12 +114,20 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
         String accessToken = tokenEntity.getToken();
         long expireTime = tokenEntity.getExpireDate().getTime();
         // 剩余时间大于RESIDUE_MS 不刷新过期时间
-        if (expireTime - System.currentTimeMillis() > RESIDUE_MS) {
+        if (expireTime - System.currentTimeMillis() > getRefreshMs()) {
             return;
         }
         log.debug("刷新token:{}过期时间", accessToken);
-        tokenEntity.setExpireDate(new Date(System.currentTimeMillis() + EXPIRE_MS));
+        tokenEntity.setExpireDate(new Date(System.currentTimeMillis() + getExpireMs()));
         cache.evict(SecurityConstant.getSysUserTokenCacheKey(accessToken));
         this.updateById(tokenEntity);
+    }
+
+    private long getExpireMs() {
+        return TimeUnit.HOURS.toMillis(sysConfigService.get(EXPIRE_HOURS_KEY));
+    }
+
+    private long getRefreshMs() {
+        return TimeUnit.HOURS.toMillis(sysConfigService.get(REFRESH_HOURS_KEY));
     }
 }

@@ -1,5 +1,6 @@
 package com.xsy.base.config;
 
+import brave.Span;
 import brave.Tracer;
 import com.xsy.base.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,14 @@ public class TraceIdResponseAdvice implements ResponseBodyAdvice<Result<?>> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return Result.class.equals(returnType.getParameterType());
+        return Result.class.isAssignableFrom(returnType.getParameterType());
     }
 
     @Override
     public Result<?> beforeBodyWrite(Result<?> body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        if (body != null) {
-            body.setTraceId(tracer.currentSpan().context().traceIdString());
+        Span span = tracer.currentSpan();
+        if (body != null && span != null) {
+            body.setTraceId(span.context().traceIdString());
         }
         return body;
     }
