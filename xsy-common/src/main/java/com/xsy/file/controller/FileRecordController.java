@@ -82,7 +82,7 @@ public class FileRecordController {
                 IOUtils.copy(is, os);
             }
         } catch (IOException e) {
-            throw new GlobalException("文件下载失败 " + path, e);
+            throw new GlobalException("文件下载失败 " + e.getMessage(), e);
         }
     }
 

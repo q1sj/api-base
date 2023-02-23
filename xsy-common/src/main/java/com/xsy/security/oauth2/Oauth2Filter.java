@@ -14,6 +14,7 @@ import com.xsy.base.util.HttpContextUtils;
 import com.xsy.base.util.JsonUtils;
 import com.xsy.base.util.Result;
 import com.xsy.security.enums.SecurityConstant;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -32,6 +33,7 @@ import java.io.IOException;
  *
  * @author Mark sunlightcs@gmail.com
  */
+@Slf4j
 public class Oauth2Filter extends AuthenticatingFilter {
 
     @Override
@@ -77,6 +79,7 @@ public class Oauth2Filter extends AuthenticatingFilter {
 
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
+        log.warn(e.getMessage(), e);
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         httpResponse.setContentType("application/json;charset=utf-8");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
@@ -93,7 +96,7 @@ public class Oauth2Filter extends AuthenticatingFilter {
             r = Result.error(resultCodeEnum);
             String json = JsonUtils.toJsonString(r);
             httpResponse.getWriter().print(json);
-        } catch (IOException e1) {
+        } catch (IOException ignore) {
 
         }
 

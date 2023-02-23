@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @TableName("file_record")
 @Entity(name = "file_record")
-@Table(indexes = {@Index(name = "uk_path", columnList = "path", unique = true)})
+@Table(indexes = {@Index(name = "uk_path", columnList = "path,isDelete", unique = true)})
 public class FileRecordEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,8 +74,8 @@ public class FileRecordEntity {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    @TableLogic
-    private Boolean isDelete;
+    @TableLogic(delval = "id")
+    private Long isDelete;
     @Column(length = 2048)
     private String remark;
 }

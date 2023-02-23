@@ -16,10 +16,13 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,13 +65,26 @@ public class ShiroConfig {
         Map<String, Filter> filters = new HashMap<>();
         filters.put("oauth2", new Oauth2Filter());
         shiroFilter.setFilters(filters);
-        Map<String, String> filterMap =baseAuthFilterMapConfig.map(BaseAuthFilterMapConfig::getFilterMap).orElse(new HashMap<>(1));
+        Map<String, String> filterMap = baseAuthFilterMapConfig.map(BaseAuthFilterMapConfig::getFilterMap).orElse(new HashMap<>(1));
         // 注解标注的anon接口地址添加到手动配置中
         filterMap.putAll(noAuthScan.getNoAuthMap());
         filterMap.putIfAbsent("/**", "oauth2");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilter;
+    }
+
+    @Bean
+    public FilterRegistrationBean<Filter> filterRegistrationBean(AbstractShiroFilter shiroFilter) {
+        FilterRegistrationBean<Filter> filterRegistration = new FilterRegistrationBean<>();
+        filterRegistration.setFilter(shiroFilter);
+        filterRegistration.addInitParameter("targetFilterLifecycle", "true");
+        filterRegistration.setAsyncSupported(true);
+        filterRegistration.setEnabled(true);
+        //这里添加一下对DispatcherType.ASYNC的支持就可以了
+        filterRegistration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+
+        return filterRegistration;
     }
 
     @Bean("lifecycleBeanPostProcessor")
