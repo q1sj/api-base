@@ -1,9 +1,5 @@
 package com.xsy.security.enums;
 
-import com.xsy.sys.entity.ListKey;
-
-import java.util.Collections;
-
 /**
  * @author Q1sj
  * @date 2022.9.29 11:24
@@ -13,14 +9,6 @@ public class SecurityConstant {
      * token header
      */
     public static final String TOKEN_HEADER = "token";
-    /**
-     * 权限缓存key
-     */
-    public static final ListKey<String> PERMISSIONS_KEY = new ListKey<>("permissions", Collections.emptyList(), String.class);
-    /**
-     * 权限缓存名称
-     */
-    public static final String PERMISSIONS_CACHE_NAME = "permissions";
     /**
      * 权限分隔符
      */

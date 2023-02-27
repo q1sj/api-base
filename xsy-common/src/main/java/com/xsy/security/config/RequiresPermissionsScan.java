@@ -1,8 +1,5 @@
 package com.xsy.security.config;
 
-import com.xsy.base.cache.CacheManagerWrapper;
-import com.xsy.base.cache.CacheWrapper;
-import com.xsy.security.enums.SecurityConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.aop.support.AopUtils;
@@ -24,11 +21,10 @@ import java.util.*;
 @Slf4j
 @Component
 public class RequiresPermissionsScan implements ApplicationContextAware {
+    private List<String> permissionList;
 
-    private final CacheWrapper cache;
-
-    public RequiresPermissionsScan(CacheManagerWrapper cacheManagerWrapper) {
-        cache = cacheManagerWrapper.getCache(SecurityConstant.PERMISSIONS_CACHE_NAME);
+    public List<String> getPermissionList() {
+        return Collections.unmodifiableList(permissionList);
     }
 
     @Override
@@ -50,6 +46,6 @@ public class RequiresPermissionsScan implements ApplicationContextAware {
                 permissionsSet.addAll(Arrays.asList(permissions.value()));
             }
         }
-        cache.put(SecurityConstant.PERMISSIONS_KEY, new ArrayList<>(permissionsSet));
+        permissionList = new ArrayList<>(permissionsSet);
     }
 }
