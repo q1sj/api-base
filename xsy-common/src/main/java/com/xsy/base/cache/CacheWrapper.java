@@ -4,6 +4,7 @@ import com.xsy.sys.entity.BaseKey;
 import org.springframework.cache.Cache;
 import org.springframework.lang.Nullable;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -41,6 +42,10 @@ public class CacheWrapper implements Cache {
             return key.deserialization(valueWrapper.get().toString());
         }
         return (T) valueWrapper.get();
+    }
+
+    public <T> Optional<T> getOptional(BaseKey<T> key) {
+        return Optional.ofNullable(get(key));
     }
 
     @Nullable

@@ -58,6 +58,13 @@ public class SpringCacheManageTest {
         cache.evict(DemoKeyConstant.INT_KEY);
     }
 
+    @Test
+    public void testNumberKey() {
+        CacheWrapper cache = cacheManagerWrapper.getCache(DemoKeyConstant.CACHE_NAME);
+        cache.put(new NumberKey("long_num"), 1L);
+        Number longNum = cache.get(new NumberKey("long_num"));
+    }
+
     static class DemoKeyConstant {
         public static final String CACHE_NAME = "demo_cache";
         public static final ObjectKey<SysUserEntity> USER_KEY = new ObjectKey<>("user_1", SysUserEntity.class);
