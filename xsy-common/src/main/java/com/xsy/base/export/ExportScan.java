@@ -30,11 +30,15 @@ import java.util.Map;
 @Slf4j
 @Component
 public class ExportScan implements ApplicationContextAware {
-    @Autowired
+    @Autowired(required = false)
     private RequestMappingHandlerMapping mapping;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        if (mapping == null) {
+            log.warn("not web env");
+            return;
+        }
         Map<String, Object> controllers = applicationContext.getBeansWithAnnotation(Controller.class);
         //遍历每个controller层
         for (Map.Entry<String, Object> entry : controllers.entrySet()) {
