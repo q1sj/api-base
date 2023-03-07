@@ -1,7 +1,7 @@
 package com.xsy.sys.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.xsy.sys.entity.SysCron;
+import com.xsy.sys.entity.SysTaskConfigEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2023.3.1 9:11
  */
 @Mapper
-public interface SysCronDao extends BaseMapper<SysCron> {
+public interface SysTaskConfigDao extends BaseMapper<SysTaskConfigEntity> {
 }

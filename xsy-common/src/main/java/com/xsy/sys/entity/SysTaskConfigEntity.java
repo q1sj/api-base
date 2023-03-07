@@ -8,10 +8,11 @@ import javax.persistence.*;
 /**
  * @author Q1sj
  */
-@Entity(name = "sys_cron")
+@Entity(name = "sys_task_config")
+@Table(indexes = {@Index(name = "uk_task_name", columnList = "taskName", unique = true)})
 @Data
-@TableName("sys_cron")
-public class SysCron {
+@TableName("sys_task_config")
+public class SysTaskConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

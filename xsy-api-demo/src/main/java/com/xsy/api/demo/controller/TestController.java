@@ -1,19 +1,25 @@
 package com.xsy.api.demo.controller;
 
 import com.xsy.base.util.Result;
+import com.xsy.base.util.SpringContextUtils;
 import com.xsy.base.util.StringUtils;
 import com.xsy.security.annotation.NoAuth;
 import com.xsy.sys.dto.SysUserDTO;
 import com.xsy.sys.entity.StringKey;
+import com.xsy.sys.service.DynamicTask;
 import com.xsy.sys.service.SysConfigService;
 import com.xsy.sys.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -88,5 +94,21 @@ public class TestController implements TestApi {
     public Long getL() {
         log.info("getL");
         return 1L;
+    }
+
+    @Autowired
+    @Lazy
+    private ScheduledExecutorService dynamicScheduleThreadPool;
+
+
+    @NoAuth
+    @PostMapping("/run")
+    public Result<Void> run(@RequestParam String name) {
+        log.info("立即执行:{}", name);
+        Object bean = SpringContextUtils.getBean(name);
+        if (bean instanceof DynamicTask) {
+            dynamicScheduleThreadPool.submit(() -> ((DynamicTask) bean).run());
+        }
+        return Result.ok();
     }
 }
