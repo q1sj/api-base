@@ -2,11 +2,8 @@ package com.xsy.sys.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * @author Q1sj
@@ -16,7 +13,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 @Configuration
 public class ThreadPoolConfig {
     @Bean
-    public ScheduledExecutorService dynamicScheduleThreadPool() {
-        return new ScheduledThreadPoolExecutor(20, new CustomizableThreadFactory("dynamicTask-"));
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+        threadPoolTaskScheduler.setPoolSize(20);
+        threadPoolTaskScheduler.setThreadNamePrefix("task-");
+        threadPoolTaskScheduler.initialize();
+
+        return threadPoolTaskScheduler;
     }
 }
