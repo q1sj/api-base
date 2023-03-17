@@ -21,7 +21,7 @@ public class AppInfoController {
 
     private final VersionVO versionVO;
 
-    public AppInfoController(@Value("${app.version}") String version) {
+    public AppInfoController(@Value("${app.version:unknown}") String version) {
         this.versionVO = new VersionVO(version);
     }
 

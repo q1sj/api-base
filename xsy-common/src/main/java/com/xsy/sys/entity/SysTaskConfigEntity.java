@@ -13,6 +13,10 @@ import javax.persistence.*;
 @Data
 @TableName("sys_task_config")
 public class SysTaskConfigEntity {
+    /**
+     * 默认允许重复执行cron定时任务
+     */
+    public static final boolean DEFAULT_ALLOW_RE_FIRES_CRON = true;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,4 +27,18 @@ public class SysTaskConfigEntity {
     private Boolean enable;
     @Column(nullable = false)
     private String cronExpression;
+    /**
+     * 是否允许同一时间重复执行cron定时任务
+     * 默认允许
+     */
+    @Column
+    private Boolean allowReFiresCron;
+
+    public boolean getAllowReFiresCron() {
+        return allowReFiresCron == null ? DEFAULT_ALLOW_RE_FIRES_CRON : allowReFiresCron;
+    }
+
+    public void setAllowReFiresCron(Boolean allowReFiresCron) {
+        this.allowReFiresCron = allowReFiresCron;
+    }
 }
