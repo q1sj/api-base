@@ -10,7 +10,6 @@
     <version>1.0.0</version>
     <modules>
         <module>xsy-common</module>
-        <module>xsy-api-demo</module>
         <module>xsy-generator</module>
     </modules>
 
@@ -170,4 +169,11 @@
     <build>
         <finalName>${artifactId}-${version}.${timestamp}</finalName>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/q1sj/api-base</url>
+        </repository>
+    </distributionManagement>
 </project>
