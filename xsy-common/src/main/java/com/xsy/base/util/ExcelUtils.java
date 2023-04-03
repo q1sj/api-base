@@ -28,7 +28,7 @@ public class ExcelUtils {
         try (OutputStream outputStream = response.getOutputStream()) {
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(excelName + ".xls", StandardCharsets.UTF_8.displayName()));
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(excelName + ".xlsx", StandardCharsets.UTF_8.displayName()));
             EasyExcel.write(response.getOutputStream(), clazz).sheet(excelName).doWrite(list);
             outputStream.flush();
         } catch (Exception e) {
