@@ -7,19 +7,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xsy.base.util.PageData;
 import com.xsy.sys.dao.SysConfigDao;
-import com.xsy.sys.entity.BaseKey;
+import com.xsy.sys.entity.RefreshConfigEvent;
 import com.xsy.sys.entity.SysConfigEntity;
 import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-
-import java.io.Serializable;
-import java.util.function.Supplier;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Q1sj
@@ -27,68 +24,42 @@ import java.util.function.Supplier;
  */
 @Slf4j
 @Service
-@CacheConfig(cacheNames = SysConfigServiceImpl.CACHE_NAME)
 public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEntity> implements SysConfigService {
-
-    static final String CACHE_NAME = "sys_config";
-
     @Autowired
-    private SysConfigServiceImpl _this;
+    private ApplicationContext applicationContext;
 
     @Override
-    public PageData<SysConfigEntity> list(String configKey, int page, int pageSize) {
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrUpdate(String key, String value) {
+        this.saveOrUpdate(new SysConfigEntity(key, value));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveOrUpdate(SysConfigEntity entity) {
+        boolean saveOrUpdate = super.saveOrUpdate(entity);
+        applicationContext.publishEvent(new RefreshConfigEvent(entity.getConfigKey()));
+        return saveOrUpdate;
+    }
+
+    @Nullable
+    public String get(String key) {
+        SysConfigEntity entity = this.getById(key);
+        return entity == null ? null : entity.getConfigValue();
+    }
+
+    @Override
+    public void delete(String key) {
+        log.warn("参数管理删除 key:{}", key);
+        removeById(key);
+    }
+
+    @Override
+    public PageData<SysConfigEntity> list(@Nullable String configKey, int page, int pageSize) {
         LambdaQueryWrapper<SysConfigEntity> wrapper = Wrappers.lambdaQuery(SysConfigEntity.class)
                 .like(StringUtils.isNotBlank(configKey), SysConfigEntity::getConfigKey, configKey);
         IPage<SysConfigEntity> iPage = new Page<>(page, pageSize);
         this.page(iPage, wrapper);
         return new PageData<>(iPage);
-    }
-
-    @Override
-    @CacheEvict(key = "#key.getKey()")
-    public <T> void put(BaseKey<T> key, T val) {
-        saveOrUpdate(new SysConfigEntity(key.getKey(), key.serialization(val)));
-    }
-
-    @Override
-    @CacheEvict(key = "#sysConfigEntity.getConfigKey()")
-    public void put(SysConfigEntity sysConfigEntity) {
-        saveOrUpdate(sysConfigEntity);
-    }
-
-    @Override
-    public <T> T get(BaseKey<T> key) {
-        SysConfigEntity entity = _this.getById(key.getKey());
-        return entity != null ? key.deserialization(entity.getConfigValue()) : key.getDefaultValue();
-    }
-
-    @Override
-    public <T> T get(BaseKey<T> key, Supplier<T> valueLoad) {
-        T val = get(key);
-        if (val != null) {
-            return val;
-        }
-        synchronized (key) {
-            val = get(key);
-            if (val != null) {
-                return val;
-            }
-            val = valueLoad.get();
-            put(key, val);
-            return val;
-        }
-    }
-
-    @Override
-    @CacheEvict(key = "#key.getKey()")
-    public void del(BaseKey<?> key) {
-        removeById(key.getKey());
-    }
-
-    @Override
-    @Cacheable(key = "#id")
-    public SysConfigEntity getById(Serializable id) {
-        log.debug("select id:{}", id);
-        return super.getById(id);
     }
 }

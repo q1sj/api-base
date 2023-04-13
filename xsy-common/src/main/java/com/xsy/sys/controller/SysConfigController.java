@@ -44,7 +44,7 @@ public class SysConfigController {
      */
     @PostMapping("/saveOrUpdate")
     public Result<Void> saveOrUpdate(@RequestBody @Validated SysConfigEntity sysConfigEntity) {
-        sysConfigService.put(sysConfigEntity);
+        sysConfigService.saveOrUpdate(sysConfigEntity);
         return Result.ok();
     }
 }

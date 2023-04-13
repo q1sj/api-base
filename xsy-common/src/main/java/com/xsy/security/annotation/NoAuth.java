@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 此注解标注方法 跳过认证授权
- * {@link com.xsy.security.config.NoAuthScan}
+ * {@link com.xsy.security.oauth2.Oauth2Filter#isAccessAllowed}
  *
  * @author Q1sj
  * @date 2022.10.26 15:51

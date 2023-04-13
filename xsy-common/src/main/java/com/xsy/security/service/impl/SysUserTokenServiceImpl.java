@@ -16,10 +16,8 @@ import com.xsy.security.entity.SysUserTokenEntity;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.oauth2.TokenGenerator;
 import com.xsy.security.service.SysUserTokenService;
-import com.xsy.sys.entity.LongKey;
-import com.xsy.sys.service.SysConfigService;
+import com.xsy.sys.annotation.SysConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,13 +30,13 @@ import java.util.concurrent.TimeUnit;
 @Service
 @CacheConfig(cacheNames = SecurityConstant.SYS_USER_TOKEN_CACHE_NAME)
 public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
-    @Autowired
-    private SysConfigService sysConfigService;
-    private static final LongKey EXPIRE_HOURS_KEY = new LongKey("EXPIRE_HOURS_KEY", 12L);
+    @SysConfig("EXPIRE_HOURS_KEY")
+    private static long EXPIRE_HOURS = 12L;
     /**
      * token过期时间小于此值 刷新
      */
-    private static final LongKey REFRESH_HOURS_KEY = new LongKey("REFRESH_HOURS_KEY", 6L);
+    @SysConfig("REFRESH_HOURS")
+    private static long REFRESH_HOURS = 6L;
 
     private final Cache cache;
 
@@ -124,10 +122,10 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
     }
 
     private long getExpireMs() {
-        return TimeUnit.HOURS.toMillis(sysConfigService.get(EXPIRE_HOURS_KEY));
+        return TimeUnit.HOURS.toMillis(EXPIRE_HOURS);
     }
 
     private long getRefreshMs() {
-        return TimeUnit.HOURS.toMillis(sysConfigService.get(REFRESH_HOURS_KEY));
+        return TimeUnit.HOURS.toMillis(REFRESH_HOURS);
     }
 }

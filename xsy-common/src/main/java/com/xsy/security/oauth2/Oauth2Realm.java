@@ -22,6 +22,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -37,6 +38,7 @@ public class Oauth2Realm extends AuthorizingRealm {
     @Autowired
     private AuthService authService;
     @Autowired
+    @Lazy
     private SysUserTokenService sysUserTokenService;
     @Autowired
     private SysUserService sysUserService;
@@ -70,12 +72,12 @@ public class Oauth2Realm extends AuthorizingRealm {
 
         //根据accessToken，查询用户信息
         if (!TokenGenerator.validToken(accessToken)) {
-            throw new IncorrectCredentialsException();
+            throw new IncorrectCredentialsException("token无效 " + accessToken);
         }
         SysUserTokenEntity tokenEntity = authService.getByToken(accessToken);
         //token失效
         if (tokenEntity == null || tokenEntity.getExpireDate().getTime() < System.currentTimeMillis()) {
-            throw new ExpiredCredentialsException();
+            throw new ExpiredCredentialsException("token过期 " + accessToken);
         }
 
         //查询用户信息
