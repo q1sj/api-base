@@ -65,7 +65,7 @@ public class DynamicTaskService implements CommandLineRunner {
             return config;
         }
         SysTaskConfigEntity defaultConfig = dynamicTask.getDefaultConfig();
-        log.debug("数据库配置不存在 使用默认配置:{}", defaultConfig);
+        log.debug("{}数据库配置不存在 使用默认配置:{}", dynamicTask.getClass().getName(), defaultConfig);
         return defaultConfig;
     }
 
