@@ -4,6 +4,7 @@ import com.xsy.sys.annotation.SysConfig;
 import com.xsy.sys.entity.RefreshConfigEvent;
 import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,9 @@ public class RefreshSysConfigBeanPostProcessor implements ApplicationListener<Re
                 continue;
             }
             String sysConfigKey = sysConfig.value();
+            if (StringUtils.isBlank(sysConfigKey)) {
+                sysConfigKey = field.getName();
+            }
             SysConfigField sysConfigField = new SysConfigField(sysConfigKey, bean, field);
             List<SysConfigField> sysConfigFieldList = SYS_CONFIG_FIELD_MAP.computeIfAbsent(sysConfigKey, key -> new CopyOnWriteArrayList<>());
             if (!sysConfigFieldList.isEmpty() && !sysConfigFieldList.get(0).field.getType().equals(field.getType())) {

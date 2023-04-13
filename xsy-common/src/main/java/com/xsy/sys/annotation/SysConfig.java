@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface SysConfig {
     /**
-     * 参数管理key
+     * 参数管理key 默认使用字段名
      */
     String value() default "";
 }
