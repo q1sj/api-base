@@ -37,13 +37,15 @@ public class ExportMethodInterceptor implements MethodInterceptor {
             return result;
         }
         List list = parseList(result, export);
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletResponse response = servletRequestAttributes.getResponse();
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-        Class exportClass = CollectionUtils.isEmpty(export.exportClass()) ? list.get(0).getClass() : export.exportClass()[0];
-        ExcelUtils.excelDown(response, exportClass, list, StringUtils.isNotBlank(export.filename()) ? export.filename() : UUID.randomUUID().toString());
+        Class exportClass = export.exportClass() == Object.class ? list.get(0).getClass() : export.exportClass();
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (servletRequestAttributes != null) {
+            HttpServletResponse response = servletRequestAttributes.getResponse();
+            ExcelUtils.excelDown(response, exportClass, list, StringUtils.isNotBlank(export.filename()) ? export.filename() : UUID.randomUUID().toString());
+        }
         return null;
     }
 

@@ -1,5 +1,6 @@
 package com.xsy.base.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -9,10 +10,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 
-@Configuration
+@Configuration("com.xsy.base.config.RestTemplateConfig")
 public class RestTemplateConfig {
 
     @Bean
+    @ConditionalOnMissingBean
     public RestTemplate restTemplate(ClientHttpRequestFactory clientHttpRequestFactory) {
         RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory);
         // 支持中文编码
@@ -23,6 +25,7 @@ public class RestTemplateConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         //单位为ms

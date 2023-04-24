@@ -1,6 +1,7 @@
 package com.xsy.base.config;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -9,5 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @MapperScan(basePackages = {"com.xsy.*.dao"})
 @ComponentScan(basePackages = "com.xsy")
+@EntityScan("com.xsy")
 public class XsyCommonAutoConfiguration {
 }

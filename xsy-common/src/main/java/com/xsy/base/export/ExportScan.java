@@ -1,5 +1,6 @@
 package com.xsy.base.export;
 
+import com.alibaba.excel.EasyExcel;
 import com.xsy.base.util.CollectionUtils;
 import com.xsy.base.util.RequestMappingUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import net.sf.cglib.proxy.Enhancer;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -29,6 +31,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
+@ConditionalOnClass(EasyExcel.class)
 public class ExportScan implements ApplicationContextAware {
     @Autowired(required = false)
     private RequestMappingHandlerMapping mapping;

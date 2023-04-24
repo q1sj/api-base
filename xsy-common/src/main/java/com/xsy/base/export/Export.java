@@ -33,5 +33,5 @@ public @interface Export {
      *
      * @return
      */
-    Class<?>[] exportClass() default {};
+    Class<?> exportClass() default Object.class;
 }
