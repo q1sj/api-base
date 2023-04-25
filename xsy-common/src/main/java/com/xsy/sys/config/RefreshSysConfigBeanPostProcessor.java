@@ -37,6 +37,7 @@ public class RefreshSysConfigBeanPostProcessor implements ApplicationListener<Re
     @Lazy
     private ConversionService conversionService;
     @Autowired
+    @Lazy
     private SysConfigService sysConfigService;
 
     @Override

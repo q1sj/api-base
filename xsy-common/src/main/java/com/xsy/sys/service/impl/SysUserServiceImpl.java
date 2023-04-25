@@ -141,12 +141,13 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     @Override
-    @CacheEvict(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
     public void delete(Long[] ids) {
         // 清除用户权限缓存
-        CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME);
+        CacheWrapper userCache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_CACHE_NAME);
+        CacheWrapper permissionsCache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME);
         for (Long id : ids) {
-            cache.evict(SecurityConstant.getSysUserPermissionsCacheKey(id));
+            userCache.evict(SecurityConstant.getSysUserCacheKey(id));
+            permissionsCache.evict(SecurityConstant.getSysUserPermissionsCacheKey(id));
         }
         //删除用户
         baseDao.deleteBatchIds(Arrays.asList(ids));

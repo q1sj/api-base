@@ -8,6 +8,7 @@ import org.springframework.lang.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 转换工具类
@@ -17,19 +18,15 @@ import java.util.List;
 public class ConvertUtils {
     private static Logger logger = LoggerFactory.getLogger(ConvertUtils.class);
 
-    @Nullable
     public static <T> T sourceToTarget(Object source, Class<T> target) {
-        if (source == null) {
-            return null;
-        }
+        Objects.requireNonNull(source);
         T targetObject = null;
         try {
             targetObject = target.newInstance();
-            BeanUtils.copyProperties(source, targetObject);
-        } catch (Exception e) {
-            logger.error("convert error ", e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-
+        BeanUtils.copyProperties(source, targetObject);
         return targetObject;
     }
 

@@ -30,13 +30,13 @@ import java.util.concurrent.TimeUnit;
 @Service
 @CacheConfig(cacheNames = SecurityConstant.SYS_USER_TOKEN_CACHE_NAME)
 public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
-    @SysConfig("EXPIRE_HOURS_KEY")
-    private static long EXPIRE_HOURS = 12L;
+    @SysConfig("TOKEN_EXPIRE_HOURS")
+    private long expireHours = 12L;
     /**
      * token过期时间小于此值 刷新
      */
-    @SysConfig("REFRESH_HOURS")
-    private static long REFRESH_HOURS = 6L;
+    @SysConfig("TOKEN_REFRESH_HOURS")
+    private long refreshHours = 6L;
 
     private final Cache cache;
 
@@ -122,10 +122,10 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
     }
 
     private long getExpireMs() {
-        return TimeUnit.HOURS.toMillis(EXPIRE_HOURS);
+        return TimeUnit.HOURS.toMillis(expireHours);
     }
 
     private long getRefreshMs() {
-        return TimeUnit.HOURS.toMillis(REFRESH_HOURS);
+        return TimeUnit.HOURS.toMillis(refreshHours);
     }
 }

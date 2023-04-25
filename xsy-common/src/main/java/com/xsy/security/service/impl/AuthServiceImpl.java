@@ -31,8 +31,10 @@ import java.util.Set;
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
+    @Lazy
     private SysMenuService sysMenuService;
     @Autowired
+    @Lazy
     private SysUserService sysUserService;
     @Autowired
     @Lazy
@@ -69,5 +71,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public SysUserEntity getUser(Long userId) {
         return sysUserService.selectById(userId);
+    }
+
+    @Override
+    public void refreshExpireDate(SysUserTokenEntity tokenEntity) {
+        sysUserTokenService.refreshExpireDate(tokenEntity);
+    }
+
+    @Override
+    public boolean userIsDisable(SysUserEntity user) {
+        return sysUserService.userIsDisable(user);
     }
 }

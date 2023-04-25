@@ -118,6 +118,12 @@ public class GlobalExceptionHandler {
         return Result.error(ResultCodeEnum.CLIENT_ERROR, "不支持的请求方式");
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Result<?> handleException(IllegalArgumentException ex) {
+        logger.warn(ex.getMessage(), ex);
+        return Result.error(ResultCodeEnum.CLIENT_ERROR, "非法参数 " + ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public Result<?> handleException(Exception ex) {
         logger.error(ex.getMessage(), ex);

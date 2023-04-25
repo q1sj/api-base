@@ -13,7 +13,6 @@ import com.xsy.security.entity.SysUserTokenEntity;
 import com.xsy.security.user.UserDetail;
 import com.xsy.sys.entity.SysUserEntity;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,8 +30,23 @@ public interface AuthService {
 
     /**
      * 根据用户ID，查询用户
+     *
      * @param userId
      */
     SysUserEntity getUser(Long userId);
 
+    /**
+     * 刷新token过期时间
+     *
+     * @param tokenEntity
+     */
+    void refreshExpireDate(SysUserTokenEntity tokenEntity);
+
+    /**
+     * 用户是否可用
+     *
+     * @param user
+     * @return
+     */
+    boolean userIsDisable(SysUserEntity user);
 }

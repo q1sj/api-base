@@ -11,10 +11,8 @@ package com.xsy.security.oauth2;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.security.entity.SysUserTokenEntity;
 import com.xsy.security.service.AuthService;
-import com.xsy.security.service.SysUserTokenService;
 import com.xsy.security.user.UserDetail;
 import com.xsy.sys.entity.SysUserEntity;
-import com.xsy.sys.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -36,12 +34,8 @@ import java.util.Set;
 @Component
 public class Oauth2Realm extends AuthorizingRealm {
     @Autowired
-    private AuthService authService;
-    @Autowired
     @Lazy
-    private SysUserTokenService sysUserTokenService;
-    @Autowired
-    private SysUserService sysUserService;
+    private AuthService authService;
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -84,13 +78,13 @@ public class Oauth2Realm extends AuthorizingRealm {
         SysUserEntity userEntity = authService.getUser(tokenEntity.getUserId());
 
         //账号锁定
-        if (sysUserService.userIsDisable(userEntity)) {
+        if (authService.userIsDisable(userEntity)) {
             throw new LockedAccountException("账号锁定");
         }
         //转换成UserDetail对象
         UserDetail userDetail = ConvertUtils.sourceToTarget(userEntity, UserDetail.class);
 
-        sysUserTokenService.refreshExpireDate(tokenEntity);
+        authService.refreshExpireDate(tokenEntity);
         return new SimpleAuthenticationInfo(userDetail, accessToken, getName());
     }
 
