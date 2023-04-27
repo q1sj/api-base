@@ -1,5 +1,6 @@
 package com.xsy.base.config;
 
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
@@ -33,4 +34,9 @@ public class MybatisPlusConfig {
         return mybatisPlusInterceptor;
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public MetaObjectHandler metaObjectHandler() {
+        return new FieldMetaObjectHandler();
+    }
 }

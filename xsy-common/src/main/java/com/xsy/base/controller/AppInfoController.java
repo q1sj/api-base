@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AppInfoController {
     public static final String VERSION_MAPPING = "/version";
 
-    private final VersionVO versionVO;
+    private final AppInfoVO appInfoVO;
 
-    public AppInfoController(@Value("${app.version:unknown}") String version) {
-        this.versionVO = new VersionVO(version);
+    public AppInfoController(@Value("${spring.application.name:unknown}") String applicationName, @Value("${app.version:unknown}") String version) {
+        this.appInfoVO = new AppInfoVO(applicationName, version);
     }
 
     /**
@@ -32,14 +32,15 @@ public class AppInfoController {
      */
     @NoAuth
     @GetMapping(AppInfoController.VERSION_MAPPING)
-    public Result<VersionVO> version() {
-        return Result.ok(versionVO);
+    public Result<AppInfoVO> version() {
+        return Result.ok(appInfoVO);
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class VersionVO {
+    static class AppInfoVO {
+        private String applicationName;
         /**
          * 版本号
          */

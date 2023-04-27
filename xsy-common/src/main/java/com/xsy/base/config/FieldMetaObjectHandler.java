@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.xsy.security.user.SecurityUser;
 import com.xsy.security.user.UserDetail;
 import org.apache.ibatis.reflection.MetaObject;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
@@ -13,7 +12,6 @@ import java.util.Date;
  *
  * @author Mark sunlightcs@gmail.com
  */
-@Component
 public class FieldMetaObjectHandler implements MetaObjectHandler {
     private final static String CREATE_DATE = "createDate";
     private final static String CREATOR = "creator";
