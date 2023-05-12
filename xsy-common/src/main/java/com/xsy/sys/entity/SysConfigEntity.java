@@ -31,9 +31,15 @@ public class SysConfigEntity {
     @NotNull
     private String configKey;
     /**
+     * 参数值的数据类型
+     * {@link com.xsy.sys.enums.SysConfigValueTypeEnum}
+     */
+    @Column(nullable = false)
+    private String configValueType;
+    /**
      * 值
      */
-    @Column(columnDefinition = "text")
+    @Column(nullable = false, columnDefinition = "text")
     private String configValue;
     /**
      * 备注
@@ -41,6 +47,7 @@ public class SysConfigEntity {
     private String remark;
     /**
      * 更新时间
+     *
      * @ignore
      */
     @Null

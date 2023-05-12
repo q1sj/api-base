@@ -11,11 +11,16 @@ import org.springframework.lang.Nullable;
 public interface SysConfigService {
     boolean saveOrUpdate(SysConfigEntity entity);
 
-    void saveOrUpdate(String key, String value);
-
     @Nullable
     String get(String key);
 
+    /**
+     * 只删除数据库中数据,代码中字段仍保持不变
+     * 只删除数据库中数据,代码中字段仍保持不变
+     * 只删除数据库中数据,代码中字段仍保持不变
+     *
+     * @param key
+     */
     void delete(String key);
 
     PageData<SysConfigEntity> list(@Nullable String configKey, int page, int pageSize);
