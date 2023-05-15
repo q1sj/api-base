@@ -1,6 +1,7 @@
 package com.xsy.base.log;
 
 import com.xsy.base.util.IpUtils;
+import com.xsy.base.util.JsonUtils;
 import com.xsy.security.user.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 
 /**
  * post接口日志切面
@@ -39,7 +39,7 @@ public class ApiLogAop {
         long startTime = System.currentTimeMillis();
         Object resp = null;
         Throwable throwable = null;
-        String argsStr = Arrays.toString(point.getArgs());
+        String argsStr = JsonUtils.toLogJsonString(point.getArgs());
         try {
             resp = point.proceed();
             return resp;
@@ -54,7 +54,7 @@ public class ApiLogAop {
                         SecurityUser.getUserId(),
                         request != null ? request.getRequestURL() : "null",
                         argsStr,
-                        resp,
+                        JsonUtils.toLogJsonString(resp),
                         throwable,
                         System.currentTimeMillis() - startTime);
             }
