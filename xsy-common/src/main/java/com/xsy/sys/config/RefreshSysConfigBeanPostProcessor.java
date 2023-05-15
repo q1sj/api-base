@@ -1,7 +1,6 @@
 package com.xsy.sys.config;
 
 import com.xsy.sys.annotation.SysConfig;
-import com.xsy.sys.entity.RefreshConfigEvent;
 import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -9,8 +8,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
@@ -31,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Component
 @Slf4j
-public class RefreshSysConfigBeanPostProcessor implements ApplicationListener<RefreshConfigEvent>, BeanPostProcessor {
+public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventListener, BeanPostProcessor, Ordered {
     private static final Map<String, List<SysConfigField>> SYS_CONFIG_FIELD_MAP = new ConcurrentHashMap<>();
     @Autowired
     @Lazy
@@ -47,14 +46,18 @@ public class RefreshSysConfigBeanPostProcessor implements ApplicationListener<Re
     }
 
     @Override
-    public void onApplicationEvent(RefreshConfigEvent event) {
-        String key = event.getKey();
+    public void refreshConfigEvent(String key) {
         log.info("refreshConfigEvent key:{}", key);
         List<SysConfigField> sysConfigFields = SYS_CONFIG_FIELD_MAP.get(key);
         if (CollectionUtils.isEmpty(sysConfigFields)) {
             return;
         }
         sysConfigFields.forEach(this::refreshValue);
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
     }
 
     private void initSysConfigField(Object bean) throws BeansException {
