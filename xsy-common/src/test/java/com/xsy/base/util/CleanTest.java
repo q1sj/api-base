@@ -5,11 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
@@ -22,11 +18,17 @@ public class CleanTest {
         File tempDir = new File(property);
         File testCleanDir = new File(tempDir, "testClean");
         testCleanDir.mkdirs();
+        new File(testCleanDir, "testDir").mkdirs();
         File file1 = new File(testCleanDir, "aaa.txt");
         file1.createNewFile();
         file1.setLastModified(1L);
+        File file2 = new File(testCleanDir, "ccc.jpg");
+        file2.createNewFile();
+        file2.setLastModified(1L);
         new File(testCleanDir, "bbb.txt").createNewFile();
-        clean = new Clean(testCleanDir.getAbsolutePath(), 1, FileUtils.ONE_GB);
+
+        clean = new Clean(testCleanDir.getAbsolutePath(), 1, Collections.singletonList("txt"));
+        clean.setAllowMaxUtilizationRate(95);
     }
 
     @After
@@ -40,21 +42,6 @@ public class CleanTest {
     @Test
     public void start() {
         clean.start();
-        assertEquals(1, clean.getPath().listFiles().length);
-    }
-
-    public static void main(String[] args) throws SocketException {
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        while (networkInterfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = networkInterfaces.nextElement();
-            Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-            while (inetAddresses.hasMoreElements()) {
-                InetAddress inetAddress = inetAddresses.nextElement();
-                if (inetAddress instanceof Inet4Address) {
-                    String hostAddress = inetAddress.getHostAddress();
-                    System.out.println(hostAddress);
-                }
-            }
-        }
+        assertEquals(2, clean.getPath().listFiles().length);
     }
 }
