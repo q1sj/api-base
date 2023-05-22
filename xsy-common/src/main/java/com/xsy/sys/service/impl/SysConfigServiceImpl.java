@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xsy.base.exception.GlobalException;
 import com.xsy.base.util.PageData;
 import com.xsy.sys.dao.SysConfigDao;
+import com.xsy.sys.entity.BaseKey;
 import com.xsy.sys.entity.RefreshConfigEvent;
 import com.xsy.sys.entity.SysConfigEntity;
 import com.xsy.sys.enums.SysConfigValueTypeEnum;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -41,6 +44,16 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
         if (entity.getConfigValueType() == null) {
             entity.setConfigValueType(SysConfigValueTypeEnum.STRING.name());
         }
+        SysConfigValueTypeEnum configValueTypeEnum = null;
+        try {
+            configValueTypeEnum = SysConfigValueTypeEnum.valueOf(entity.getConfigValueType());
+        } catch (IllegalArgumentException e) {
+            throw new GlobalException(entity.getConfigValueType() + "不存在", e);
+        }
+        if (!configValueTypeEnum.valid(entity.getConfigValue())) {
+            throw new GlobalException(entity.getConfigValueType() + "类型转换失败");
+        }
+        entity.setUpdateTime(new Date());
         boolean saveOrUpdate = super.saveOrUpdate(entity);
         applicationContext.publishEvent(new RefreshConfigEvent(entity.getConfigKey()));
         return saveOrUpdate;
@@ -58,6 +71,13 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
             }
             return get(k);
         });
+    }
+
+    @Override
+    public <T> T get(BaseKey<T> key) {
+        String k = key.getKey();
+        String valStr = get(k);
+        return key.deserialization(valStr);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.xsy.sys.service;
 
 import com.xsy.base.util.PageData;
+import com.xsy.sys.entity.BaseKey;
 import com.xsy.sys.entity.SysConfigEntity;
 import org.springframework.lang.Nullable;
 
@@ -13,6 +14,8 @@ public interface SysConfigService {
 
     @Nullable
     String get(String key);
+
+    <T> T get(BaseKey<T> key);
 
     /**
      * 只删除数据库中数据,代码中字段仍保持不变
