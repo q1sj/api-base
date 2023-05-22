@@ -52,6 +52,12 @@ public class DynamicTaskService implements CommandLineRunner {
         }
     }
 
+    /**
+     * 获取定时任务配置,数据库未配置时使用默认配置{@link DynamicTask#getDefaultConfig()}
+     *
+     * @param dynamicTask
+     * @return
+     */
     private SysTaskConfigEntity getTaskConfig(DynamicTask dynamicTask) {
         LambdaQueryWrapper<SysTaskConfigEntity> wrapper = Wrappers.lambdaQuery(SysTaskConfigEntity.class)
                 .eq(SysTaskConfigEntity::getTaskName, dynamicTask.getClass().getName());
@@ -71,6 +77,7 @@ public class DynamicTaskService implements CommandLineRunner {
 
     /**
      * 如果需要停止修改enable
+     * 删除的定时任务服务重启后仍会使用默认配置,如需彻底删除请修改代码
      *
      * @param taskName
      */
@@ -86,6 +93,11 @@ public class DynamicTaskService implements CommandLineRunner {
         add(getDynamicTask(taskName));
     }
 
+    /**
+     * 添加定时任务,停止旧的定时任务
+     *
+     * @param dynamicTask
+     */
     public void add(DynamicTask dynamicTask) {
         SysTaskConfigEntity taskConfig = getTaskConfig(dynamicTask);
         String cronExpression;
@@ -143,6 +155,7 @@ public class DynamicTaskService implements CommandLineRunner {
                 log.error("task:{}运行异常 {}", taskName, e.getMessage(), e);
             } finally {
                 log.info("{}任务结束...耗时:{}ms", taskName, System.currentTimeMillis() - start);
+                // TODO 运行记录写数据库
             }
         }
     }
