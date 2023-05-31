@@ -27,8 +27,8 @@ public class CleanTest {
         file2.setLastModified(1L);
         new File(testCleanDir, "bbb.txt").createNewFile();
 
-        clean = new Clean(testCleanDir.getAbsolutePath(), 1, Collections.singletonList("txt"));
-        clean.setAllowMaxUtilizationRate(95);
+        clean = new Clean(testCleanDir.getAbsolutePath(), 10, Collections.singletonList("txt"));
+        clean.setAllowMaxUtilizationRate(91);
     }
 
     @After

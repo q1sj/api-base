@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.time.Instant;
@@ -30,16 +32,16 @@ public class Clean {
      */
     private final int cleanDayAgo;
     /**
+     * 要删除的文件扩展名
+     */
+    private final List<String> extensionList;
+    /**
      * 允许最大使用率 默认85
      * 此参数优先级大于{@link #cleanDayAgo}
      * 使用率大于此值会继续删除
      */
     @Setter
     private int allowMaxUtilizationRate;
-    /**
-     * 要删除的文件扩展名
-     */
-    private final List<String> extensionList;
 
     public Clean(String path, int cleanDayAgo) {
         this(path, cleanDayAgo, Collections.emptyList());
@@ -61,26 +63,24 @@ public class Clean {
             log.warn("目录{}不存在", this.path.getAbsolutePath());
             return;
         }
-        int cleanDayAgo = this.cleanDayAgo;
-        log.info("{} 删除{}天前数据 扩展名:{}", path, cleanDayAgo, extensionList.isEmpty() ? "*" : extensionList);
-        clean(path, cleanDayAgo);
-        long usableSpace = path.getUsableSpace();
-        int utilizationRate = utilizationRate();
-        log.info("{} 可用空间:{} 使用率:{}% 允许最大使用率:{}%", path, FileUtils.byteCountToDisplaySize(usableSpace), utilizationRate, allowMaxUtilizationRate);
-        while (allowMaxUtilizationRate < utilizationRate && cleanDayAgo > 0) {
-            if (!this.path.exists()) {
-                log.warn("目录{}不存在", this.path.getAbsolutePath());
-                return;
-            }
-            cleanDayAgo--;
+
+        for (int cleanDayAgo = this.cleanDayAgo; cleanDayAgo > 0; cleanDayAgo--) {
             log.info("{} 删除{}天前数据 扩展名:{}", path, cleanDayAgo, extensionList.isEmpty() ? "*" : extensionList);
             clean(path, cleanDayAgo);
-            utilizationRate = utilizationRate();
+            long usableSpace = path.getUsableSpace();
+            int utilizationRate = utilizationRate();
             log.info("{} 可用空间:{} 使用率:{}% 允许最大使用率:{}%", path, FileUtils.byteCountToDisplaySize(usableSpace), utilizationRate, allowMaxUtilizationRate);
+            if (allowMaxUtilizationRate > utilizationRate) {
+                return;
+            }
         }
     }
 
     private int utilizationRate() {
+        if (!path.exists()) {
+            log.info("目录{}不存在使用率为0", path.getAbsolutePath());
+            return 0;
+        }
         double rate = 100D * (path.getTotalSpace() - path.getUsableSpace()) / path.getTotalSpace();
         return (int) rate;
     }
@@ -98,11 +98,11 @@ public class Clean {
             }
             return;
         }
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(file.lastModified()), ZoneId.systemDefault());
-        LocalDateTime now = LocalDate.now().atStartOfDay();
-        if (now.plusDays(-cleanDayAgo).isAfter(localDateTime)) {
-            if (extensionList.isEmpty() || extensionList.contains(FileUtils.getExtension(file.getName()))) {
-                log.warn("delete lastModified:{} {}", localDateTime, file);
+        LocalDateTime lastModifiedTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(file.lastModified()), ZoneId.systemDefault());
+        LocalDateTime today = LocalDate.now().atStartOfDay();
+        if (today.plusDays(-cleanDayAgo).isAfter(lastModifiedTime)) {
+            if (extensionList.isEmpty() || extensionList.contains(FilenameUtils.getExtension(file.getName()))) {
+                log.warn("delete lastModified:{} {}", lastModifiedTime, file);
                 FileUtils.deleteQuietly(file);
             }
         }
