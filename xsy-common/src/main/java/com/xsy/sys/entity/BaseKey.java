@@ -26,9 +26,8 @@ public abstract class BaseKey<T> {
      * @param val
      * @return
      */
-    @Nullable
     public String serialization(@Nullable T val) {
-        return val != null ? serializationNotNull(val) : null;
+        return val != null ? serializationNotNull(val) : "";
     }
 
     /**
@@ -37,9 +36,8 @@ public abstract class BaseKey<T> {
      * @param val
      * @return
      */
-    @Nullable
     public T deserialization(@Nullable String val) {
-        return val != null ? deserializationNotNull(val) : null;
+	    return val != null ? deserializationNotNull(val) : defaultValue;
     }
 
     /**

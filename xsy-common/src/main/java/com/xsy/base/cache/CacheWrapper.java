@@ -21,7 +21,7 @@ public class CacheWrapper implements Cache {
     }
 
     public <T> void put(BaseKey<T> key, @Nullable T val) {
-        cache.put(key.getKey(), val);
+        cache.put(key.getKey(), key.serialization(val));
     }
 
     /**

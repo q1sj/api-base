@@ -10,14 +10,10 @@ package com.xsy.security.oauth2;
 
 
 import com.xsy.base.enums.ResultCodeEnum;
-import com.xsy.base.util.HttpContextUtils;
-import com.xsy.base.util.JsonUtils;
-import com.xsy.base.util.Result;
-import com.xsy.base.util.SpringContextUtils;
+import com.xsy.base.util.*;
 import com.xsy.security.annotation.NoAuth;
 import com.xsy.security.enums.SecurityConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -68,9 +64,9 @@ public class Oauth2Filter extends AuthenticatingFilter {
                     .map(HandlerMethod::getMethod)
                     .map(Method::getDeclaredAnnotations)
                     .orElse(null);
-            if (ArrayUtils.isEmpty(declaredAnnotations)) {
-                return false;
-            }
+	        if (CollectionUtils.isEmpty(declaredAnnotations)) {
+		        return false;
+	        }
             for (Annotation annotation : declaredAnnotations) {
                 if (annotation.annotationType() == NoAuth.class) {
                     return true;

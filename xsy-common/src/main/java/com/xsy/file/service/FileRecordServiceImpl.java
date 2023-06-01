@@ -150,7 +150,7 @@ public class FileRecordServiceImpl implements FileRecordService {
     /**
      * 定时删除过期
      */
-    @Scheduled(cron = "${file.delete-task.cron:0 1 * * * ?}")
+    @Scheduled(fixedDelay = 60 * 60 * 1000, initialDelay = 5 * 60 * 1000)
     public void deleteTask() {
         long start = System.currentTimeMillis();
         log.info("开始删除过期文件...");

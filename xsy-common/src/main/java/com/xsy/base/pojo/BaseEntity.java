@@ -1,8 +1,8 @@
 /**
  * Copyright (c) 2018 人人开源 All rights reserved.
- *
+ * <p>
  * https://www.renren.io
- *
+ * <p>
  * 版权所有，侵权必究！
  */
 
@@ -37,14 +37,19 @@ public abstract class BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @TableId
     private Long id;
-    /**
-     * 创建者
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private Long  creator;
-    /**
-     * 创建时间
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private Date createDate;
+	/**
+	 * 创建者
+	 */
+	@TableField(fill = FieldFill.INSERT)
+	private Long creator;
+	/**
+	 * 创建时间
+	 */
+	@TableField(fill = FieldFill.INSERT)
+	private Date createDate;
+
+	@TableField(fill = FieldFill.INSERT_UPDATE)
+	private Long updater;
+	@TableField(fill = FieldFill.INSERT_UPDATE)
+	private Date updateDate;
 }
