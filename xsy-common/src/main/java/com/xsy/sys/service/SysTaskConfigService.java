@@ -10,6 +10,8 @@ import com.xsy.sys.entity.SysTaskConfigEntity;
  * @date 2023.3.7 15:23
  */
 public interface SysTaskConfigService extends IService<SysTaskConfigEntity> {
-    PageData<SysTaskConfigEntity> page(SysTaskConfigQuery query);
+	PageData<SysTaskConfigEntity> page(SysTaskConfigQuery query);
+
+	void run(Integer id);
 }
 

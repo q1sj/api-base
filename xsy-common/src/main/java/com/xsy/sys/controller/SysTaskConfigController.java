@@ -2,16 +2,12 @@ package com.xsy.sys.controller;
 
 import com.xsy.base.util.PageData;
 import com.xsy.base.util.Result;
-import com.xsy.base.util.SpringContextUtils;
 import com.xsy.sys.dto.SysTaskConfigQuery;
 import com.xsy.sys.entity.SysTaskConfigEntity;
-import com.xsy.sys.service.DynamicTask;
 import com.xsy.sys.service.SysTaskConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,9 +29,6 @@ public class SysTaskConfigController {
 
     @Autowired
     private SysTaskConfigService sysTaskConfigService;
-    @Autowired
-    @Lazy
-    private ThreadPoolTaskScheduler threadPoolTaskScheduler;
 
     /**
      * 立即执行
@@ -43,13 +36,9 @@ public class SysTaskConfigController {
      * @param name 定时任务名称
      * @return
      */
-    @PostMapping("/run/{name}")
-    public Result<Void> run(@PathVariable String name) throws ClassNotFoundException {
-        log.info("立即执行:{}", name);
-        Object bean = SpringContextUtils.getBean(Class.forName(name));
-        if (bean instanceof DynamicTask) {
-            threadPoolTaskScheduler.submit(() -> ((DynamicTask) bean).run());
-        }
+    @PostMapping("/run/{id}")
+    public Result<Void> run(@PathVariable Integer id) {
+        sysTaskConfigService.run(id);
         return Result.ok();
     }
 

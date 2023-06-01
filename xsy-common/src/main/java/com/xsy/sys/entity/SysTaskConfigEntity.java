@@ -27,6 +27,7 @@ public class SysTaskConfigEntity {
     private Boolean enable;
     @Column(nullable = false)
     private String cronExpression;
+    private String param;
     /**
      * 是否允许同一时间重复执行cron定时任务
      * 默认允许

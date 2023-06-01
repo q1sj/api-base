@@ -6,8 +6,10 @@ import com.xsy.base.exception.GlobalException;
 import com.xsy.base.util.CollectionUtils;
 import com.xsy.base.util.SpringContextUtils;
 import com.xsy.sys.entity.SysTaskConfigEntity;
+import com.xsy.sys.entity.SysTaskLogEntity;
 import com.xsy.sys.service.DynamicTask;
 import com.xsy.sys.service.SysTaskConfigService;
+import com.xsy.sys.service.SysTaskLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 /**
  * @author Q1sj
@@ -38,6 +41,8 @@ public class DynamicTaskService implements CommandLineRunner {
     @Autowired
     private SysTaskConfigService sysTaskConfigService;
     @Autowired
+    private SysTaskLogService sysTaskLogService;
+    @Autowired
     @Lazy
     private ThreadPoolTaskScheduler threadPoolTaskScheduler;
     private final Map<String, ScheduledFuture<?>> scheduledFutureMap = new HashMap<>();
@@ -47,13 +52,18 @@ public class DynamicTaskService implements CommandLineRunner {
         if (CollectionUtils.isEmpty(dynamicTaskList)) {
             return;
         }
-        for (DynamicTask dynamicTask : dynamicTaskList) {
-            add(dynamicTask);
+        List<SysTaskConfigEntity> configList = sysTaskConfigService.list();
+        if (CollectionUtils.isEmpty(configList)) {
+            return;
+        }
+        Map<String, DynamicTask> map = dynamicTaskList.stream().collect(Collectors.toMap(t -> t.getClass().getName(), t -> t));
+        for (SysTaskConfigEntity taskConfig : configList) {
+            add(map.get(taskConfig.getTaskName()), taskConfig);
         }
     }
 
     /**
-     * 获取定时任务配置,数据库未配置时使用默认配置{@link DynamicTask#getDefaultConfig()}
+     * 获取定时任务配置
      *
      * @param dynamicTask
      * @return
@@ -61,23 +71,15 @@ public class DynamicTaskService implements CommandLineRunner {
     private SysTaskConfigEntity getTaskConfig(DynamicTask dynamicTask) {
         LambdaQueryWrapper<SysTaskConfigEntity> wrapper = Wrappers.lambdaQuery(SysTaskConfigEntity.class)
                 .eq(SysTaskConfigEntity::getTaskName, dynamicTask.getClass().getName());
-        SysTaskConfigEntity config = null;
-        try {
-            config = sysTaskConfigService.getOne(wrapper);
-        } catch (Exception e) {
-            log.error("{}", e.getMessage(), e);
+        SysTaskConfigEntity config = sysTaskConfigService.getOne(wrapper);
+        if (config == null) {
+            throw new GlobalException(dynamicTask.getClass().getName() + "定时任务配置不存在");
         }
-        if (config != null) {
-            return config;
-        }
-        SysTaskConfigEntity defaultConfig = dynamicTask.getDefaultConfig();
-        log.debug("{}数据库配置不存在 使用默认配置:{}", dynamicTask.getClass().getName(), defaultConfig);
-        return defaultConfig;
+        return config;
     }
 
     /**
      * 如果需要停止修改enable
-     * 删除的定时任务服务重启后仍会使用默认配置,如需彻底删除请修改代码
      *
      * @param taskName
      */
@@ -87,6 +89,7 @@ public class DynamicTaskService implements CommandLineRunner {
             return;
         }
         log.debug("cancel:{}", taskName);
+        scheduledFuture.cancel(false);
     }
 
     public void add(String taskName) {
@@ -100,6 +103,22 @@ public class DynamicTaskService implements CommandLineRunner {
      */
     public void add(DynamicTask dynamicTask) {
         SysTaskConfigEntity taskConfig = getTaskConfig(dynamicTask);
+        add(dynamicTask, taskConfig);
+    }
+
+    public DynamicTask getDynamicTask(String taskName) {
+        try {
+            Class<?> clazz = Class.forName(taskName);
+            if (!DynamicTask.class.isAssignableFrom(clazz)) {
+                throw new GlobalException("task类型不匹配:" + taskName);
+            }
+            return (DynamicTask) SpringContextUtils.getBean(clazz);
+        } catch (BeansException | ClassNotFoundException e) {
+            throw new GlobalException("taskName不存在:" + taskName, e);
+        }
+    }
+
+    private void add(DynamicTask dynamicTask, SysTaskConfigEntity taskConfig) {
         String cronExpression;
         if (taskConfig.getEnable()) {
             cronExpression = taskConfig.getCronExpression();
@@ -118,19 +137,6 @@ public class DynamicTaskService implements CommandLineRunner {
             scheduledFutureMap.putIfAbsent(taskName, schedule);
         }
     }
-
-    public DynamicTask getDynamicTask(String taskName) {
-        try {
-            Class<?> clazz = Class.forName(taskName);
-            if (!DynamicTask.class.isAssignableFrom(clazz)) {
-                throw new GlobalException("task类型不匹配:" + taskName);
-            }
-            return (DynamicTask) SpringContextUtils.getBean(clazz);
-        } catch (BeansException | ClassNotFoundException e) {
-            throw new GlobalException("taskName不存在:" + taskName, e);
-        }
-    }
-
     class CanStopedRunnable implements Runnable {
         private final DynamicTask dynamicTask;
         private final String taskName;
@@ -148,15 +154,30 @@ public class DynamicTaskService implements CommandLineRunner {
                 return;
             }
             long start = System.currentTimeMillis();
+            Exception ex = null;
             log.info("{}任务开始...", taskName);
             try {
-                dynamicTask.run();
+                dynamicTask.run(taskConfig.getParam());
             } catch (Exception e) {
+                ex = e;
                 log.error("task:{}运行异常 {}", taskName, e.getMessage(), e);
             } finally {
-                log.info("{}任务结束...耗时:{}ms", taskName, System.currentTimeMillis() - start);
-                // TODO 运行记录写数据库
+                long cost = System.currentTimeMillis() - start;
+                log.info("{}任务结束...耗时:{}ms", taskName, cost);
+                saveLog(taskConfig, ex, (int) cost);
             }
+        }
+
+        private void saveLog(SysTaskConfigEntity taskConfig, Exception ex, int cost) {
+            // 运行记录写数据库
+            SysTaskLogEntity logEntity = new SysTaskLogEntity();
+            logEntity.setTaskId(taskConfig.getId());
+            logEntity.setTaskName(taskName);
+            logEntity.setStatus(ex == null ? SysTaskLogEntity.SUCCESS_STATUS : SysTaskLogEntity.FAIL_STATUS);
+            logEntity.setMsg(ex == null ? "" : ex.getClass().getName() + ":" + ex.getMessage());
+            logEntity.setCost(cost);
+            logEntity.setCreateTime(new Date());
+            sysTaskLogService.save(logEntity);
         }
     }
 
