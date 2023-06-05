@@ -154,30 +154,27 @@ public class DynamicTaskService implements CommandLineRunner {
                 return;
             }
             long start = System.currentTimeMillis();
-            Exception ex = null;
             log.info("{}任务开始...", taskName);
-            try {
-                dynamicTask.run(taskConfig.getParam());
-            } catch (Exception e) {
-                ex = e;
-                log.error("task:{}运行异常 {}", taskName, e.getMessage(), e);
-            } finally {
-                long cost = System.currentTimeMillis() - start;
-                log.info("{}任务结束...耗时:{}ms", taskName, cost);
-                saveLog(taskConfig, ex, (int) cost);
-            }
-        }
-
-        private void saveLog(SysTaskConfigEntity taskConfig, Exception ex, int cost) {
-            // 运行记录写数据库
             SysTaskLogEntity logEntity = new SysTaskLogEntity();
             logEntity.setTaskId(taskConfig.getId());
             logEntity.setTaskName(taskName);
-            logEntity.setStatus(ex == null ? SysTaskLogEntity.SUCCESS_STATUS : SysTaskLogEntity.FAIL_STATUS);
-            logEntity.setMsg(ex == null ? "" : ex.getClass().getName() + ":" + ex.getMessage());
-            logEntity.setCost(cost);
             logEntity.setCreateTime(new Date());
-            sysTaskLogService.save(logEntity);
+            try {
+                dynamicTask.run(taskConfig.getParam());
+                logEntity.setStatus(SysTaskLogEntity.SUCCESS_STATUS);
+                logEntity.setMsg("");
+            } catch (Exception e) {
+                log.error("task:{}运行异常 {}", taskName, e.getMessage(), e);
+                logEntity.setStatus(SysTaskLogEntity.FAIL_STATUS);
+                logEntity.setMsg(e.toString());
+            } finally {
+                long cost = System.currentTimeMillis() - start;
+                log.info("{}任务结束...耗时:{}ms", taskName, cost);
+                // 运行记录写数据库
+                logEntity.setCost((int) cost);
+                sysTaskLogService.save(logEntity);
+
+            }
         }
     }
 
