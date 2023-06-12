@@ -12,6 +12,7 @@ import com.xsy.file.entity.FileRecordEntity;
 import com.xsy.file.entity.UploadFileDTO;
 import com.xsy.security.user.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -167,13 +168,13 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     /**
-     * 生成存储文件名 业务名_时间戳_随机字符串.后缀名
+     * 生成存储文件名 业务名_时间_随机字符串.后缀名
      *
      * @param originalFilename 原始文件名
      * @param source
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + FileUtils.getExtension(originalFilename);
+        return source + "_" + DateFormatUtils.format(new Date(), "yyyyMMddHHmmss") + "_" + UUID.randomUUID() + "." + FileUtils.getExtension(originalFilename);
     }
 }

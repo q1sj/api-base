@@ -22,10 +22,7 @@ import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
@@ -58,7 +55,9 @@ public class DynamicTaskService implements CommandLineRunner {
         }
         Map<String, DynamicTask> map = dynamicTaskList.stream().collect(Collectors.toMap(t -> t.getClass().getName(), t -> t));
         for (SysTaskConfigEntity taskConfig : configList) {
-            add(map.get(taskConfig.getTaskName()), taskConfig);
+            DynamicTask dynamicTask = map.get(taskConfig.getTaskName());
+            Objects.requireNonNull(dynamicTask, taskConfig.getTaskName() + "未找到bean");
+            add(dynamicTask, taskConfig);
         }
     }
 

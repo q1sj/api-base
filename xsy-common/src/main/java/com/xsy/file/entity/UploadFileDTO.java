@@ -8,7 +8,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class UploadFileDTO {
-    public final static List<String> IMAGE_FILE_EXTENSION = Collections.unmodifiableList(Arrays.asList("jpg", "png", "gif", "bmp"));
-    public final static List<String> VIDEO_FILE_EXTENSION = Collections.unmodifiableList(Arrays.asList("mp4", "avi"));
+    public final static List<String> IMAGE_FILE_EXTENSION = Arrays.asList("jpg", "png", "gif", "bmp");
+    public final static List<String> VIDEO_FILE_EXTENSION = Arrays.asList("mp4", "avi");
 
     private MultipartFile file;
     /**

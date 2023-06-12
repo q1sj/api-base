@@ -32,7 +32,11 @@ public class Clean {
      */
     private final int cleanDayAgo;
     /**
-     * 要删除的文件扩展名
+     * 要删除的文件扩展名,删除所有扩展名使用{@link Collections#emptyList()}
+     * foo.txt      --> "txt"
+     * a/b/c.jpg    --> "jpg"
+     * a/b.txt/c    --> ""
+     * a/b/c        --> ""
      */
     private final List<String> extensionList;
     /**

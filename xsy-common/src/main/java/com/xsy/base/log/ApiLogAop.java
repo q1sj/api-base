@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * post接口日志切面
@@ -39,7 +40,7 @@ public class ApiLogAop {
         long startTime = System.currentTimeMillis();
         Object resp = null;
         Throwable throwable = null;
-        String argsStr = JsonUtils.toLogJsonString(point.getArgs());
+        String argsStr = getLogJson(point.getArgs());
         try {
             resp = point.proceed();
             return resp;
@@ -54,10 +55,18 @@ public class ApiLogAop {
                         SecurityUser.getUserId(),
                         request != null ? request.getRequestURL() : "null",
                         argsStr,
-                        JsonUtils.toLogJsonString(resp),
+                        getLogJson(resp),
                         throwable,
                         System.currentTimeMillis() - startTime);
             }
+        }
+    }
+
+    private static String getLogJson(Object obj) {
+        try {
+            return JsonUtils.toLogJsonString(obj);
+        } catch (Exception e) {
+            return Objects.toString(obj);
         }
     }
 }
