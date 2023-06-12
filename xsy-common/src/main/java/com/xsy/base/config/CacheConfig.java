@@ -3,11 +3,13 @@ package com.xsy.base.config;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -30,21 +32,15 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Configuration
 public class CacheConfig {
-    /**
-     * 缓存过期时间
-     */
-    @Value("${cache.expire:1}")
-    private Integer expire;
-    /**
-     * 缓存过期时间单位
-     */
-    @Value("${cache.expireTimeUnit:HOURS}")
-    private String expireTimeUnit;
-    /**
-     * 缓存最大大小
-     */
-    @Value("${cache.maxSize:10000}")
-    private Long cacheMaxSize;
+    @Autowired
+    private CacheProperties cacheProperties;
+
+    @Bean
+    @ConditionalOnMissingBean(CacheManager.class)
+    @ConditionalOnProperty(name = CacheProperties.ENABLE_PROPERTIES_NAME, havingValue = "false", matchIfMissing = true)
+    public CacheManager noOpCacheManager() {
+        return new NoOpCacheManager();
+    }
 
     /**
      * Caffeine
@@ -62,7 +58,7 @@ public class CacheConfig {
                 // 初始的缓存空间大小
                 .initialCapacity(100)
                 // 缓存的最大条数
-                .maximumSize(cacheMaxSize));
+                .maximumSize(cacheProperties.getCacheMaxSize()));
         return cacheManager;
     }
 
@@ -93,13 +89,14 @@ public class CacheConfig {
      * 缓存过期时间
      */
     private long expireMs() {
-        TimeUnit timeUnit = null;
+        TimeUnit timeUnit;
+        int expire = 1;
         try {
-            timeUnit = TimeUnit.valueOf(expireTimeUnit);
+            timeUnit = TimeUnit.valueOf(cacheProperties.getExpireTimeUnit());
+            expire = cacheProperties.getExpire();
         } catch (IllegalArgumentException e) {
             timeUnit = TimeUnit.HOURS;
-            expire = 1;
-            log.warn("expireTimeUnit:{}无效 使用默认过期时间{} {}", expireTimeUnit, expire, timeUnit.name());
+            log.warn("expireTimeUnit:{}无效 使用默认过期时间{} {}", timeUnit, expire, timeUnit.name());
         }
         return timeUnit.toMillis(expire);
     }
