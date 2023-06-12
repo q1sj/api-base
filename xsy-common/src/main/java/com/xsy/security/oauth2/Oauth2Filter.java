@@ -10,7 +10,10 @@ package com.xsy.security.oauth2;
 
 
 import com.xsy.base.enums.ResultCodeEnum;
-import com.xsy.base.util.*;
+import com.xsy.base.util.HttpContextUtils;
+import com.xsy.base.util.JsonUtils;
+import com.xsy.base.util.Result;
+import com.xsy.base.util.SpringContextUtils;
 import com.xsy.security.annotation.NoAuth;
 import com.xsy.security.enums.SecurityConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -28,8 +32,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
@@ -59,18 +61,19 @@ public class Oauth2Filter extends AuthenticatingFilter {
         }
         RequestMappingHandlerMapping requestMappingHandlerMapping = SpringContextUtils.getBean(RequestMappingHandlerMapping.class);
         try {
-            Annotation[] declaredAnnotations = Optional.ofNullable(requestMappingHandlerMapping.getHandler((HttpServletRequest) request))
-                    .map(handler -> ((HandlerMethod) handler.getHandler()))
-                    .map(HandlerMethod::getMethod)
-                    .map(Method::getDeclaredAnnotations)
-                    .orElse(null);
-	        if (CollectionUtils.isEmpty(declaredAnnotations)) {
-		        return false;
-	        }
-            for (Annotation annotation : declaredAnnotations) {
-                if (annotation.annotationType() == NoAuth.class) {
-                    return true;
-                }
+            Optional<HandlerMethod> handlerMethod = Optional.ofNullable(requestMappingHandlerMapping.getHandler((HttpServletRequest) request))
+                    .map(handler -> ((HandlerMethod) handler.getHandler()));
+            if (handlerMethod.map(HandlerMethod::getBeanType)
+                    .map(beanType -> AnnotatedElementUtils.findMergedAnnotation(beanType, NoAuth.class))
+                    .isPresent()) {
+                log.debug("类存在@NoAuth");
+                return true;
+            }
+            if (handlerMethod.map(HandlerMethod::getMethod)
+                    .map(method -> AnnotatedElementUtils.findMergedAnnotation(method, NoAuth.class))
+                    .isPresent()) {
+                log.debug("方法存在@NoAuth");
+                return true;
             }
         } catch (Exception e) {
             log.error(e.getMessage());
