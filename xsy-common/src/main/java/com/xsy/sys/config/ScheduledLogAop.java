@@ -34,14 +34,14 @@ public class ScheduledLogAop {
 		String taskName = getTaskName(point);
 		log.info("定时任务{} 运行开始", taskName);
 		SysTaskLogEntity logEntity = new SysTaskLogEntity();
-		logEntity.setTaskId(-1L);
+		logEntity.setTaskId((long) taskName.hashCode());
 		logEntity.setTaskName(taskName);
 		logEntity.setCreateTime(new Date());
+		logEntity.setStatus(SysTaskLogEntity.RUNNING_STATUS);
+		logEntity.setMsg("");
+		sysTaskLogService.save(logEntity);
 		try {
-			Object resp = point.proceed();
-			logEntity.setStatus(SysTaskLogEntity.SUCCESS_STATUS);
-			logEntity.setMsg("");
-			return resp;
+			return point.proceed();
 		} catch (Throwable t) {
 			logEntity.setStatus(SysTaskLogEntity.FAIL_STATUS);
 			logEntity.setMsg(t.toString());
@@ -51,7 +51,7 @@ public class ScheduledLogAop {
 			long cost = System.currentTimeMillis() - startTime;
 			log.info("定时任务{} 运行结束 耗时:{}ms", taskName, cost);
 			logEntity.setCost((int) cost);
-			sysTaskLogService.save(logEntity);
+			sysTaskLogService.saveOrUpdate(logEntity);
 		}
 	}
 

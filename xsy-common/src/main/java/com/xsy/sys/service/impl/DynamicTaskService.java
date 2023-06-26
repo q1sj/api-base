@@ -22,7 +22,11 @@ import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
@@ -42,7 +46,7 @@ public class DynamicTaskService implements CommandLineRunner {
     @Autowired
     @Lazy
     private ThreadPoolTaskScheduler threadPoolTaskScheduler;
-    private final Map<String, ScheduledFuture<?>> scheduledFutureMap = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> scheduledFutureMap = new ConcurrentHashMap<>();
 
     @Override
     public void run(String... args) throws Exception {
@@ -128,13 +132,13 @@ public class DynamicTaskService implements CommandLineRunner {
         String taskName = runnable.taskName;
         ScheduledFuture<?> schedule = threadPoolTaskScheduler.schedule(runnable,
                 taskConfig.getAllowReFiresCron() ? new AllowReFiresCronTrigger(cronExpression, taskName) : new CronTrigger(cronExpression));
-        if (scheduledFutureMap.computeIfPresent(taskName, (k, v) -> {
-            log.debug("cancel old:{}", k);
-            v.cancel(false);
+        scheduledFutureMap.compute(taskName, (k, v) -> {
+            if (v != null) {
+                log.debug("cancel old:{}", k);
+                v.cancel(false);
+            }
             return schedule;
-        }) == null) {
-            scheduledFutureMap.putIfAbsent(taskName, schedule);
-        }
+        });
     }
     class CanStopedRunnable implements Runnable {
         private final DynamicTask dynamicTask;
@@ -158,21 +162,27 @@ public class DynamicTaskService implements CommandLineRunner {
             logEntity.setTaskId(taskConfig.getId());
             logEntity.setTaskName(taskName);
             logEntity.setCreateTime(new Date());
+            logEntity.setMsg("");
+            logEntity.setStatus(SysTaskLogEntity.RUNNING_STATUS);
+            // 先记录开始日志
+            sysTaskLogService.save(logEntity);
             try {
                 dynamicTask.run(taskConfig.getParam());
-                logEntity.setStatus(SysTaskLogEntity.SUCCESS_STATUS);
-                logEntity.setMsg("");
             } catch (Exception e) {
                 log.error("task:{}运行异常 {}", taskName, e.getMessage(), e);
                 logEntity.setStatus(SysTaskLogEntity.FAIL_STATUS);
                 logEntity.setMsg(e.toString());
+            } catch (Throwable t) {
+                logEntity.setStatus(SysTaskLogEntity.FAIL_STATUS);
+                logEntity.setMsg(t.toString());
+                throw t;
             } finally {
                 long cost = System.currentTimeMillis() - start;
                 log.info("{}任务结束...耗时:{}ms", taskName, cost);
                 // 运行记录写数据库
                 logEntity.setCost((int) cost);
-                sysTaskLogService.save(logEntity);
-
+                // 更新耗时
+                sysTaskLogService.saveOrUpdate(logEntity);
             }
         }
     }

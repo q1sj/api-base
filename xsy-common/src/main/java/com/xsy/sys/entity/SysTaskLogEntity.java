@@ -14,14 +14,15 @@ import java.util.Date;
  */
 @Entity(name = "sys_task_log")
 @Table(indexes = {
-		@Index(name = "idx_create_time", columnList = "createTime"),
-		@Index(name = "idx_task_id", columnList = "taskId")
+		@Index(name = "idx_sys_task_log_create_time", columnList = "createTime"),
+		@Index(name = "idx_sys_task_log_task_id", columnList = "taskId")
 })
 @TableName("sys_task_log")
 @Data
 public class SysTaskLogEntity {
 	public static final int SUCCESS_STATUS = 0;
 	public static final int FAIL_STATUS = 1;
+	public static final int RUNNING_STATUS = 2;
 	private static final int MSG_MAX_LENGTH = 2048;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
