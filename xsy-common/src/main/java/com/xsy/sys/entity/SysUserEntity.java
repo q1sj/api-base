@@ -31,7 +31,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_user")
 @Entity(name = "sys_user")
-@Table(indexes = {@Index(name = "idx_create_date", columnList = BaseEntity.Fields.createDate)})
+@Table(indexes = {@Index(name = "idx_sys_user_create_date", columnList = BaseEntity.Fields.createDate)})
 @FieldNameConstants
 public class SysUserEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;

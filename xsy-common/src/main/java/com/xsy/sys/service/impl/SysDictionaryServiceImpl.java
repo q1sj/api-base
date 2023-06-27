@@ -19,24 +19,24 @@ import java.util.List;
 public class SysDictionaryServiceImpl extends ServiceImpl<SysDictionaryDao, SysDictionaryEntity> implements SysDictionaryService {
     public List<SysDictionaryEntity> values(String type) {
         LambdaQueryWrapper<SysDictionaryEntity> wrapper = Wrappers.lambdaQuery(SysDictionaryEntity.class)
-                .eq(SysDictionaryEntity::getType, type)
-                .orderByAsc(SysDictionaryEntity::getSort);
+                .eq(SysDictionaryEntity::getDictType, type)
+                .orderByAsc(SysDictionaryEntity::getDictSort);
         return this.list(wrapper);
     }
 
     @Nullable
     public SysDictionaryEntity getByCode(String type, String code) {
         LambdaQueryWrapper<SysDictionaryEntity> wrapper = Wrappers.lambdaQuery(SysDictionaryEntity.class)
-                .eq(SysDictionaryEntity::getType, type)
-                .eq(SysDictionaryEntity::getCode, code);
+                .eq(SysDictionaryEntity::getDictType, type)
+                .eq(SysDictionaryEntity::getDictCode, code);
         return this.getOne(wrapper);
     }
 
     @Override
     public SysDictionaryEntity getByValue(String type, String value) {
         LambdaQueryWrapper<SysDictionaryEntity> wrapper = Wrappers.lambdaQuery(SysDictionaryEntity.class)
-                .eq(SysDictionaryEntity::getType, type)
-                .eq(SysDictionaryEntity::getValue, value);
+                .eq(SysDictionaryEntity::getDictType, type)
+                .eq(SysDictionaryEntity::getDictValue, value);
         return this.getOne(wrapper);
     }
 }

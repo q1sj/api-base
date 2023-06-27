@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @TableName("file_record")
 @Entity(name = "file_record")
-@Table(indexes = {@Index(name = "uk_path", columnList = "path,isDelete", unique = true)})
+@Table(indexes = {@Index(name = "uk_file_record_path", columnList = "path,isDelete", unique = true)})
 public class FileRecordEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

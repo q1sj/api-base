@@ -21,15 +21,15 @@ import javax.persistence.Table;
 @TableName("sys_dictionary")
 @Entity(name = "sys_dictionary")
 @Table(indexes = {
-        @Index(name = "uk_type_code_val", columnList = SysDictionaryEntity.Fields.type + "," + SysDictionaryEntity.Fields.code + "," + SysDictionaryEntity.Fields.value, unique = true)
+        @Index(name = "uk_sys_dictionary_type_code_val", columnList = SysDictionaryEntity.Fields.dictType + "," + SysDictionaryEntity.Fields.dictCode + "," + SysDictionaryEntity.Fields.dictValue, unique = true)
 })
 public class SysDictionaryEntity extends BaseEntity {
     @Column(nullable = false)
-    private String type;
+    private String dictType;
     @Column(nullable = false)
-    private String code;
+    private String dictCode;
     @Column(nullable = false)
-    private String value;
+    private String dictValue;
     @Column(nullable = false)
-    private Integer sort;
+    private Integer dictSort;
 }

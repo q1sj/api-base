@@ -9,7 +9,7 @@ import javax.persistence.*;
  * @author Q1sj
  */
 @Entity(name = "sys_task_config")
-@Table(indexes = {@Index(name = "uk_task_name", columnList = "taskName", unique = true)})
+@Table(indexes = {@Index(name = "uk_sys_task_config_task_name", columnList = "taskName", unique = true)})
 @Data
 @TableName("sys_task_config")
 public class SysTaskConfigEntity {
