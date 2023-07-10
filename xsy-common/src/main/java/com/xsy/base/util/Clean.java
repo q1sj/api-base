@@ -69,11 +69,11 @@ public class Clean {
         }
 
         for (int cleanDayAgo = this.cleanDayAgo; cleanDayAgo > 0; cleanDayAgo--) {
-            log.info("{} 删除{}天前数据 扩展名:{}", path, cleanDayAgo, extensionList.isEmpty() ? "*" : extensionList);
+            log.info("{} 删除{}天前数据 扩展名:{}", path.getAbsolutePath(), cleanDayAgo, extensionList.isEmpty() ? "*" : extensionList);
             clean(path, cleanDayAgo);
             long usableSpace = path.getUsableSpace();
             int utilizationRate = utilizationRate();
-            log.info("{} 可用空间:{} 使用率:{}% 允许最大使用率:{}%", path, FileUtils.byteCountToDisplaySize(usableSpace), utilizationRate, allowMaxUtilizationRate);
+            log.info("{} 可用空间:{} 使用率:{}% 允许最大使用率:{}%", path.getAbsolutePath(), FileUtils.byteCountToDisplaySize(usableSpace), utilizationRate, allowMaxUtilizationRate);
             if (allowMaxUtilizationRate > utilizationRate) {
                 return;
             }

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.util.Date;
 
 /**
@@ -50,7 +49,6 @@ public class SysConfigEntity {
      *
      * @ignore
      */
-    @Null
     private Date updateTime;
 
     public SysConfigEntity(String key, String value) {

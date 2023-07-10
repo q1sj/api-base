@@ -38,6 +38,7 @@ public class ScheduledLogAop {
 		logEntity.setTaskName(taskName);
 		logEntity.setCreateTime(new Date());
 		logEntity.setStatus(SysTaskLogEntity.RUNNING_STATUS);
+		logEntity.setCost(-1);
 		logEntity.setMsg("");
 		sysTaskLogService.save(logEntity);
 		try {

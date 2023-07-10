@@ -34,7 +34,7 @@ public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventList
     private static final Map<String, List<SysConfigField>> SYS_CONFIG_FIELD_MAP = new ConcurrentHashMap<>();
     @Autowired
     @Lazy
-    private ConversionService conversionService;
+    private ConversionService mvcConversionService;
     @Autowired
     @Lazy
     private SysConfigService sysConfigService;
@@ -57,7 +57,7 @@ public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventList
 
     @Override
     public int getOrder() {
-        return 0;
+        return HIGHEST_PRECEDENCE + 1;
     }
 
     private void initSysConfigField(Object bean) throws BeansException {
@@ -100,7 +100,7 @@ public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventList
         }
         Object newValue;
         try {
-            newValue = conversionService.convert(valueStr, sysConfigField.field.getType());
+            newValue = mvcConversionService.convert(valueStr, sysConfigField.field.getType());
         } catch (Exception e) {
             throw new IllegalArgumentException(sysConfigField.key + "不合法", e);
         }
