@@ -34,7 +34,8 @@ public class ScheduledLogAop {
 		String taskName = getTaskName(point);
 		log.info("定时任务{} 运行开始", taskName);
 		SysTaskLogEntity logEntity = new SysTaskLogEntity();
-		logEntity.setTaskId((long) taskName.hashCode());
+
+		logEntity.setTaskId(Integer.toUnsignedLong(taskName.hashCode()));
 		logEntity.setTaskName(taskName);
 		logEntity.setCreateTime(new Date());
 		logEntity.setStatus(SysTaskLogEntity.RUNNING_STATUS);
@@ -42,7 +43,9 @@ public class ScheduledLogAop {
 		logEntity.setMsg("");
 		sysTaskLogService.save(logEntity);
 		try {
-			return point.proceed();
+			Object proceed = point.proceed();
+			logEntity.setStatus(SysTaskLogEntity.SUCCESS_STATUS);
+			return proceed;
 		} catch (Throwable t) {
 			logEntity.setStatus(SysTaskLogEntity.FAIL_STATUS);
 			logEntity.setMsg(t.toString());

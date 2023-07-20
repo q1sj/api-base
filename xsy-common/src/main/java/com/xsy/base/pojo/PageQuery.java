@@ -37,8 +37,8 @@ public class PageQuery {
 
     public <T> IPage<T> initPage() {
         return new Page<>(
-                page == null ? DEFAULT_PAGE : Math.max(page, MAX_PAGE),
-                pageSize == null ? DEFAULT_PAGE_SIZE : Math.max(pageSize, MAX_PAGE_SIZE)
+                page == null ? DEFAULT_PAGE : Math.min(page, MAX_PAGE),
+                pageSize == null ? DEFAULT_PAGE_SIZE : Math.min(pageSize, MAX_PAGE_SIZE)
         );
     }
 }

@@ -54,8 +54,8 @@ public class FileRecordServiceImpl implements FileRecordService {
         long maxSize = uploadFileDTO.getMaxSize();
         BizAssertUtils.isTrue(size <= maxSize, "文件过大 阈值:" + FileUtils.byteCountToDisplaySize(maxSize) + "实际:" + FileUtils.byteCountToDisplaySize(size));
         String originalFilename = file.getOriginalFilename();
-        List<String> fileExtension = uploadFileDTO.getFileExtension();
-        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getExtension(originalFilename)), "文件类型不合法");
+        Set<String> fileExtension = uploadFileDTO.getFileExtension();
+        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getExtension(originalFilename).toLowerCase()), "文件类型不合法");
         try (InputStream is = file.getInputStream()) {
             return save(is, size, originalFilename, uploadFileDTO.getSource(), uploadFileDTO.getExpireMs());
         }
@@ -110,6 +110,24 @@ public class FileRecordServiceImpl implements FileRecordService {
         BeanUtils.copyProperties(record, dto);
         dto.setContent(inputStream);
         return dto;
+    }
+
+    @Override
+    public InputStream getInputStream(Long fileId) throws IOException {
+        FileRecordEntity record = fileRecordDao.selectById(fileId);
+        if (record == null) {
+            throw new FileNotFoundException(Objects.toString(fileId));
+        }
+        return getInputStream(record.getPath());
+    }
+
+    @Override
+    public FileRecordDTO getFileRecord(Long fileId) throws IOException {
+        FileRecordEntity record = fileRecordDao.selectById(fileId);
+        if (record == null) {
+            throw new FileNotFoundException(Objects.toString(fileId));
+        }
+        return getFileRecord(record.getPath());
     }
 
     @Override

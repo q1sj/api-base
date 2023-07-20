@@ -35,17 +35,17 @@ import java.util.concurrent.TimeUnit;
 public class FileRecordController {
     public static final String REQUEST_MAPPING = "/file";
     public static final String DOWNLOAD_MAPPING = "/download";
-    @Autowired
-    private FileRecordService fileRecordService;
+	public static final String IMG_MAPPING = "/img";
+	@Autowired
+	private FileRecordService fileRecordService;
 
-    /**
-     * 上传文件 demo
-     * <p>
-     * 根据具体业务单独编写接口 设置文件大小阈值,合法后缀名
-     *
-     * @param file
-     * @return
-     */
+	/**
+	 * 上传文件
+	 *
+	 * @param file
+	 * @return
+	 * @apiNote demo 根据具体业务单独编写接口 设置文件大小阈值,合法后缀名
+	 */
     @PostMapping("/upload")
     public Result<FileRecordEntity> upload(MultipartFile file) {
         String source = "upload-api-demo";
@@ -76,20 +76,66 @@ public class FileRecordController {
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         try {
             FileRecordDTO fileRecord = this.fileRecordService.getFileRecord(path);
-            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
-            try (InputStream is = fileRecord.getContent();
-                 OutputStream os = response.getOutputStream()) {
-                IOUtils.copy(is, os);
-            }
+	        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
+	        try (InputStream is = fileRecord.getContent();
+	             OutputStream os = response.getOutputStream()) {
+		        IOUtils.copy(is, os);
+	        }
         } catch (IOException e) {
-            throw new GlobalException("文件下载失败 " + e.getMessage(), e);
+	        throw new GlobalException("文件下载失败 " + e.getMessage(), e);
         }
     }
 
-    @PostMapping("/delete")
-    public Result<Void> delete(@RequestParam String path) {
-        boolean delete = fileRecordService.delete(path);
-        return delete ? Result.ok() : Result.error("删除失败");
-    }
+	/**
+	 * 下载文件
+	 *
+	 * @param response
+	 * @param fileId
+	 */
+	@NoAuth
+	@GetMapping(DOWNLOAD_MAPPING + "/{fileId}")
+	public void download(HttpServletResponse response, @PathVariable Long fileId) {
+		response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+		try {
+			FileRecordDTO fileRecord = this.fileRecordService.getFileRecord(fileId);
+			response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
+			try (InputStream is = fileRecord.getContent();
+			     OutputStream os = response.getOutputStream()) {
+				IOUtils.copy(is, os);
+			}
+		} catch (IOException e) {
+			throw new GlobalException("文件下载失败 " + e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 访问图片
+	 *
+	 * @param response
+	 * @param fileId
+	 */
+	@NoAuth
+	@GetMapping(IMG_MAPPING + "/{fileId}")
+	public void img(HttpServletResponse response, @PathVariable Long fileId) {
+		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		try (InputStream is = this.fileRecordService.getInputStream(fileId);
+		     OutputStream os = response.getOutputStream()) {
+			IOUtils.copy(is, os);
+		} catch (IOException e) {
+			throw new GlobalException("图片访问失败", e);
+		}
+	}
+
+	/**
+	 * 删除
+	 *
+	 * @param path
+	 * @return
+	 */
+	@PostMapping("/delete")
+	public Result<Void> delete(@RequestParam String path) {
+		boolean delete = fileRecordService.delete(path);
+		return delete ? Result.ok() : Result.error("删除失败");
+	}
 }
 

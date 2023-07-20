@@ -56,14 +56,18 @@ public interface FileRecordService {
      */
     InputStream getInputStream(String path) throws IOException;
 
-    /**
-     * 获取文件内容
-     *
-     * @param path
-     * @return
-     * @throws IOException
-     */
-    FileRecordDTO getFileRecord(String path) throws IOException;
+	InputStream getInputStream(Long fileId) throws IOException;
+
+	/**
+	 * 获取文件内容
+	 *
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
+	FileRecordDTO getFileRecord(String path) throws IOException;
+
+	FileRecordDTO getFileRecord(Long fileId) throws IOException;
 
     /**
      * 删除文件

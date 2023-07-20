@@ -8,6 +8,7 @@
 
 package com.xsy.base.exception;
 
+import ch.qos.logback.core.util.FileSize;
 import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.util.Result;
 import com.xsy.security.user.SecurityUser;
@@ -24,6 +25,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 
 /**
@@ -32,7 +34,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
 
     /**
      * 处理自定义异常
@@ -62,6 +63,15 @@ public class GlobalExceptionHandler {
     public Result<?> handleException(BindException e) {
         BindingResult bindingResult = e.getBindingResult();
         return getResult(e, bindingResult);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result<?> handleException(MaxUploadSizeExceededException e) {
+        logger.error(e.getMessage(), e);
+        if (e.getMaxUploadSize() > 0) {
+            return Result.error("文件上传大小不能大于" + new FileSize(e.getMaxUploadSize()));
+        }
+        return Result.error("上传文件过大");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

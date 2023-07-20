@@ -8,7 +8,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,9 +20,12 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class UploadFileDTO {
-    public final static List<String> IMAGE_FILE_EXTENSION = Arrays.asList("jpg", "png", "gif", "bmp");
-    public final static List<String> VIDEO_FILE_EXTENSION = Arrays.asList("mp4", "avi");
-
+    public final static Set<String> IMAGE_FILE_EXTENSION = new HashSet<>(Arrays.asList("jpg", "png", "gif", "bmp"));
+    public final static Set<String> VIDEO_FILE_EXTENSION = new HashSet<>(Arrays.asList("mp4", "avi"));
+    /**
+     * expireMs < 0 永不过期
+     */
+    public final static int NO_EXPIRE = -1;
     private MultipartFile file;
     /**
      * 数据来源
@@ -39,6 +43,16 @@ public class UploadFileDTO {
      * 合法文件后缀名
      */
     @Nullable
-    private List<String> fileExtension;
+    private Set<String> fileExtension;
+
+    public UploadFileDTO setFileExtension(@Nullable Set<String> fileExtension) {
+        this.fileExtension = fileExtension;
+        return this;
+    }
+
+    public UploadFileDTO setFileExtension(String... fileExtension) {
+        this.fileExtension = new HashSet<>(Arrays.asList(fileExtension));
+        return this;
+    }
 
 }
