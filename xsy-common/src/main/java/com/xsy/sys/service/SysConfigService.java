@@ -15,6 +15,15 @@ public interface SysConfigService {
     @Nullable
     String get(String key);
 
+    /**
+     * 获取原始值 未进行${}替换的值
+     *
+     * @param key
+     * @return
+     */
+    @Nullable
+    String getOriginal(String key);
+
     <T> T get(BaseKey<T> key);
 
     /**

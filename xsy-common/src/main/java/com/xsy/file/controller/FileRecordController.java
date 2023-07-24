@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,17 +74,20 @@ public class FileRecordController {
     @NoAuth
     @GetMapping(DOWNLOAD_MAPPING)
     public void download(HttpServletResponse response, @RequestParam String path) {
-        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        try {
-            FileRecordDTO fileRecord = this.fileRecordService.getFileRecord(path);
-	        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
-	        try (InputStream is = fileRecord.getContent();
-	             OutputStream os = response.getOutputStream()) {
-		        IOUtils.copy(is, os);
-	        }
-        } catch (IOException e) {
-	        throw new GlobalException("文件下载失败 " + e.getMessage(), e);
-        }
+	    response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+	    try {
+		    FileRecordDTO fileRecord = this.fileRecordService.getFileRecord(path);
+		    response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
+		    try (InputStream is = fileRecord.getContent();
+		         OutputStream os = response.getOutputStream()) {
+			    long length = IOUtils.copyLarge(is, os);
+			    response.setContentLengthLong(length);
+		    }
+	    } catch (FileNotFoundException e) {
+		    throw new GlobalException("文件已过期或不存在", e);
+	    } catch (IOException e) {
+		    throw new GlobalException("文件下载失败 " + e.getMessage(), e);
+	    }
     }
 
 	/**
@@ -101,8 +105,11 @@ public class FileRecordController {
 			response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
 			try (InputStream is = fileRecord.getContent();
 			     OutputStream os = response.getOutputStream()) {
-				IOUtils.copy(is, os);
+				long length = IOUtils.copyLarge(is, os);
+				response.setContentLengthLong(length);
 			}
+		} catch (FileNotFoundException e) {
+			throw new GlobalException("文件已过期或不存在", e);
 		} catch (IOException e) {
 			throw new GlobalException("文件下载失败 " + e.getMessage(), e);
 		}
@@ -120,9 +127,12 @@ public class FileRecordController {
 		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
 		try (InputStream is = this.fileRecordService.getInputStream(fileId);
 		     OutputStream os = response.getOutputStream()) {
-			IOUtils.copy(is, os);
+			int length = IOUtils.copy(is, os);
+			response.setContentLength(length);
+		} catch (FileNotFoundException e) {
+			throw new GlobalException("文件已过期或不存在", e);
 		} catch (IOException e) {
-			throw new GlobalException("图片访问失败", e);
+			throw new GlobalException("文件下载失败 " + e.getMessage(), e);
 		}
 	}
 

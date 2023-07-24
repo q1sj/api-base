@@ -15,7 +15,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
     /**
      * 读取resource目录下文件
      *
-     * @param path
+     * @param path 目录名/文件名 开头不要/ 例如 'json/xx.json'
      * @return
      * @throws IOException
      */

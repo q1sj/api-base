@@ -74,6 +74,15 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
+    public String getOriginal(String key) {
+        SysConfigEntity entity = this.getById(key);
+        if (entity == null) {
+            return null;
+        }
+        return entity.getConfigValue();
+    }
+
+    @Override
     public <T> T get(BaseKey<T> key) {
         String k = key.getKey();
         String valStr = get(k);

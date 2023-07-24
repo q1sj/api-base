@@ -20,7 +20,7 @@ import java.util.TimeZone;
 /**
  * JSON 工具类
  *
- * @author Mark sunlightcs@gmail.com
+ * @author Q1sj
  */
 public class JsonUtils {
     private static final ObjectMapper OBJECT_MAPPER;

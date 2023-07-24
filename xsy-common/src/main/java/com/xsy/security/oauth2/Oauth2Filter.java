@@ -66,13 +66,13 @@ public class Oauth2Filter extends AuthenticatingFilter {
             if (handlerMethod.map(HandlerMethod::getBeanType)
                     .map(beanType -> AnnotatedElementUtils.findMergedAnnotation(beanType, NoAuth.class))
                     .isPresent()) {
-                log.debug("类存在@NoAuth");
+                log.debug("{} 类存在@NoAuth", ((HttpServletRequest) request).getRequestURI());
                 return true;
             }
             if (handlerMethod.map(HandlerMethod::getMethod)
                     .map(method -> AnnotatedElementUtils.findMergedAnnotation(method, NoAuth.class))
                     .isPresent()) {
-                log.debug("方法存在@NoAuth");
+                log.debug("{} 方法存在@NoAuth", ((HttpServletRequest) request).getRequestURI());
                 return true;
             }
         } catch (Exception e) {

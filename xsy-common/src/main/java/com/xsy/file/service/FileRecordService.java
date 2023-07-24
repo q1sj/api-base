@@ -14,35 +14,40 @@ import java.io.InputStream;
  * @date 2022.8.15 14:02
  */
 public interface FileRecordService {
-    /**
-     * 上传文件
-     * controller demo {@link FileRecordController#upload}
-     *
-     * @param uploadFileDTO
-     * @return
-     * @throws IOException
-     */
-    FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException;
+	/**
+	 * 永不过期
+	 */
+	int NO_EXPIRE = -1;
 
-    /**
-     * 保存文件
-     *
-     * @param file     文件
-     * @param source   数据来源 避免使用文件名中不允许的字符
-     * @param expireMs 过期毫秒值
-     * @return
-     * @throws IOException
-     */
-    FileRecordEntity save(File file, String source, long expireMs) throws IOException;
+	/**
+	 * 上传文件
+	 * controller demo {@link FileRecordController#upload}
+	 *
+	 * @param uploadFileDTO
+	 * @return
+	 * @throws IOException
+	 */
+	FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException;
 
-    /**
-     * 保存文件
-     *
-     * @param data             文件内容
-     * @param fileSize         文件大小
-     * @param originalFilename 原始文件名
-     * @param source           数据来源 避免使用文件名中不允许的字符
-     * @param expireMs         过期毫秒值
+	/**
+	 * 保存文件
+	 *
+	 * @param file     文件
+	 * @param source   数据来源 避免使用文件名中不允许的字符
+	 * @param expireMs 过期毫秒值
+	 * @return
+	 * @throws IOException
+	 */
+	FileRecordEntity save(File file, String source, long expireMs) throws IOException;
+
+	/**
+	 * 保存文件
+	 *
+	 * @param data             文件内容
+	 * @param fileSize         文件大小
+	 * @param originalFilename 原始文件名
+	 * @param source           数据来源 避免使用文件名中不允许的字符
+	 * @param expireMs         过期毫秒值
      * @return
      */
     FileRecordEntity save(InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException;
@@ -69,11 +74,21 @@ public interface FileRecordService {
 
 	FileRecordDTO getFileRecord(Long fileId) throws IOException;
 
-    /**
-     * 删除文件
-     *
-     * @param path {@link FileRecordEntity#getPath()}
-     * @return
-     */
-    boolean delete(String path);
+	/**
+	 * 删除文件
+	 *
+	 * @param path {@link FileRecordEntity#getPath()}
+	 * @return
+	 */
+	boolean delete(String path);
+
+	boolean delete(Long fileId);
+
+	/**
+	 * 更新文件过期时间
+	 *
+	 * @param fileId   文件id
+	 * @param expireMs 过期时间=当前时间+expireMs expireMs<=0 永不过期
+	 */
+	void updateExpireTime(long fileId, long expireMs);
 }

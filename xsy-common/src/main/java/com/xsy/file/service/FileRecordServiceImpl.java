@@ -2,6 +2,7 @@ package com.xsy.file.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xsy.base.util.BizAssertUtils;
 import com.xsy.base.util.CollectionUtils;
 import com.xsy.base.util.FileUtils;
@@ -33,7 +34,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class FileRecordServiceImpl implements FileRecordService {
+public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecordEntity> implements FileRecordService {
     private final List<String> illegalCharactersInDirectoryNames = Arrays.asList("*", ".", "\"", "[", "]", ":", ";", "|", "=");
     private final FileRecordDao fileRecordDao;
     private final FileStorageStrategy fileStorageStrategy;
@@ -83,7 +84,7 @@ public class FileRecordServiceImpl implements FileRecordService {
         fileRecordEntity.setUploadIp(IpUtils.getIpAddr(request));
         fileRecordEntity.setUploadTime(new Date());
         fileRecordEntity.setDigest(fileStorageStrategy.digest(path));
-        // expireMs < 0 不过期
+        // expireMs <= 0 不过期
         if (expireMs > 0) {
             Date expireTime = new Date(System.currentTimeMillis() + expireMs);
             fileRecordEntity.setExpireTime(expireTime);
@@ -151,6 +152,31 @@ public class FileRecordServiceImpl implements FileRecordService {
             fileRecordDao.updateById(record);
         }
         return fileRecordDao.deleteById(record.getId()) > 0;
+    }
+
+    @Override
+    public boolean delete(Long fileId) {
+        log.info("delete {}", fileId);
+        FileRecordEntity record = this.getById(fileId);
+        if (record == null) {
+            log.warn("id:{} 不存在", fileId);
+            return false;
+        }
+        try {
+            fileStorageStrategy.delete(record.getPath());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            record.setRemark(e.getClass().getName() + ":" + e.getMessage());
+            fileRecordDao.updateById(record);
+        }
+        return fileRecordDao.deleteById(record.getId()) > 0;
+    }
+
+    @Override
+    public void updateExpireTime(long fileId, long expireMs) {
+        update(Wrappers.lambdaUpdate(FileRecordEntity.class)
+                .eq(FileRecordEntity::getId, fileId)
+                .set(FileRecordEntity::getExpireTime, expireMs > 0 ? new Date(System.currentTimeMillis() + expireMs) : null));
     }
 
     /**

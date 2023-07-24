@@ -1,8 +1,6 @@
 package com.xsy.file.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -67,6 +65,7 @@ public class FileRecordEntity {
     /**
      * 过期时间 为空永不过期
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Date expireTime;
     @Column(nullable = false)
     @ColumnDefault("CURRENT_TIMESTAMP(6)")

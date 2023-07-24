@@ -1,6 +1,7 @@
 package com.xsy.file.entity;
 
 import com.xsy.base.util.FileUtils;
+import com.xsy.file.service.FileRecordService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -23,9 +24,9 @@ public class UploadFileDTO {
     public final static Set<String> IMAGE_FILE_EXTENSION = new HashSet<>(Arrays.asList("jpg", "png", "gif", "bmp"));
     public final static Set<String> VIDEO_FILE_EXTENSION = new HashSet<>(Arrays.asList("mp4", "avi"));
     /**
-     * expireMs < 0 永不过期
+     * expireMs <= 0 永不过期
      */
-    public final static int NO_EXPIRE = -1;
+    public final static int NO_EXPIRE = FileRecordService.NO_EXPIRE;
     private MultipartFile file;
     /**
      * 数据来源
