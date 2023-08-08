@@ -81,10 +81,15 @@
         </plugins>
     </build>
     <distributionManagement>
-        <repository>
+        <!--<repository>
             <id>github</id>
             <name>GitHub OWNER Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/q1sj/api-base</url>
+        </repository>-->
+        <repository>
+            <id>nexus-releases</id>
+            <name>nexus-releases</name>
+            <url>http://192.168.2.250:8081/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 </project>

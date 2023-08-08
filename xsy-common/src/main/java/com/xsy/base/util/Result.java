@@ -97,6 +97,9 @@ public class Result<T> {
     }
 
     public boolean isSuccess() {
-        return this.code == SUCCESS_CODE;
+        if (this.code == null) {
+            return true;
+        }
+        return Objects.equals(this.code, SUCCESS_CODE);
     }
 }

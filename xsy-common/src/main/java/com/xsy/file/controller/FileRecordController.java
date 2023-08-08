@@ -86,7 +86,7 @@ public class FileRecordController {
 	    } catch (FileNotFoundException e) {
 		    throw new GlobalException("文件已过期或不存在", e);
 	    } catch (IOException e) {
-		    throw new GlobalException("文件下载失败 " + e.getMessage(), e);
+		    throw new GlobalException("文件下载失败", e);
 	    }
     }
 
@@ -111,7 +111,7 @@ public class FileRecordController {
 		} catch (FileNotFoundException e) {
 			throw new GlobalException("文件已过期或不存在", e);
 		} catch (IOException e) {
-			throw new GlobalException("文件下载失败 " + e.getMessage(), e);
+			throw new GlobalException("文件下载失败", e);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class FileRecordController {
 		} catch (FileNotFoundException e) {
 			throw new GlobalException("文件已过期或不存在", e);
 		} catch (IOException e) {
-			throw new GlobalException("文件下载失败 " + e.getMessage(), e);
+			throw new GlobalException("文件下载失败", e);
 		}
 	}
 
