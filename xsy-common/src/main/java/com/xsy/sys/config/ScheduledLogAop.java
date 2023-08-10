@@ -1,7 +1,7 @@
 package com.xsy.sys.config;
 
-import com.xsy.sys.entity.SysTaskLogEntity;
-import com.xsy.sys.service.SysTaskLogService;
+import com.xsy.job.entity.ScheduleJobLogEntity;
+import com.xsy.job.service.ScheduleJobLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -22,7 +22,7 @@ import java.util.Date;
 @Component
 public class ScheduledLogAop {
 	@Autowired
-	private SysTaskLogService sysTaskLogService;
+	private ScheduleJobLogService scheduleJobLogService;
 
 	@Pointcut("@annotation(org.springframework.scheduling.annotation.Scheduled)")
 	public void pointcut() {
@@ -33,29 +33,29 @@ public class ScheduledLogAop {
 		long startTime = System.currentTimeMillis();
 		String taskName = getTaskName(point);
 		log.info("定时任务{} 运行开始", taskName);
-		SysTaskLogEntity logEntity = new SysTaskLogEntity();
+		ScheduleJobLogEntity logEntity = new ScheduleJobLogEntity();
 
-		logEntity.setTaskId(Integer.toUnsignedLong(taskName.hashCode()));
-		logEntity.setTaskName(taskName);
+		logEntity.setJobId(Integer.toUnsignedLong(taskName.hashCode()));
+		logEntity.setBeanName(taskName);
+		logEntity.setParams("");
 		logEntity.setCreateTime(new Date());
-		logEntity.setStatus(SysTaskLogEntity.RUNNING_STATUS);
-		logEntity.setCost(-1);
-		logEntity.setMsg("");
-		sysTaskLogService.save(logEntity);
+		logEntity.setStatus(ScheduleJobLogEntity.EXECUTION_STATUS);
+		logEntity.setTimes(-1);
+		scheduleJobLogService.save(logEntity);
 		try {
 			Object proceed = point.proceed();
-			logEntity.setStatus(SysTaskLogEntity.SUCCESS_STATUS);
+			logEntity.setStatus(ScheduleJobLogEntity.SUCCESS_STATUS);
 			return proceed;
 		} catch (Throwable t) {
-			logEntity.setStatus(SysTaskLogEntity.FAIL_STATUS);
-			logEntity.setMsg(t.toString());
+			logEntity.setStatus(ScheduleJobLogEntity.FAIL_STATUS);
+			logEntity.setError(t.getMessage());
 			log.error("定时任务{} 运行失败 exception:{}", taskName, t.toString());
 			throw t;
 		} finally {
 			long cost = System.currentTimeMillis() - startTime;
 			log.info("定时任务{} 运行结束 耗时:{}ms", taskName, cost);
-			logEntity.setCost((int) cost);
-			sysTaskLogService.saveOrUpdate(logEntity);
+			logEntity.setTimes((int) cost);
+			scheduleJobLogService.saveOrUpdate(logEntity);
 		}
 	}
 

@@ -34,6 +34,7 @@
         <h2.version>2.1.210</h2.version>
         <druid.version>1.1.13</druid.version>
         <mybatisplus.version>3.5.2</mybatisplus.version>
+        <quartz.version>2.3.0</quartz.version>
         <commons.io.version>2.5</commons.io.version>
         <joda-time.version>2.10.14</joda-time.version>
         <fastdfs-client.version>1.26.5</fastdfs-client.version>
@@ -114,6 +115,17 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.mchange</groupId>
+                        <artifactId>c3p0</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
