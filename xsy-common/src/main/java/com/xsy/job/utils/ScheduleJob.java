@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -68,6 +69,12 @@ public class ScheduleJob extends QuartzJobBean {
 
 			logger.debug("任务执行完毕，任务ID：" + scheduleJob.getJobId() + "  总共耗时：" + times + "毫秒");
 		} catch (Exception e) {
+			Throwable t;
+			if (e instanceof InvocationTargetException && ((InvocationTargetException) e).getTargetException() != null) {
+				t = ((InvocationTargetException) e).getTargetException();
+			} else {
+				t = e;
+			}
 			logger.error("任务执行失败，任务ID：" + scheduleJob.getJobId(), e);
 
 			//任务执行总时长
@@ -76,7 +83,7 @@ public class ScheduleJob extends QuartzJobBean {
 
 			//任务状态    0：成功    1：失败
 			log.setStatus(1);
-			log.setError(StringUtils.substring(e.toString(), 0, 2000));
+			log.setError(StringUtils.substring(t.toString(), 0, 2000));
 		} finally {
 			scheduleJobLogService.save(log);
 		}

@@ -11,8 +11,6 @@ package com.xsy.base.exception;
 
 import com.xsy.base.enums.ResultCodeEnum;
 
-import java.util.Arrays;
-
 /**
  * 自定义异常
  *
@@ -46,11 +44,5 @@ public class GlobalException extends RuntimeException {
 
     public ResultCodeEnum getCode() {
         return code;
-    }
-
-    @Override
-    public StackTraceElement[] getStackTrace() {
-        StackTraceElement[] stackTrace = super.getStackTrace();
-        return Arrays.stream(stackTrace).filter(stackTraceElement -> stackTraceElement.getClassName().startsWith("com.xsy")).toArray(StackTraceElement[]::new);
     }
 }
