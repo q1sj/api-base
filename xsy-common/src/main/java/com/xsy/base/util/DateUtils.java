@@ -1,5 +1,10 @@
 package com.xsy.base.util;
 
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+
+import java.io.IOException;
+import java.net.InetAddress;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,8 +16,33 @@ import java.util.Date;
  * @date 2022.9.7 16:58
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
+    public static final String DEFAULT_NTP_SERVER_HOST = "ntp.aliyun.com";
 
     public static final ZoneId ZONE_ID = ZoneId.systemDefault();
+
+    public static Date getNetDate() throws IOException {
+        return getNetDate(DEFAULT_NTP_SERVER_HOST);
+    }
+
+    /**
+     * 获取网络时间
+     *
+     * @param ntpServerHost
+     * @return
+     * @throws IOException
+     */
+    public static Date getNetDate(String ntpServerHost) throws IOException {
+        NTPUDPClient ntpudpClient = new NTPUDPClient();
+        try {
+            ntpudpClient.open();
+            ntpudpClient.setSoTimeout(1000);
+            ntpudpClient.setDefaultTimeout(1000);
+            TimeInfo time = ntpudpClient.getTime(InetAddress.getByName(ntpServerHost));
+            return new Date(time.getMessage().getTransmitTimeStamp().getTime());
+        } finally {
+            ntpudpClient.close();
+        }
+    }
 
     /**
      * 获取年月日 时分秒毫秒清零
