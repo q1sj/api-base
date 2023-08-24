@@ -28,6 +28,9 @@ import com.xsy.sys.enums.SuperAdminEnum;
 import com.xsy.sys.enums.UserStatusEnum;
 import com.xsy.sys.service.SysRoleUserService;
 import com.xsy.sys.service.SysUserService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -50,6 +56,7 @@ import java.util.List;
 @Service
 @CacheConfig(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME)
 public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEntity> implements SysUserService {
+    private static final int MAX_WRONG_PASSWORD_COUNT = 5;
     @Autowired
     private SysRoleUserService sysRoleUserService;
     @Autowired
@@ -160,11 +167,17 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
     @Override
     public SysUserDTO validLogin(LoginDTO login) throws GlobalException {
+        // 密码连续错误锁定账号
+        String username = login.getUsername();
+        if (passwordErrorExceeded(username)) {
+            throw new GlobalException("账户锁定");
+        }
         // 根据用户名获取用户
         //用户信息
-        SysUserEntity user = baseDao.getByUsername(login.getUsername());
+        SysUserEntity user = baseDao.getByUsername(username);
         if (user == null) {
-            throw new GlobalException("用户名或密码错误");
+            int wrongPasswordCount = accumulateWrongPasswords(username);
+            throw new GlobalException("用户名或密码错误" + wrongPasswordCount + "次,超过" + MAX_WRONG_PASSWORD_COUNT + "锁定账户");
         }
         //账号停用
         if (userIsDisable(user)) {
@@ -172,21 +185,88 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         }
         // 密码错误
         if (!PasswordUtils.matches(login.getPassword(), user.getPassword())) {
-            // TODO 密码连续错误锁定账号
-            throw new GlobalException("用户名或密码错误");
+            // 累加错误次数
+            int wrongPasswordCount = accumulateWrongPasswords(username);
+            throw new GlobalException("用户名或密码错误" + wrongPasswordCount + "次,超过" + MAX_WRONG_PASSWORD_COUNT + "锁定账户");
         }
+        clearWrongPassrodCount(username);
         SysUserDTO dto = new SysUserDTO();
         BeanUtils.copyProperties(user, dto);
         return dto;
     }
 
     public boolean userIsDisable(SysUserEntity user) {
-        // TODO 加入锁定过期时间
         return user.getStatus() == UserStatusEnum.DISABLE.value();
     }
 
     private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {
         return Wrappers.lambdaQuery(SysUserEntity.class)
                 .like(StringUtils.isNotBlank(query.getUsername()), SysUserEntity::getUsername, query.getUsername());
+    }
+
+    /**
+     * 累加密码错误次数
+     *
+     * @param username
+     */
+    private synchronized int accumulateWrongPasswords(String username) {
+        WrongPasswordRecord record = getWrongPasswordRecord(username);
+        record.setWrongCount(record.getWrongCount() + 1);
+        record.setLastWrongTime(System.currentTimeMillis());
+        wrongPasswordRecordMap.put(username, record);
+        return record.getWrongCount();
+    }
+
+    /**
+     * 用户是否超过密码错误次数
+     * x分钟内错误次数大于x次
+     *
+     * @param username
+     * @return
+     */
+    private boolean passwordErrorExceeded(String username) {
+        WrongPasswordRecord record = getWrongPasswordRecord(username);
+        // x分钟内错误次数大于x次 锁定
+        if (record.getWrongCount() >= MAX_WRONG_PASSWORD_COUNT) {
+            if (record.getLastWrongTime() + TimeUnit.MINUTES.toMillis(30) > System.currentTimeMillis()) {
+                return true;
+            } else {
+                // 超出时间 清空错误次数
+                clearWrongPassrodCount(username);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private void clearWrongPassrodCount(String username) {
+        getWrongPasswordRecord(username).setWrongCount(0);
+    }
+
+    private final Map<String, WrongPasswordRecord> wrongPasswordRecordMap = new ConcurrentHashMap<>();
+
+    private WrongPasswordRecord getWrongPasswordRecord(String username) {
+        return wrongPasswordRecordMap.computeIfAbsent(username, k -> new WrongPasswordRecord(username, 0, 0L));
+    }
+
+    /**
+     * 用户密码错误次数记录
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class WrongPasswordRecord {
+        /**
+         * 用户名
+         */
+        private String username;
+        /**
+         * 错误次数
+         */
+        private Integer wrongCount;
+        /**
+         * 上次密码错误时间
+         */
+        private Long lastWrongTime;
     }
 }
