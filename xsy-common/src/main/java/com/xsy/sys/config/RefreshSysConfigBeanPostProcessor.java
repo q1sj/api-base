@@ -155,27 +155,6 @@ public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventList
 	private void refreshValue(SysConfigField sysConfigField) {
 		String valueStr = sysConfigService.get(sysConfigField.key);
 		refreshValue(sysConfigField, valueStr);
-		// TODO 解析${}占位符依赖的参数管理
-        /*// 删除旧的依赖
-        dependSysConfigKey.remove(sysConfigField.key);
-        PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("${", "}", ":", false);
-        propertyPlaceholderHelper.replacePlaceholders(valueStr, placeholderName -> {
-            dependSysConfigKey.compute(sysConfigField.key, (k, v) -> {
-                if (v == null) {
-                    v = new ArrayList<>();
-                }
-                v.add(placeholderName);
-                return v;
-            });
-            return "";
-        });*/
-		// TODO 需要同时刷新${}占位符中依赖的参数
-        /*for (Map.Entry<String, List<String>> entry : dependSysConfigKey.entrySet()) {
-            if (CollectionUtils.contains((Iterator<?>) entry.getValue(), sysConfigField.key)) {
-                refreshValue();
-            }
-        }*/
-
 	}
 
 	static class SysConfigField {

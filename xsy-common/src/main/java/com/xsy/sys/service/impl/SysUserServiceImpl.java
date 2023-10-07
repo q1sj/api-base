@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.cache.CacheManagerWrapper;
 import com.xsy.base.cache.CacheWrapper;
 import com.xsy.base.exception.GlobalException;
+import com.xsy.base.exception.UserLockedException;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.PageData;
@@ -171,7 +172,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         // 密码连续错误锁定账号
         String username = login.getUsername();
         if (passwordErrorExceeded(username)) {
-            throw new GlobalException("账户锁定");
+            throw new UserLockedException("账户锁定");
         }
         // 根据用户名获取用户
         //用户信息
@@ -227,12 +228,17 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
      */
     private boolean passwordErrorExceeded(String username) {
         WrongPasswordRecord record = getWrongPasswordRecord(username);
-        // 上次错误时间超时WRONG_PASSWORD_RECORD_EXPIRED 清空次数
-        if (record.getLastWrongTime() + TimeUnit.MINUTES.toMillis(WRONG_PASSWORD_RECORD_EXPIRED) < System.currentTimeMillis()) {
-            clearWrongPasswordCount(username);
-            return false;
+        // x分钟内错误次数大于x次 锁定
+        if (record.getWrongCount() >= MAX_WRONG_PASSWORD_COUNT) {
+            if (record.getLastWrongTime() + TimeUnit.MINUTES.toMillis(30) > System.currentTimeMillis()) {
+                return true;
+            } else {
+                // 超出时间 清空错误次数
+                clearWrongPasswordCount(username);
+                return false;
+            }
         }
-        return record.getWrongCount() >= MAX_WRONG_PASSWORD_COUNT;
+        return false;
     }
 
     private void clearWrongPasswordCount(String username) {
