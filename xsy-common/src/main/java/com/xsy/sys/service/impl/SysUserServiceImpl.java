@@ -45,6 +45,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -111,7 +112,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         //密码加密
         String password = PasswordUtils.encode(entity.getPassword());
         entity.setPassword(password);
-
+        entity.setStatus(UserStatusEnum.ENABLED.value());
         //保存用户
         entity.setSuperAdmin(SuperAdminEnum.NO.value());
         insert(entity);
@@ -198,7 +199,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     public boolean userIsDisable(SysUserEntity user) {
-        return user.getStatus() == UserStatusEnum.DISABLE.value();
+        return Objects.equals(user.getStatus(), UserStatusEnum.DISABLE.value());
     }
 
     private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {
