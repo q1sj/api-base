@@ -73,6 +73,10 @@ public class SysUserEntity extends BaseEntity {
      */
     private Integer status;
     /**
+     * 上次登录时间
+     */
+    private Date lastLoginTime;
+    /**
      * 更新者
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)

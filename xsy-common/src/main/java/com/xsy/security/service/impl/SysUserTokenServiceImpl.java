@@ -17,7 +17,10 @@ import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.oauth2.TokenGenerator;
 import com.xsy.security.service.SysUserTokenService;
 import com.xsy.sys.annotation.SysConfig;
+import com.xsy.sys.dto.SysUserDTO;
+import com.xsy.sys.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,6 +33,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 @CacheConfig(cacheNames = SecurityConstant.SYS_USER_TOKEN_CACHE_NAME)
 public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
+    @Autowired
+    private SysUserService sysUserService;
     @SysConfig("TOKEN_EXPIRE_HOURS")
     private long expireHours = 12L;
     /**
@@ -45,7 +50,8 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
     }
 
     @Override
-    public TokenDTO createToken(Long userId) {
+    public TokenDTO createToken(SysUserDTO user) {
+        Long userId = user.getId();
         logout(userId);
         //用户token
         String token = TokenGenerator.generateValue();
@@ -73,7 +79,11 @@ public class SysUserTokenServiceImpl extends RenBaseServiceImpl<SysUserTokenDao,
             //更新token
             this.updateById(tokenEntity);
         }
-        return new TokenDTO(token, getExpireMs());
+
+        Date lastLoginTime = user.getLastLoginTime();
+        // 更新登陆时间
+        sysUserService.updateLastLoginTime(userId);
+        return new TokenDTO(token, getExpireMs(), lastLoginTime);
     }
 
 

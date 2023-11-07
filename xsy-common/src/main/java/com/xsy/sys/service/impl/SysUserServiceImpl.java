@@ -42,10 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -142,6 +139,14 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
         //更新角色用户关系
         sysRoleUserService.saveOrUpdate(entity.getId(), dto.getRoleIdList());
+    }
+
+    @Override
+    public void updateLastLoginTime(Long id) {
+        SysUserEntity user = new SysUserEntity();
+        user.setId(id);
+        user.setLastLoginTime(new Date());
+        updateById(user);
     }
 
     @Override

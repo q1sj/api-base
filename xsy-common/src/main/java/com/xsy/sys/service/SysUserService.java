@@ -35,6 +35,8 @@ public interface SysUserService extends RenBaseService<SysUserEntity> {
 
     void update(SysUserDTO dto);
 
+    void updateLastLoginTime(Long id);
+
     void delete(Long[] ids);
 
     /**

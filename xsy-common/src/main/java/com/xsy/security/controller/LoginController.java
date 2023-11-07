@@ -49,7 +49,7 @@ public class LoginController {
         ValidatorUtils.validateEntity(login);
         SysUserDTO user = sysUserService.validLogin(login);
         //登录成功
-        return Result.ok(sysUserTokenService.createToken(user.getId()));
+        return Result.ok(sysUserTokenService.createToken(user));
     }
 
     /**

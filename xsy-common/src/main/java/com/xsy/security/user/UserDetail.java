@@ -11,7 +11,7 @@ package com.xsy.security.user;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Date;
 
 /**
  * 登录用户信息
@@ -22,14 +22,18 @@ import java.util.List;
 public class UserDetail implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
-    private String username;
-    private String realName;
-    private String headUrl;
-    private Integer gender;
-    private String email;
-    private String mobile;
-    private String password;
-    private Integer status;
-    private Integer superAdmin;
+	private Long id;
+	private String username;
+	private String realName;
+	private String headUrl;
+	private Integer gender;
+	private String email;
+	private String mobile;
+	private String password;
+	private Integer status;
+	/**
+	 * 上次登录时间
+	 */
+	private Date lastLoginTime;
+	private Integer superAdmin;
 }
