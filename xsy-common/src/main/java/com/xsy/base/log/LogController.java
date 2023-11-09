@@ -30,7 +30,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * 日志下载
+ * 日志文件下载
  *
  * @author Q1sj
  * @date 2022.9.9 11:12
@@ -44,7 +44,7 @@ public class LogController {
     private String logFileName;
 
     /**
-     * 日志列表
+     * 日志文件列表
      *
      * @return
      */
@@ -65,7 +65,7 @@ public class LogController {
     }
 
     /**
-     * 日志下载
+     * 日志文件下载
      *
      * @param response
      * @param name     文件名
