@@ -15,6 +15,7 @@ import com.xsy.security.user.SecurityUser;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 /**
  * 异常处理器
  */
+@Order(0)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);

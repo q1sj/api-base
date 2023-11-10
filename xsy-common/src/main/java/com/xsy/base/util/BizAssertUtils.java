@@ -19,6 +19,13 @@ public class BizAssertUtils {
         }
     }
 
+    public static void notEquals(Object o1, Object o2, String msg) {
+        if (Objects.equals(o1, o2)) {
+            throw new ParamValidationException(msg);
+        }
+    }
+
+
     public static void isTrue(boolean condition, String msg) {
         if (!condition) {
             throw new ParamValidationException(msg);

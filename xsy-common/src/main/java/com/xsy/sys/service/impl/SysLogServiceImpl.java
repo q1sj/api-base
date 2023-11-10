@@ -5,11 +5,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xsy.base.util.BizAssertUtils;
+import com.xsy.base.util.DateUtils;
 import com.xsy.sys.dao.ApiLogDao;
 import com.xsy.sys.dto.SysLogDTO;
 import com.xsy.sys.entity.SysLogEntity;
 import com.xsy.sys.service.SysLogService;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * @author Q1sj
@@ -20,8 +24,14 @@ public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> impl
 	@Override
 	public IPage<SysLogEntity> list(SysLogDTO dto) {
 		LambdaQueryWrapper<SysLogEntity> wrapper = Wrappers.lambdaQuery(SysLogEntity.class)
-				.between(SysLogEntity::getRecordTime, dto.getStartTime(), dto.getEndTime())
+				.between(dto.getStartTime() != null && dto.getEndTime() != null, SysLogEntity::getRecordTime, dto.getStartTime(), dto.getEndTime())
 				.orderByDesc(SysLogEntity::getRecordTime);
 		return page(new Page<>(dto.getPage(), dto.getPageSize()), wrapper);
+	}
+
+	public void clearLog(int ago) {
+		BizAssertUtils.isTrue(ago > 0, "必须大于0");
+		this.remove(Wrappers.lambdaQuery(SysLogEntity.class)
+				.lt(SysLogEntity::getRecordTime, DateUtils.addDays(new Date(), -ago)));
 	}
 }

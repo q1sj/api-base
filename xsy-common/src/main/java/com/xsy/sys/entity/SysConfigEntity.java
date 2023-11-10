@@ -38,6 +38,7 @@ public class SysConfigEntity {
     /**
      * 值
      */
+    @NotNull
     @Column(nullable = false, columnDefinition = "text")
     private String configValue;
     /**
