@@ -62,4 +62,16 @@ public class SysConfigController {
     public Result<List<String>> configValueType() {
         return Result.ok(Arrays.stream(SysConfigValueTypeEnum.values()).map(SysConfigValueTypeEnum::name).collect(Collectors.toList()));
     }
+
+    /**
+     * 删除
+     *
+     * @param configKey 参数名
+     * @return
+     */
+    @PostMapping("/delete/{configKey}")
+    public Result<Void> delete(@PathVariable String configKey) {
+        sysConfigService.delete(configKey);
+        return Result.ok();
+    }
 }
