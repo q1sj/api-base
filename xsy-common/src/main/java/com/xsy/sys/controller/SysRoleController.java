@@ -8,10 +8,8 @@
 
 package com.xsy.sys.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xsy.base.enums.AddGroup;
 import com.xsy.base.enums.UpdateGroup;
-import com.xsy.base.pojo.PageQuery;
 import com.xsy.base.util.BizAssertUtils;
 import com.xsy.base.util.PageData;
 import com.xsy.base.util.Result;
@@ -22,7 +20,6 @@ import com.xsy.sys.service.SysRoleMenuService;
 import com.xsy.sys.service.SysRoleService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.groups.Default;
@@ -48,7 +45,6 @@ public class SysRoleController {
      * @return
      */
     @GetMapping("page")
-    @RequiresPermissions("sys:role:page")
     public Result<PageData<SysRoleDTO>> page(RoleListQuery query) {
         PageData<SysRoleDTO> page = sysRoleService.page(query);
         return Result.ok(page);
@@ -60,7 +56,6 @@ public class SysRoleController {
      * @return
      */
     @GetMapping("list")
-    @RequiresPermissions("sys:role:list")
     public Result<List<SysRoleDTO>> list(RoleListQuery query) {
         List<SysRoleDTO> data = sysRoleService.list(query);
         return Result.ok(data);
@@ -73,7 +68,6 @@ public class SysRoleController {
      * @return
      */
     @GetMapping("{id}")
-    @RequiresPermissions("sys:role:info")
     public Result<SysRoleDTO> get(@PathVariable("id") Long id) {
         SysRoleDTO data = sysRoleService.get(id);
 
@@ -91,7 +85,7 @@ public class SysRoleController {
      * @return
      */
     @PostMapping
-    @RequiresPermissions("sys:role:save")
+    @RequiresPermissions("role:save")
     public Result save(@RequestBody SysRoleDTO dto) {
         //效验数据
         ValidatorUtils.validateEntity(dto, AddGroup.class, Default.class);
@@ -108,7 +102,7 @@ public class SysRoleController {
      * @return
      */
     @PutMapping
-    @RequiresPermissions("sys:role:update")
+    @RequiresPermissions("role:update")
     public Result update(@RequestBody SysRoleDTO dto) {
         //效验数据
         ValidatorUtils.validateEntity(dto, UpdateGroup.class, Default.class);
@@ -125,7 +119,7 @@ public class SysRoleController {
      * @return
      */
     @DeleteMapping
-    @RequiresPermissions("sys:role:delete")
+    @RequiresPermissions("role:delete")
     public Result delete(@RequestBody Long[] ids) {
         //效验数据
         BizAssertUtils.isNotEmpty(ids, "id不能为空");

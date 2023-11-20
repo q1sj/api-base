@@ -8,6 +8,7 @@
 
 package com.xsy.job.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -24,6 +25,7 @@ import java.util.Properties;
 public class ScheduleConfig {
 
     @Bean
+    @ConditionalOnProperty(name = "quartz.enable", havingValue = "true", matchIfMissing = true)
     public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource) {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setDataSource(dataSource);

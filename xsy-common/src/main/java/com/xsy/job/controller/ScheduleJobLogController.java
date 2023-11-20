@@ -36,7 +36,7 @@ public class ScheduleJobLogController {
 	 * 定时任务日志列表
 	 */
 	@RequestMapping("/list")
-	@RequiresPermissions("sys:schedule:log")
+	@RequiresPermissions("schedule:log")
 	public Result<PageData<ScheduleJobLogEntity>> list(@RequestParam Map<String, Object> params) {
 		PageData<ScheduleJobLogEntity> page = scheduleJobLogService.queryPage(params);
 

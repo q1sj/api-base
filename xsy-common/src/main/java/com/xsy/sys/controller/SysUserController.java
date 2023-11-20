@@ -48,7 +48,6 @@ public class SysUserController {
      * @return
      */
     @GetMapping("page")
-    @RequiresPermissions("sys:user:page")
     public Result<PageData<SysUserDTO>> page(UserListQuery query) {
         PageData<SysUserDTO> page = sysUserService.page(query);
         return Result.ok(page);
@@ -61,7 +60,6 @@ public class SysUserController {
      * @return
      */
     @GetMapping("{id}")
-    @RequiresPermissions("sys:user:info")
     public Result<SysUserDTO> get(@PathVariable("id") Long id) {
         SysUserDTO data = sysUserService.get(id);
         if (data == null) {
@@ -93,7 +91,8 @@ public class SysUserController {
      */
     @PutMapping("password")
     public Result password(@RequestBody PasswordDTO dto) {
-        //效验数据
+        // TODO RSA
+	    //效验数据
         ValidatorUtils.validateEntity(dto);
 
         UserDetail user = SecurityUser.getUser();
@@ -115,7 +114,7 @@ public class SysUserController {
      * @return
      */
     @PostMapping
-    @RequiresPermissions("sys:user:save")
+    @RequiresPermissions("user:save")
     public Result save(@RequestBody SysUserDTO dto) {
         //效验数据
         ValidatorUtils.validateEntity(dto, AddGroup.class, Default.class);
@@ -132,7 +131,7 @@ public class SysUserController {
      * @return
      */
     @PutMapping
-    @RequiresPermissions("sys:user:update")
+    @RequiresPermissions("user:update")
     public Result update(@RequestBody SysUserDTO dto) {
         //效验数据
         ValidatorUtils.validateEntity(dto, UpdateGroup.class, Default.class);
@@ -149,7 +148,7 @@ public class SysUserController {
      * @return
      */
     @DeleteMapping
-    @RequiresPermissions("sys:user:delete")
+    @RequiresPermissions("user:delete")
     public Result delete(@RequestBody Long[] ids) {
         //效验数据
         BizAssertUtils.isNotEmpty(ids, "id不能为空");

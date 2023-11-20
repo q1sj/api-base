@@ -35,7 +35,6 @@ public class ScheduleJobController {
 	 * 定时任务列表
 	 */
 	@RequestMapping("/list")
-	@RequiresPermissions("sys:schedule:list")
 	public Result<PageData<ScheduleJobEntity>> list(@RequestParam Map<String, Object> params) {
 		PageData<ScheduleJobEntity> page = scheduleJobService.queryPage(params);
 
@@ -46,7 +45,6 @@ public class ScheduleJobController {
 	 * 定时任务信息
 	 */
 	@RequestMapping("/info/{jobId}")
-	@RequiresPermissions("sys:schedule:info")
 	public Result<ScheduleJobEntity> info(@PathVariable("jobId") Long jobId) {
 		ScheduleJobEntity schedule = scheduleJobService.getById(jobId);
 
@@ -57,7 +55,7 @@ public class ScheduleJobController {
 	 * 保存定时任务
 	 */
 	@RequestMapping("/save")
-	@RequiresPermissions("sys:schedule:save")
+	@RequiresPermissions("schedule:save")
 	public Result<Void> save(@RequestBody ScheduleJobEntity scheduleJob) {
 		ValidatorUtils.validateEntity(scheduleJob);
 
@@ -70,7 +68,7 @@ public class ScheduleJobController {
 	 * 修改定时任务
 	 */
 	@RequestMapping("/update")
-	@RequiresPermissions("sys:schedule:update")
+	@RequiresPermissions("schedule:update")
 	public Result<Void> update(@RequestBody ScheduleJobEntity scheduleJob) {
 		ValidatorUtils.validateEntity(scheduleJob);
 
@@ -83,7 +81,7 @@ public class ScheduleJobController {
 	 * 删除定时任务
 	 */
 	@RequestMapping("/delete")
-	@RequiresPermissions("sys:schedule:delete")
+	@RequiresPermissions("schedule:delete")
 	public Result<Void> delete(@RequestBody Long[] jobIds) {
 		scheduleJobService.deleteBatch(jobIds);
 
@@ -94,7 +92,7 @@ public class ScheduleJobController {
 	 * 立即执行任务
 	 */
 	@RequestMapping("/run")
-	@RequiresPermissions("sys:schedule:run")
+	@RequiresPermissions("schedule:run")
 	public Result<Void> run(@RequestBody Long[] jobIds) {
 		scheduleJobService.run(jobIds);
 
@@ -105,7 +103,7 @@ public class ScheduleJobController {
 	 * 暂停定时任务
 	 */
 	@RequestMapping("/pause")
-	@RequiresPermissions("sys:schedule:pause")
+	@RequiresPermissions("schedule:pause")
 	public Result<Void> pause(@RequestBody Long[] jobIds) {
 		scheduleJobService.pause(jobIds);
 
@@ -116,7 +114,7 @@ public class ScheduleJobController {
 	 * 恢复定时任务
 	 */
 	@RequestMapping("/resume")
-	@RequiresPermissions("sys:schedule:resume")
+	@RequiresPermissions("schedule:resume")
 	public Result<Void> resume(@RequestBody Long[] jobIds) {
 		scheduleJobService.resume(jobIds);
 

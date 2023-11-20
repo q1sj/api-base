@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -27,7 +28,7 @@ public class SysConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @TableId(type = IdType.INPUT)
-    @NotNull
+    @NotBlank
     private String configKey;
     /**
      * 参数值的数据类型

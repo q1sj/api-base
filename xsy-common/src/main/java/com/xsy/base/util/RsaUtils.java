@@ -71,6 +71,7 @@ public class RsaUtils {
      * @return 密文
      */
     public static String encrypt(String str, String publicKey) {
+        publicKey = publicKey.replace("\n", "");
         //base64编码的公钥
         byte[] decoded = Base64.getDecoder().decode(publicKey);
         try {
@@ -92,6 +93,7 @@ public class RsaUtils {
      * @return 明文
      */
     public static String decrypt(String str, String privateKey) {
+        privateKey = privateKey.replace("\n", "");
         //64位解码加密后的字符串
         byte[] inputByte = Base64.getDecoder().decode(str);
         //base64编码的私钥

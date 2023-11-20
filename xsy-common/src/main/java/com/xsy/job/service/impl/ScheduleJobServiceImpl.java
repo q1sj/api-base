@@ -19,25 +19,34 @@ import com.xsy.job.entity.ScheduleJobEntity;
 import com.xsy.job.service.ScheduleJobService;
 import com.xsy.job.utils.Constant;
 import com.xsy.job.utils.ScheduleUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronTrigger;
 import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+@Slf4j
 @Service("scheduleJobService")
 public class ScheduleJobServiceImpl extends ServiceImpl<ScheduleJobDao, ScheduleJobEntity> implements ScheduleJobService {
 	@Autowired
 	private Scheduler scheduler;
+	@Value("${quartz.enable:true}")
+	private Boolean quartzEnable;
 
 	/**
 	 * 项目启动时，初始化定时器
 	 */
 	@PostConstruct
 	public void init() {
+		if (!quartzEnable) {
+			log.info("quartzEnable=false");
+			return;
+		}
 		List<ScheduleJobEntity> scheduleJobList = this.list();
 		for (ScheduleJobEntity scheduleJob : scheduleJobList) {
 			CronTrigger cronTrigger = ScheduleUtils.getCronTrigger(scheduler, scheduleJob.getJobId());
