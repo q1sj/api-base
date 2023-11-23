@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -57,6 +58,23 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
         boolean saveOrUpdate = super.saveOrUpdate(entity);
         applicationContext.publishEvent(new RefreshConfigEvent(entity.getConfigKey()));
         return saveOrUpdate;
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, String value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        sysConfig.setConfigValue(value);
+        return saveOrUpdate(sysConfig);
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, SysConfigValueTypeEnum valueType, String value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        sysConfig.setConfigValue(value);
+        sysConfig.setConfigValueType(valueType.name());
+        return saveOrUpdate(sysConfig);
     }
 
     @Nullable
@@ -102,5 +120,11 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
         IPage<SysConfigEntity> iPage = new Page<>(page, pageSize);
         this.page(iPage, wrapper);
         return new PageData<>(iPage);
+    }
+
+    @Override
+    public List<SysConfigEntity> startWith(String keyPrefix) {
+        return this.list(Wrappers.lambdaQuery(SysConfigEntity.class)
+                .likeRight(SysConfigEntity::getConfigKey, keyPrefix));
     }
 }

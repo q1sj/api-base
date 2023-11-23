@@ -3,7 +3,10 @@ package com.xsy.sys.service;
 import com.xsy.base.util.PageData;
 import com.xsy.sys.entity.BaseKey;
 import com.xsy.sys.entity.SysConfigEntity;
+import com.xsy.sys.enums.SysConfigValueTypeEnum;
 import org.springframework.lang.Nullable;
+
+import java.util.List;
 
 /**
  * @author Q1sj
@@ -11,6 +14,10 @@ import org.springframework.lang.Nullable;
  */
 public interface SysConfigService {
     boolean saveOrUpdate(SysConfigEntity entity);
+
+    boolean saveOrUpdate(String key, String value);
+
+    boolean saveOrUpdate(String key, SysConfigValueTypeEnum valueType, String value);
 
     @Nullable
     String get(String key);
@@ -36,4 +43,12 @@ public interface SysConfigService {
     void delete(String key);
 
     PageData<SysConfigEntity> list(@Nullable String configKey, int page, int pageSize);
+
+    /**
+     * 根据key前缀查询
+     *
+     * @param keyPrefix
+     * @return
+     */
+    List<SysConfigEntity> startWith(String keyPrefix);
 }

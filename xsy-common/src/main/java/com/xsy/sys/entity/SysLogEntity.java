@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -48,6 +45,7 @@ public class SysLogEntity {
 	 * 响应
 	 */
 	@ExcelProperty("响应")
+	@Column(columnDefinition = "text")
 	private String resp;
 	/**
 	 * 异常

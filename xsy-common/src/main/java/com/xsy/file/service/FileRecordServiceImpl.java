@@ -1,6 +1,7 @@
 package com.xsy.file.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xsy.base.util.BizAssertUtils;
@@ -75,6 +76,7 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
         // 持久化文件
         String path = fileStorageStrategy.saveFile(data, fileSize, generateFilename(originalFilename, source), source);
         FileRecordEntity fileRecordEntity = new FileRecordEntity();
+        fileRecordEntity.setId(IdWorker.getId());
         fileRecordEntity.setName(originalFilename);
         fileRecordEntity.setPath(path);
         fileRecordEntity.setFileType(FileUtils.getExtension(originalFilename));

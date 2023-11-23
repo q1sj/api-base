@@ -6,11 +6,6 @@ import com.xsy.base.util.JsonUtils;
 import com.xsy.security.user.SecurityUser;
 import com.xsy.sys.entity.SysLogEntity;
 import com.xsy.sys.service.SysLogService;
-
-import java.util.Date;
-import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
-
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -19,6 +14,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.Objects;
 
 
 /**
@@ -68,19 +67,19 @@ public class ApiLogAop {
             log.info("method:{} ip:{} user:{} url:{} args:{} resp:{} throwable:{} cost:{}ms",
                     method, ip, username, url, argsStr, respLogJson, throwable, cost);
             if (logSaveDb) {
-                SysLogEntity entity = new SysLogEntity();
-                entity.setId(IdWorker.getId());
-                entity.setMethod(method);
-                entity.setIp(ip);
-                entity.setUsername(username);
-                entity.setUrl(url);
-                entity.setArgs(argsStr);
-                entity.setResp(respLogJson);
-                entity.setThrowable(Objects.toString(throwable));
-                entity.setCost(cost);
-                entity.setRecordTime(new Date());
-                entity.setCreateTime(new Date());
                 try {
+                    SysLogEntity entity = new SysLogEntity();
+                    entity.setId(IdWorker.getId());
+                    entity.setMethod(method);
+                    entity.setIp(ip);
+                    entity.setUsername(username);
+                    entity.setUrl(url);
+                    entity.setArgs(argsStr);
+                    entity.setResp(respLogJson);
+                    entity.setThrowable(Objects.toString(throwable));
+                    entity.setCost(cost);
+                    entity.setRecordTime(new Date());
+                    entity.setCreateTime(new Date());
                     sysLogService.save(entity);
                 } catch (Exception e) {
                     log.error("系统日志落库失败 {}", e.getMessage(), e);
