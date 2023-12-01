@@ -16,7 +16,7 @@ import java.util.Date;
  * @date 2022.9.7 16:58
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
-    public static final String DEFAULT_NTP_SERVER_HOST = "ntp.aliyun.com";
+    public static final String DEFAULT_NTP_SERVER_HOST = "time.windows.com";
     public static final int DEFAULT_NTP_SERVER_PORT = 123;
 
     public static final ZoneId ZONE_ID = ZoneId.systemDefault();
@@ -37,11 +37,15 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     public static Date getNetDate(String ntpServerHost, int port) throws IOException {
+        return getNetDate(ntpServerHost, port, 1000);
+    }
+
+    public static Date getNetDate(String ntpServerHost, int port, int timeout) throws IOException {
         NTPUDPClient ntpudpClient = new NTPUDPClient();
         try {
             ntpudpClient.open();
-            ntpudpClient.setSoTimeout(1000);
-            ntpudpClient.setDefaultTimeout(1000);
+            ntpudpClient.setSoTimeout(timeout);
+            ntpudpClient.setDefaultTimeout(timeout);
             TimeInfo time = ntpudpClient.getTime(InetAddress.getByName(ntpServerHost), port);
             return new Date(time.getMessage().getTransmitTimeStamp().getTime());
         } finally {

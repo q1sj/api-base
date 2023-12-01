@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * @author Q1sj
  * @date 2023.3.2 8:51
  */
-@Component
+@Component("com.xsy.sys.config.ThreadPoolConfig")
 @Configuration
 public class ThreadPoolConfig {
     @Value("${thread-pool.task-scheduler.pool-size:20}")

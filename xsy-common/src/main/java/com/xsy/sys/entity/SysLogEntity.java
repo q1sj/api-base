@@ -40,6 +40,7 @@ public class SysLogEntity {
 	 * 参数
 	 */
 	@ExcelProperty("请求参数")
+	@Column(columnDefinition = "text")
 	private String args;
 	/**
 	 * 响应
@@ -51,6 +52,7 @@ public class SysLogEntity {
 	 * 异常
 	 */
 	@ExcelProperty("异常")
+	@Column(columnDefinition = "text")
 	private String throwable;
 	/**
 	 * 耗时(ms)
