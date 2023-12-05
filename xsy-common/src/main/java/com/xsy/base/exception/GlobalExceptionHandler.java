@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * 异常处理器
@@ -143,11 +146,12 @@ public class GlobalExceptionHandler {
     }
 
     private Result<?> getResult(Exception e, BindingResult bindingResult) {
-        StringBuilder errorMessage = new StringBuilder("校验失败:");
+        List<String> errorMessages = new ArrayList<>();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            errorMessage.append(fieldError.getField()).append(fieldError.getDefaultMessage()).append(" ");
+            errorMessages.add(fieldError.getField() + fieldError.getDefaultMessage());
         }
-        logger.warn(errorMessage.toString(), e);
-        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, errorMessage.toString());
+        String errorMessage = "校验失败:" + String.join(",", errorMessages);
+        logger.warn(errorMessage, e);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, errorMessage);
     }
 }

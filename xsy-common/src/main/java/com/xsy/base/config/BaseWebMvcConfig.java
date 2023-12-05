@@ -25,7 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 
-public class WebMvcConfig implements WebMvcConfigurer {
+public class BaseWebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private TraceHandlerInterceptor traceHandlerInterceptor;
 
