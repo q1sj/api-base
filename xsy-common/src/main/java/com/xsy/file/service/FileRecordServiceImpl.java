@@ -69,7 +69,7 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     }
 
     @Override
-    public FileRecordEntity save(Long id, File file, String source, long expireMs) throws IOException {
+    public FileRecordEntity save(long id, File file, String source, long expireMs) throws IOException {
         return save(id, Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
     }
 
@@ -79,7 +79,7 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     }
 
     @Override
-    public FileRecordEntity save(Long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException {
+    public FileRecordEntity save(long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException {
         BizAssertUtils.isNotBlank(source, "source不能为空");
         // 判断source是否包含不允许字符
         illegalCharactersInDirectoryNames.forEach(s -> BizAssertUtils.isFalse(source.contains(s), "source中不允许出现的符号:" + s));

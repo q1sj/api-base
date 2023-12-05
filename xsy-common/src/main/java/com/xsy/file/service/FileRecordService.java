@@ -50,7 +50,7 @@ public interface FileRecordService {
 	 * @return
 	 * @throws IOException
 	 */
-	FileRecordEntity save(Long id, File file, String source, long expireMs) throws IOException;
+	FileRecordEntity save(long id, File file, String source, long expireMs) throws IOException;
 
 	/**
 	 * 保存文件
@@ -76,7 +76,7 @@ public interface FileRecordService {
 	 * @return
 	 * @throws IOException
 	 */
-	FileRecordEntity save(Long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException;
+	FileRecordEntity save(long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException;
 
 	/**
 	 * 获取文件内容
