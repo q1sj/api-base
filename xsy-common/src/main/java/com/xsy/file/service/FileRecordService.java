@@ -41,6 +41,18 @@ public interface FileRecordService {
 	FileRecordEntity save(File file, String source, long expireMs) throws IOException;
 
 	/**
+	 * 保存文件 自定义fileId 用于预生成下载链接
+	 *
+	 * @param id
+	 * @param file
+	 * @param source
+	 * @param expireMs
+	 * @return
+	 * @throws IOException
+	 */
+	FileRecordEntity save(Long id, File file, String source, long expireMs) throws IOException;
+
+	/**
 	 * 保存文件
 	 *
 	 * @param data             文件内容
@@ -48,18 +60,32 @@ public interface FileRecordService {
 	 * @param originalFilename 原始文件名
 	 * @param source           数据来源 避免使用文件名中不允许的字符
 	 * @param expireMs         过期毫秒值
-     * @return
-     */
-    FileRecordEntity save(InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException;
+	 * @return
+	 */
+	FileRecordEntity save(InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException;
 
-    /**
-     * 获取文件内容
-     *
-     * @param path {@link FileRecordEntity#getPath()}
-     * @return
-     * @throws IOException
-     */
-    InputStream getInputStream(String path) throws IOException;
+	/**
+	 * 保存文件 自定义fileId 用于预生成下载链接
+	 *
+	 * @param id
+	 * @param data
+	 * @param fileSize
+	 * @param originalFilename
+	 * @param source
+	 * @param expireMs
+	 * @return
+	 * @throws IOException
+	 */
+	FileRecordEntity save(Long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException;
+
+	/**
+	 * 获取文件内容
+	 *
+	 * @param path {@link FileRecordEntity#getPath()}
+	 * @return
+	 * @throws IOException
+	 */
+	InputStream getInputStream(String path) throws IOException;
 
 	InputStream getInputStream(Long fileId) throws IOException;
 

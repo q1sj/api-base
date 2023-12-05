@@ -69,14 +69,24 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     }
 
     @Override
+    public FileRecordEntity save(Long id, File file, String source, long expireMs) throws IOException {
+        return save(id, Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
+    }
+
+    @Override
     public FileRecordEntity save(InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException {
+        return save(IdWorker.getId(), data, fileSize, originalFilename, source, expireMs);
+    }
+
+    @Override
+    public FileRecordEntity save(Long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException {
         BizAssertUtils.isNotBlank(source, "source不能为空");
         // 判断source是否包含不允许字符
         illegalCharactersInDirectoryNames.forEach(s -> BizAssertUtils.isFalse(source.contains(s), "source中不允许出现的符号:" + s));
         // 持久化文件
         String path = fileStorageStrategy.saveFile(data, fileSize, generateFilename(originalFilename, source), source);
         FileRecordEntity fileRecordEntity = new FileRecordEntity();
-        fileRecordEntity.setId(IdWorker.getId());
+        fileRecordEntity.setId(id);
         fileRecordEntity.setName(originalFilename);
         fileRecordEntity.setPath(path);
         fileRecordEntity.setFileType(FileUtils.getExtension(originalFilename));
