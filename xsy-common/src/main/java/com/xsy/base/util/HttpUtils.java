@@ -40,19 +40,38 @@ public class HttpUtils {
         BizAssertUtils.isNotNull(respType, "respType不能为空");
 
         long startTime = System.currentTimeMillis();
-        String respBody = null;
+        T resp = null;
         try {
-            ResponseEntity<String> resp = restTemplate.exchange(url, httpMethod, body, String.class);
-            log.debug("resp:{}", resp);
-            respBody = resp.getBody();
-            return JsonUtils.parseObject(respBody, respType);
+            ResponseEntity<String> respEntity = restTemplate.exchange(url, httpMethod, body, String.class);
+            log.debug("resp:{}", respEntity);
+            String respBody = respEntity.getBody();
+            resp = JsonUtils.parseObject(respBody, respType);
+            return resp;
         } catch (Exception e) {
             throw new GlobalException(url + "请求失败", e);
         } finally {
-            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body, respBody);
+            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body, resp == null ? "" : JsonUtils.toLogJsonString(resp));
         }
     }
 
+    public static <T> T exchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, Class<T> respType) throws GlobalException {
+        BizAssertUtils.isNotBlank(url, "url不能为空");
+        BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
+        BizAssertUtils.isNotNull(respType, "respType不能为空");
+
+        long startTime = System.currentTimeMillis();
+        T resp = null;
+        try {
+            ResponseEntity<T> respEntity = restTemplate.exchange(url, httpMethod, body, respType);
+            log.debug("resp:{}", respEntity);
+            resp = respEntity.getBody();
+            return resp;
+        } catch (Exception e) {
+            throw new GlobalException(url + "请求失败", e);
+        } finally {
+            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body, resp == null || String.class == respType ? resp : JsonUtils.toLogJsonString(resp));
+        }
+    }
     public static <T> Future<T> asyncExchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) {
         return THREAD_POOL.submit(() -> exchange(url, httpMethod, body, respType));
     }
