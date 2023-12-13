@@ -21,6 +21,7 @@ import java.util.Date;
  */
 @Slf4j
 public class LocalFileStorageStrategy implements FileStorageStrategy {
+    public static final String SAVE_PATH_PREFIX = "/file-storage";
     private final String separator = "/";
     private String basePath;
 
@@ -84,7 +85,7 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
         String dateFormat = sdf.format(new Date());
         String relativePathPrefix = StringUtils.isNotBlank(source) ? separator + source : "";
         // 固定前缀 方便nginx反向代理
-        return "/file-storage" + relativePathPrefix + separator + dateFormat + separator + fileName;
+        return SAVE_PATH_PREFIX + relativePathPrefix + separator + dateFormat + separator + fileName;
     }
 
     /**

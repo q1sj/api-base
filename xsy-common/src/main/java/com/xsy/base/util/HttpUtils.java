@@ -11,6 +11,7 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Objects;
 import java.util.concurrent.*;
 
 /**
@@ -50,7 +51,7 @@ public class HttpUtils {
         } catch (Exception e) {
             throw new GlobalException(url + "请求失败", e);
         } finally {
-            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body, resp == null ? "" : JsonUtils.toLogJsonString(resp));
+            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body == null ? "" : getLogJson(body.getBody()), getLogJson(resp));
         }
     }
 
@@ -69,10 +70,25 @@ public class HttpUtils {
         } catch (Exception e) {
             throw new GlobalException(url + "请求失败", e);
         } finally {
-            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body, resp == null || String.class == respType ? resp : JsonUtils.toLogJsonString(resp));
+            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body == null ? "" : getLogJson(body.getBody()), getLogJson(resp));
         }
     }
+
     public static <T> Future<T> asyncExchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) {
         return THREAD_POOL.submit(() -> exchange(url, httpMethod, body, respType));
+    }
+
+    private static String getLogJson(Object o) {
+        if (o == null) {
+            return "";
+        }
+        if (String.class.equals(o.getClass())) {
+            return o.toString();
+        }
+        try {
+            return JsonUtils.toLogJsonString(o);
+        } catch (Exception e) {
+            return Objects.toString(o);
+        }
     }
 }

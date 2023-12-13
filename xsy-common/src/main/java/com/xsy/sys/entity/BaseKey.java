@@ -1,5 +1,6 @@
 package com.xsy.sys.entity;
 
+import com.xsy.base.util.StringUtils;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -37,7 +38,7 @@ public abstract class BaseKey<T> {
      * @return
      */
     public T deserialization(@Nullable String val) {
-	    return val != null ? deserializationNotNull(val) : defaultValue;
+        return StringUtils.isNotBlank(val) ? deserializationNotNull(val) : defaultValue;
     }
 
     /**
