@@ -89,6 +89,12 @@ public class ApiLogAop {
     }
 
     private static String getLogJson(Object obj) {
+        if (obj == null) {
+            return "";
+        }
+        if (String.class.equals(obj.getClass())) {
+            return obj.toString();
+        }
         try {
             return JsonUtils.toLogJsonString(obj);
         } catch (Exception e) {

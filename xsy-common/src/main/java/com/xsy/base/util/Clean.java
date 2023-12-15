@@ -9,7 +9,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public class Clean {
             return;
         }
 
-        for (int cleanDayAgo = this.cleanDayAgo; cleanDayAgo > 0; cleanDayAgo--) {
+        for (int cleanDayAgo = this.cleanDayAgo; cleanDayAgo >= 0; cleanDayAgo--) {
             log.info("{} 删除{}天前数据 扩展名:{}", path.getAbsolutePath(), cleanDayAgo, extensionList.isEmpty() ? "*" : extensionList);
             clean(path, cleanDayAgo);
             long usableSpace = path.getUsableSpace();
@@ -103,7 +102,7 @@ public class Clean {
             return;
         }
         LocalDateTime lastModifiedTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(file.lastModified()), ZoneId.systemDefault());
-        LocalDateTime today = LocalDate.now().atStartOfDay();
+        LocalDateTime today = LocalDateTime.now();
         if (today.plusDays(-cleanDayAgo).isAfter(lastModifiedTime)) {
             if (extensionList.isEmpty() || extensionList.contains(FilenameUtils.getExtension(file.getName()))) {
                 log.warn("delete lastModified:{} {}", lastModifiedTime, file);
