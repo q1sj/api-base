@@ -11,8 +11,6 @@ package com.xsy.sys.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.xsy.base.cache.CacheManagerWrapper;
-import com.xsy.base.cache.CacheWrapper;
 import com.xsy.base.exception.GlobalException;
 import com.xsy.base.exception.UserLockedException;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
@@ -38,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,8 +58,6 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     private static final int WRONG_PASSWORD_RECORD_EXPIRED = 30;
     @Autowired
     private SysRoleUserService sysRoleUserService;
-    @Autowired
-    private CacheManagerWrapper cacheManagerWrapper;
 
     @Override
     public PageData<SysUserDTO> page(UserListQuery query) {
@@ -120,12 +117,12 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserCacheKey(#dto.getId())"),
+            @CacheEvict(cacheNames = SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME, key = "T(com.xsy.security.enums.SecurityConstant).getSysUserPermissionsCacheKey(#dto.getId())")
+    })
     public void update(SysUserDTO dto) {
         SysUserEntity entity = ConvertUtils.sourceToTarget(dto, SysUserEntity.class);
-        // 清除用户权限缓存
-        CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME);
-        cache.evict(SecurityConstant.getSysUserPermissionsCacheKey(dto.getId()));
         //密码加密
         if (StringUtils.isBlank(dto.getPassword())) {
             entity.setPassword(null);
@@ -149,15 +146,12 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         updateById(user);
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "'sys_user_'+#ids"),
+            @CacheEvict(cacheNames = SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME, key = "'user_permissions_'+#ids"),
+    })
     @Override
     public void delete(Long[] ids) {
-        // 清除用户权限缓存
-        CacheWrapper userCache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_CACHE_NAME);
-        CacheWrapper permissionsCache = cacheManagerWrapper.getCache(SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME);
-        for (Long id : ids) {
-            userCache.evict(SecurityConstant.getSysUserCacheKey(id));
-            permissionsCache.evict(SecurityConstant.getSysUserPermissionsCacheKey(id));
-        }
         //删除用户
         baseDao.deleteBatchIds(Arrays.asList(ids));
 
