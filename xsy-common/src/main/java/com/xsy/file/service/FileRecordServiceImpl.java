@@ -65,11 +65,17 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
 
     @Override
     public FileRecordEntity save(File file, String source, long expireMs) throws IOException {
+        if (!file.exists()) {
+            throw new FileNotFoundException(file.getAbsolutePath());
+        }
         return save(Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
     }
 
     @Override
     public FileRecordEntity save(long id, File file, String source, long expireMs) throws IOException {
+        if (!file.exists()) {
+            throw new FileNotFoundException(file.getAbsolutePath());
+        }
         return save(id, Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
     }
 
