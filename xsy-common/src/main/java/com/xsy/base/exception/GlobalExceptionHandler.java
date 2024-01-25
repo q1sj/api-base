@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,8 +110,14 @@ public class GlobalExceptionHandler {
         return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Result<?> handleException(ConstraintViolationException e) {
+        logger.warn(e.getMessage(), e);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Result<?> handleAuthorizationException(MethodArgumentNotValidException e) {
+    public Result<?> handleException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         return getResult(e, bindingResult);
     }

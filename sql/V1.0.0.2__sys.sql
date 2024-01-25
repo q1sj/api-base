@@ -157,10 +157,6 @@ CREATE TABLE `sys_dictionary`
     `id`          bigint(20)                                                    NOT NULL,
     `creator`     bigint(20)                                                    NULL DEFAULT NULL,
     `create_date` datetime(6)                                                   NULL DEFAULT NULL,
-    `type`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-    `code`        varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-    `value`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-    `sort`        int(11)                                                       NOT NULL,
     `updater`     bigint(20)                                                    NULL DEFAULT NULL,
     `update_date` datetime(6)                                                   NULL DEFAULT NULL,
     `dict_type`   varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -168,9 +164,7 @@ CREATE TABLE `sys_dictionary`
     `dict_value`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `dict_sort`   int(11)                                                       NOT NULL,
     PRIMARY KEY (`id`) USING BTREE,
-    UNIQUE INDEX `uk_type_code` (`type`, `code`) USING BTREE,
-    UNIQUE INDEX `uk_type_code_val` (`type`, `code`, `value`) USING BTREE,
-    UNIQUE INDEX `uk_sys_dictionary_type_code_val` (`dict_type`, `dict_code`, `dict_value`) USING BTREE
+    UNIQUE INDEX `uk_sys_dictionary_type_code` (`dict_type`, `dict_code`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_general_ci

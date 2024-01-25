@@ -59,7 +59,7 @@ public enum SysConfigValueTypeEnum {
         @Override
         public boolean valid(String val) {
             try {
-                JsonUtils.parseArray(val, LinkedHashMap.class);
+                JsonUtils.parseArray(val, Object.class);
             } catch (Exception e) {
                 return false;
             }
