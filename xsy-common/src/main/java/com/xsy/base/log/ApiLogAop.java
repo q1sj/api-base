@@ -61,7 +61,7 @@ public class ApiLogAop {
             String method = Objects.toString(point.getSignature());
             String ip = request != null ? IpUtils.getIpAddr(request) : "null";
             String username = SecurityUser.getUser().getUsername();
-            String url = request != null ? Objects.toString(request.getRequestURL()) : "null";
+            String url = request != null ? getRequestURL() : "null";
             long cost = System.currentTimeMillis() - startTime;
             String respLogJson = getLogJson(resp);
             log.info("method:{} ip:{} user:{} url:{} args:{} resp:{} throwable:{} cost:{}ms",
@@ -85,6 +85,15 @@ public class ApiLogAop {
                     log.error("系统日志落库失败 {}", e.getMessage(), e);
                 }
             }
+        }
+    }
+
+    private String getRequestURL() {
+        try {
+            return Objects.toString(request.getRequestURL());
+        } catch (Exception e) {
+            log.warn("url获取失败");
+            return "null";
         }
     }
 
