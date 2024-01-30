@@ -92,7 +92,7 @@ public class ApiLogAop {
         try {
             return Objects.toString(request.getRequestURL());
         } catch (Exception e) {
-            log.warn("url获取失败");
+            log.warn("url获取失败 {}", e.getMessage());
             return "null";
         }
     }

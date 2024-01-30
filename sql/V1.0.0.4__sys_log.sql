@@ -2,7 +2,7 @@ CREATE TABLE `sys_log`
 (
     `id`          bigint(20)   NOT NULL,
     `method`      varchar(255) NOT NULL,
-    `ip`          varchar(15)  DEFAULT NULL,
+    `ip`          varchar(255) DEFAULT NULL,
     `username`    varchar(255) DEFAULT NULL,
     `url`         varchar(255) DEFAULT NULL,
     `args`        text,
