@@ -17,6 +17,9 @@ import com.xsy.sys.dto.SysUserDTO;
 import com.xsy.sys.dto.UserListQuery;
 import com.xsy.sys.entity.SysUserEntity;
 
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * 系统用户
@@ -62,4 +65,6 @@ public interface SysUserService extends RenBaseService<SysUserEntity> {
      * @return
      */
     boolean userIsDisable(SysUserEntity user);
+
+	List<Long> allMenuId(long id);
 }

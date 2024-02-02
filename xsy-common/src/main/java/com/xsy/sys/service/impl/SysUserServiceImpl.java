@@ -19,12 +19,15 @@ import com.xsy.base.util.PageData;
 import com.xsy.security.dto.LoginDTO;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.password.PasswordUtils;
+import com.xsy.security.user.SecurityUser;
+import com.xsy.security.user.UserDetail;
 import com.xsy.sys.dao.SysUserDao;
 import com.xsy.sys.dto.SysUserDTO;
 import com.xsy.sys.dto.UserListQuery;
 import com.xsy.sys.entity.SysUserEntity;
 import com.xsy.sys.enums.SuperAdminEnum;
 import com.xsy.sys.enums.UserStatusEnum;
+import com.xsy.sys.service.SysRoleMenuService;
 import com.xsy.sys.service.SysRoleUserService;
 import com.xsy.sys.service.SysUserService;
 import lombok.AllArgsConstructor;
@@ -58,6 +61,8 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     private static final int WRONG_PASSWORD_RECORD_EXPIRED = 30;
     @Autowired
     private SysRoleUserService sysRoleUserService;
+    @Autowired
+    private SysRoleMenuService sysRoleMenuService;
 
     @Override
     public PageData<SysUserDTO> page(UserListQuery query) {
@@ -201,8 +206,16 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         return Objects.equals(user.getStatus(), UserStatusEnum.DISABLE.value());
     }
 
+    @Override
+    public List<Long> allMenuId(long id) {
+        List<Long> roleIdList = sysRoleUserService.getRoleIdList(id);
+        return sysRoleMenuService.getMenuIdList(roleIdList);
+    }
+
     private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {
+        UserDetail user = SecurityUser.getUser();
         return Wrappers.lambdaQuery(SysUserEntity.class)
+                .eq(!user.isSuperAdmin(), SysUserEntity::getCreator, user.getId())
                 .like(StringUtils.isNotBlank(query.getUsername()), SysUserEntity::getUsername, query.getUsername());
     }
 

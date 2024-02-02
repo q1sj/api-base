@@ -8,10 +8,12 @@
 
 package com.xsy.security.user;
 
+import com.xsy.job.utils.Constant;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 登录用户信息
@@ -36,4 +38,13 @@ public class UserDetail implements Serializable {
 	 */
 	private Date lastLoginTime;
 	private Integer superAdmin;
+
+	/**
+	 * 是否是超级管理员
+	 *
+	 * @return
+	 */
+	public boolean isSuperAdmin() {
+		return Objects.equals(Constant.SUPER_ADMIN, this.superAdmin);
+	}
 }
