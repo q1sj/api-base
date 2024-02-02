@@ -42,6 +42,17 @@ public class SysConfigController {
     }
 
     /**
+     * 根据key查询值
+     *
+     * @param configKey
+     * @return
+     */
+    @GetMapping("/getByKey")
+    public Result<String> getByKey(@RequestParam String configKey) {
+        return Result.ok(sysConfigService.get(configKey));
+    }
+
+    /**
      * 新增或修改
      *
      * @param sysConfigEntity
