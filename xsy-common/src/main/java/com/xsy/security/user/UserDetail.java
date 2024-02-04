@@ -44,7 +44,7 @@ public class UserDetail implements Serializable {
 	 *
 	 * @return
 	 */
-	public boolean isSuperAdmin() {
+	public boolean isAdmin() {
 		return Objects.equals(Constant.SUPER_ADMIN, this.superAdmin);
 	}
 }

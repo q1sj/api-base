@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 角色
@@ -115,13 +114,13 @@ public class SysRoleServiceImpl extends RenBaseServiceImpl<SysRoleDao, SysRoleEn
     private LambdaQueryWrapper<SysRoleEntity> getWrapper(RoleListQuery query) {
         UserDetail user = SecurityUser.getUser();
         return Wrappers.lambdaQuery(SysRoleEntity.class)
-                .eq(!user.isSuperAdmin(),SysRoleEntity::getCreator,user.getId())
+                .eq(!user.isAdmin(), SysRoleEntity::getCreator, user.getId())
                 .like(StringUtils.isNotBlank(query.getName()), SysRoleEntity::getName, query.getName());
     }
 
     private void validMenuOverride(List<Long> menuIdList) {
         UserDetail user = SecurityUser.getUser();
-        if (user.isSuperAdmin()) {
+        if (user.isAdmin()) {
             return;
         }
         List<Long> allMenuIdList = sysUserService.allMenuId(user.getId());

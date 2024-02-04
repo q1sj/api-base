@@ -215,7 +215,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     private LambdaQueryWrapper<SysUserEntity> getWrapper(UserListQuery query) {
         UserDetail user = SecurityUser.getUser();
         return Wrappers.lambdaQuery(SysUserEntity.class)
-                .eq(!user.isSuperAdmin(), SysUserEntity::getCreator, user.getId())
+                .eq(!user.isAdmin(), SysUserEntity::getCreator, user.getId())
                 .like(StringUtils.isNotBlank(query.getUsername()), SysUserEntity::getUsername, query.getUsername());
     }
 
