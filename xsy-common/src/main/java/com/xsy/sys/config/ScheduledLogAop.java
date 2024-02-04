@@ -28,7 +28,11 @@ public class ScheduledLogAop {
 	public void pointcut() {
 	}
 
-	@Around("pointcut()")
+	@Pointcut("@annotation(com.xsy.base.log.IgnoreLog)")
+	public void ignoreLog() {
+	}
+
+	@Around("pointcut() && !ignoreLog()")
 	public Object around(ProceedingJoinPoint point) throws Throwable {
 		long startTime = System.currentTimeMillis();
 		String taskName = getTaskName(point);
