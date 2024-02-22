@@ -3,19 +3,23 @@ package com.xsy.base.log;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.xsy.base.util.IpUtils;
 import com.xsy.base.util.JsonUtils;
+import com.xsy.base.util.StringUtils;
 import com.xsy.security.user.SecurityUser;
 import com.xsy.sys.entity.SysLogEntity;
 import com.xsy.sys.service.SysLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.Objects;
 
@@ -58,7 +62,7 @@ public class ApiLogAop {
             throwable = t;
             throw t;
         } finally {
-            String method = Objects.toString(point.getSignature());
+            String method = getMethodName(point.getSignature());
             String ip = request != null ? IpUtils.getIpAddr(request) : "null";
             String username = SecurityUser.getUser().getUsername();
             String url = request != null ? getRequestURL() : "null";
@@ -95,6 +99,23 @@ public class ApiLogAop {
             log.warn("url获取失败 {}", e.getMessage());
             return "null";
         }
+    }
+
+    /**
+     * 存在{@link ApiLog}注解时，获取注解的method 默认为方法名
+     *
+     * @param signature
+     * @return
+     */
+    private String getMethodName(Signature signature) {
+        if (signature instanceof MethodSignature) {
+            Method method = ((MethodSignature) signature).getMethod();
+            ApiLog apiLogAnnotation = method.getAnnotation(ApiLog.class);
+            if (apiLogAnnotation != null && StringUtils.isNotBlank(apiLogAnnotation.methodName())) {
+                return apiLogAnnotation.methodName();
+            }
+        }
+        return Objects.toString(signature);
     }
 
     private static String getLogJson(Object obj) {
