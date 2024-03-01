@@ -32,6 +32,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -103,7 +104,7 @@ public class Oauth2Filter extends AuthenticatingFilter {
 
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
-        log.warn(e.getMessage(), e);
+        log.warn("认证失败 {}", Objects.toString(e));
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         httpResponse.setContentType("application/json;charset=utf-8");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
