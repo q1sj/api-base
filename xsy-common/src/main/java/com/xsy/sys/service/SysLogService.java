@@ -11,4 +11,6 @@ import com.xsy.sys.entity.SysLogEntity;
  */
 public interface SysLogService extends IService<SysLogEntity> {
 	IPage<SysLogEntity> list(SysLogDTO dto);
+
+	void clearLog(int ago);
 }

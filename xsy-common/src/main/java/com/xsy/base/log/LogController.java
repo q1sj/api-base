@@ -23,10 +23,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +57,13 @@ public class LogController {
         } else {
             files = logFile.listFiles();
         }
-        List<LogFile> list = Arrays.stream(files).map(LogFile::new).collect(Collectors.toList());
+        if (files == null) {
+            return Result.ok();
+        }
+        List<LogFile> list = Arrays.stream(files)
+                .map(LogFile::new)
+                .sorted(Comparator.comparing(LogFile::getDate).reversed())
+                .collect(Collectors.toList());
         return Result.ok(list);
     }
 
