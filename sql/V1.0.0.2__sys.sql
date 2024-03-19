@@ -201,51 +201,67 @@ CREATE TABLE `sys_menu`
 -- ----------------------------
 -- Records of sys_menu
 -- ----------------------------
-INSERT INTO sys_menu
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1067246875800000007, 1067246875800000001, '2022-08-30 10:38:59.000000', 1067246875800000001,
-        '2023-12-12 17:06:32.544000', 1067246875800000035, '角色管理', 'sys/role', '', 0, 'role', 5);
-INSERT INTO sys_menu
+        '2023-12-12 17:06:32.544000', 1067246875800000035, '角色管理', 'sys/role', '', 0, NULL, 5);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1067246875800000025, 1067246875800000001, '2022-08-30 10:38:59.000000', 1067246875800000001,
-        '2023-12-13 13:28:00.098000', 1067246875800000035, '菜单管理', 'sys/menu', '', 0, 'menu', 3);
-INSERT INTO sys_menu
+        '2023-12-13 13:28:00.098000', 1067246875800000035, '菜单管理', 'sys/menu', '', 0, NULL, 3);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1067246875800000035, 1067246875800000001, '2022-08-30 10:38:59.000000', 1067246875800000001,
         '2023-12-12 15:56:37.080000', 0, '系统设置', '', '', 0, 'setting', 2);
-INSERT INTO sys_menu
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1067246875800000055, 1067246875800000001, '2022-08-30 10:38:59.000000', 1067246875800000001,
-        '2023-12-13 13:33:13.186000', 1067246875800000035, '用户配置', 'sys/user', '', 0, 'userset', 4);
-INSERT INTO sys_menu
+        '2023-12-13 13:33:13.186000', 1067246875800000035, '用户配置', 'sys/user', '', 0, NULL, 4);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1721445702183800833, 1067246875800000001, '2023-11-06 16:33:32.973000', 1067246875800000001,
-        '2023-12-13 13:27:37.823000', 1067246875800000035, '系统日志', 'sys/log', '', 0, 'log', 1);
-INSERT INTO sys_menu
+        '2023-12-13 13:27:37.823000', 1067246875800000035, '系统日志', 'sys/log', '', 0, NULL, 1);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1721446737753264129, 1067246875800000001, '2023-11-06 16:37:39.872000', 1067246875800000001,
-        '2023-12-13 13:27:48.045000', 1067246875800000035, '参数管理', 'sys/params-manage', '', 0, 'params', 2);
-INSERT INTO sys_menu
+        '2023-12-13 13:27:48.045000', 1067246875800000035, '参数管理', 'sys/params-manage', '', 0, NULL, 2);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267238666129410, 1067246875800000001, '2023-11-14 11:25:19.692000', 1067246875800000001,
-        '2023-11-14 11:25:19.692000', 1067246875800000055, '新增', null, 'user:save', 1, null, 1);
-INSERT INTO sys_menu
+        '2023-11-14 11:25:19.692000', 1067246875800000055, '新增', NULL, 'user:save', 1, NULL, 1);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267363115323393, 1067246875800000001, '2023-11-14 11:25:49.363000', 1067246875800000001,
-        '2023-11-14 11:25:49.363000', 1067246875800000055, '修改', null, 'user:update', 1, null, 2);
-INSERT INTO sys_menu
+        '2023-11-14 11:25:49.363000', 1067246875800000055, '修改', NULL, 'user:update', 1, NULL, 2);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267459928248322, 1067246875800000001, '2023-11-14 11:26:12.445000', 1067246875800000001,
-        '2023-11-14 11:26:12.445000', 1067246875800000055, '删除', null, 'user:delete', 1, null, 2);
-INSERT INTO sys_menu
+        '2023-11-14 11:26:12.445000', 1067246875800000055, '删除', NULL, 'user:delete', 1, NULL, 2);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267572859883522, 1067246875800000001, '2023-11-14 11:26:39.370000', 1067246875800000001,
-        '2023-11-14 11:26:39.370000', 1067246875800000007, '新增', null, 'role:save', 1, null, 1);
-INSERT INTO sys_menu
+        '2023-11-14 11:26:39.370000', 1067246875800000007, '新增', NULL, 'role:save', 1, NULL, 1);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267651356282881, 1067246875800000001, '2023-11-14 11:26:58.084000', 1067246875800000001,
-        '2023-11-14 11:26:58.084000', 1067246875800000007, '修改', null, 'role:update', 1, null, 2);
-INSERT INTO sys_menu
+        '2023-11-14 11:26:58.084000', 1067246875800000007, '修改', NULL, 'role:update', 1, NULL, 2);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267726312689666, 1067246875800000001, '2023-11-14 11:27:15.956000', 1067246875800000001,
-        '2023-11-14 11:27:15.956000', 1067246875800000007, '删除', null, 'role:delete', 1, null, 2);
-INSERT INTO sys_menu
+        '2023-11-14 11:27:15.956000', 1067246875800000007, '删除', NULL, 'role:delete', 1, NULL, 2);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267809909362690, 1067246875800000001, '2023-11-14 11:27:35.887000', 1067246875800000001,
-        '2023-11-14 11:27:35.887000', 1067246875800000025, '新增', null, 'menu:save', 1, null, 1);
-INSERT INTO sys_menu
+        '2023-11-14 11:27:35.887000', 1067246875800000025, '新增', NULL, 'menu:save', 1, NULL, 1);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267875466334209, 1067246875800000001, '2023-11-14 11:27:51.517000', 1067246875800000001,
-        '2023-11-14 11:27:51.517000', 1067246875800000025, '修改', null, 'menu:update', 1, null, 2);
-INSERT INTO sys_menu
+        '2023-11-14 11:27:51.517000', 1067246875800000025, '修改', NULL, 'menu:update', 1, NULL, 2);
+INSERT INTO `sys_menu`(`id`, `creator`, `create_date`, `updater`, `update_date`, `pid`, `name`, `url`, `permissions`,
+                       `type`, `icon`, `sort`)
 VALUES (1724267952003993602, 1067246875800000001, '2023-11-14 11:28:09.765000', 1067246875800000001,
-        '2023-11-14 11:28:09.765000', 1067246875800000025, '删除', null, 'menu:delete', 1, null, 3);
+        '2023-11-14 11:28:09.765000', 1067246875800000025, '删除', NULL, 'menu:delete', 1, NULL, 3);
+
 -- ----------------------------
 -- Table structure for sys_role
 -- ----------------------------
