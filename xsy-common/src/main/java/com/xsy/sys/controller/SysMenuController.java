@@ -162,7 +162,7 @@ public class SysMenuController {
     @GetMapping("select")
     public Result<List<SysMenuDTO>> select() {
         UserDetail user = SecurityUser.getUser();
-        List<SysMenuDTO> list = sysMenuService.getUserMenuList(user, null);
+        List<SysMenuDTO> list = sysMenuService.getUserMenuList(user, 0);
 
         return Result.ok(list);
     }
