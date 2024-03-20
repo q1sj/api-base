@@ -162,7 +162,8 @@ public class SysMenuController {
     @GetMapping("select")
     public Result<List<SysMenuDTO>> select() {
         UserDetail user = SecurityUser.getUser();
-        List<SysMenuDTO> list = sysMenuService.getUserMenuList(user, 0);
+        //非bug 只查菜单使用nav接口
+        List<SysMenuDTO> list = sysMenuService.getUserMenuList(user, null);
 
         return Result.ok(list);
     }
