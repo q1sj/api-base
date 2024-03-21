@@ -35,7 +35,9 @@ public class ExportRecordServiceImpl extends ServiceImpl<ExportRecordDao, Export
 		IPage<ExportRecordEntity> page = page(query.initPage(), Wrappers.lambdaQuery(ExportRecordEntity.class)
 				.eq(!user.isAdmin(), ExportRecordEntity::getUserId, user.getId())
 				.eq(query.getStatus() != null, ExportRecordEntity::getStatus, query.getStatus())
-				.between(query.getStartTime() != null && query.getEndTime() != null, ExportRecordEntity::getExportTime, query.getStartTime(), query.getEndTime()));
+				.between(query.getStartTime() != null && query.getEndTime() != null, ExportRecordEntity::getExportTime, query.getStartTime(), query.getEndTime())
+				.orderByDesc(ExportRecordEntity::getExportTime)
+		);
 		return new PageData<>(page);
 	}
 
