@@ -36,7 +36,7 @@ public class ExportRecordServiceImpl extends ServiceImpl<ExportRecordDao, Export
 				.eq(!user.isAdmin(), ExportRecordEntity::getUserId, user.getId())
 				.eq(query.getStatus() != null, ExportRecordEntity::getStatus, query.getStatus())
 				.between(query.getStartTime() != null && query.getEndTime() != null, ExportRecordEntity::getExportTime, query.getStartTime(), query.getEndTime())
-				.orderByDesc(ExportRecordEntity::getExportTime)
+				.orderByDesc(ExportRecordEntity::getCreateTime)
 		);
 		return new PageData<>(page);
 	}

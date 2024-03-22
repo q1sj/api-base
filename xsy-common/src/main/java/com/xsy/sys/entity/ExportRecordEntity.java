@@ -1,7 +1,5 @@
 package com.xsy.sys.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.xsy.security.user.SecurityUser;
@@ -43,7 +41,7 @@ public class ExportRecordEntity implements Serializable {
 	 */
 	private Integer exportTime;
 	/**
-	 * 导出状态：1等待导出、2导出中、3导出成功、4导出失败
+	 * 导出状态：0等待导出、1导出中、2导出成功、3导出失败
 	 */
 	private Integer status;
 
@@ -71,12 +69,10 @@ public class ExportRecordEntity implements Serializable {
 	/**
 	 * 创建时间
 	 */
-	@TableField(fill = FieldFill.INSERT)
 	private Date createTime;
 	/**
 	 * 更新时间
 	 */
-	@TableField(fill = FieldFill.INSERT_UPDATE)
 	private Date updateTime;
 
 

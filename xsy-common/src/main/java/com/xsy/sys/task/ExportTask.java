@@ -123,6 +123,7 @@ public class ExportTask {
 			entity.setStatusName(ExportStatusEnum.SUCCESS.desc);
 			entity.setFileId(fileRecordEntity.getId());
 			entity.setProgress(100);
+			entity.setExportTime((int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - entity.getCreateTime().getTime()));
 			this.exportRecordService.updateById(entity);
 
 		} catch (Throwable e) {

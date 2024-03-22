@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 public class ExportRecordQuery extends PageQuery {
 	/**
-	 * 导出状态：1等待导出、2导出中、3导出成功、4导出失败
+	 * 导出状态：0等待导出、1导出中、2导出成功、3导出失败
 	 */
 	private Integer status;
 	private Date startTime;
