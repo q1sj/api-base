@@ -67,9 +67,4 @@ public class DateConverter implements Converter<String, Date> {
         }
         return date;
     }
-
-    public static void main(String[] args) {
-        String s = "2024-03-28";
-        Date convert = new DateConverter().convert(s);
-    }
 }

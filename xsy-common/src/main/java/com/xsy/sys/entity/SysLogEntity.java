@@ -7,6 +7,7 @@ import com.alibaba.excel.converters.longconverter.LongStringConverter;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.xsy.base.util.StringLimitConverter;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -39,19 +40,19 @@ public class SysLogEntity {
 	/**
 	 * 参数
 	 */
-	@ExcelProperty("请求参数")
+	@ExcelProperty(value = "请求参数", converter = StringLimitConverter.class)
 	@Column(columnDefinition = "text")
 	private String args;
 	/**
 	 * 响应
 	 */
-	@ExcelProperty("响应")
+	@ExcelProperty(value = "响应", converter = StringLimitConverter.class)
 	@Column(columnDefinition = "text")
 	private String resp;
 	/**
 	 * 异常
 	 */
-	@ExcelProperty("异常")
+	@ExcelProperty(value = "异常", converter = StringLimitConverter.class)
 	@Column(columnDefinition = "text")
 	private String throwable;
 	/**

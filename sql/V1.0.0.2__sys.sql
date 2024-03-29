@@ -39,7 +39,7 @@ CREATE TABLE `file_record`
     `remark`         varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL     DEFAULT NULL,
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `uk_path` (`path`, `is_delete`) USING BTREE,
-    UNIQUE INDEX `uk_file_record_path` (`path`, `is_delete`) USING BTREE
+    KEY `idx_expire_time` (`expire_time`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   CHARACTER SET = utf8mb4
