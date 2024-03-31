@@ -7,6 +7,8 @@ import com.alibaba.excel.metadata.property.ExcelContentProperty;
 import org.apache.poi.ss.SpreadsheetVersion;
 
 /**
+ * 限制excel单元格文本最大长度
+ *
  * @author Q1sj
  * @date 2024.3.29 14:03
  */

@@ -27,11 +27,19 @@ public class RestTemplateConfig {
     @Bean
     @ConditionalOnMissingBean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
+        return createDefaultClientHttpRequestFactory();
+    }
+
+    public static RestTemplate createDefaultRestTemplate() {
+        return new RestTemplate(createDefaultClientHttpRequestFactory());
+    }
+
+    public static ClientHttpRequestFactory createDefaultClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         //单位为ms
-        factory.setReadTimeout(30000);
+        factory.setReadTimeout(10000);
         //单位为ms
-        factory.setConnectTimeout(30000);
+        factory.setConnectTimeout(10000);
         return factory;
     }
 }
