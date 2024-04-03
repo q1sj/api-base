@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Q1sj
@@ -30,11 +31,16 @@ public class HttpUtils {
     /**
      * 接口熔断时间(秒)
      */
-    private static int fuseTime = 5;
+    private static int fuseTime = 30;
     /**
-     * 请求失败url
+     * 允许超时次数
      */
-    private static LoadingCache<String, Boolean> requestFailUrlCache = createCache();
+    private static int maxTimeoutCount = 3;
+
+    /**
+     * 请求超时url
+     */
+    private static LoadingCache<String, AtomicInteger> requestTimeoutUrlCache = createCache();
 
     private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(
             10, Runtime.getRuntime().availableProcessors() * 10,
@@ -58,8 +64,9 @@ public class HttpUtils {
         BizAssertUtils.isNotBlank(url, "url不能为空");
         BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
         BizAssertUtils.isNotNull(respType, "respType不能为空");
-        if (Objects.equals(requestFailUrlCache.get(url), true)) {
-            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败 " + fuseTime + "秒后重试");
+        AtomicInteger timeoutCount = requestTimeoutUrlCache.get(url);
+        if (timeoutCount != null && timeoutCount.get() > maxTimeoutCount) {
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败 稍后重试");
         }
         long startTime = System.currentTimeMillis();
         T resp = null;
@@ -69,7 +76,7 @@ public class HttpUtils {
             resp = respEntity.getBody();
             return resp;
         } catch (ResourceAccessException e) {
-            requestFailUrlCache.put(url, true);
+            requestTimeoutUrlCache.get(url).incrementAndGet();
             throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求超时", e);
         } catch (Exception e) {
             throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败", e);
@@ -101,13 +108,13 @@ public class HttpUtils {
             return;
         }
         HttpUtils.fuseTime = fuseTime;
-        requestFailUrlCache = createCache();
+        requestTimeoutUrlCache = createCache();
     }
 
-    private static LoadingCache<String, Boolean> createCache() {
+    private static LoadingCache<String, AtomicInteger> createCache() {
         return Caffeine.newBuilder()
                 .maximumSize(1000)
                 .expireAfterWrite(Duration.ofSeconds(fuseTime))
-                .build(key -> false);
+                .build(key -> new AtomicInteger(0));
     }
 }

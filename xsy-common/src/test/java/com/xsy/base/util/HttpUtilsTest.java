@@ -11,19 +11,21 @@ public class HttpUtilsTest {
 	@Test
 	public void testFuse() throws InterruptedException {
 		String url = "http://127.0.0.1:12345";
-		try {
-			HttpUtils.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
-		} catch (GlobalException e) {
-			e.printStackTrace();
-		}
-		try {
-			HttpUtils.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
-		} catch (GlobalException e) {
-			e.printStackTrace();
-		}
+		Runnable r = () -> {
+			try {
+				HttpUtils.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
+			} catch (GlobalException e) {
+				e.printStackTrace();
+			}
+		};
+		new Thread(r).start();
+		new Thread(r).start();
+		new Thread(r).start();
+		new Thread(r).start();
 		TimeUnit.SECONDS.sleep(5);
-		HttpUtils.exchange(url, HttpMethod.GET, new HttpEntity<>(null), String.class);
-
+		r.run();
+		TimeUnit.SECONDS.sleep(5);
+		r.run();
 	}
 
 	@Test
