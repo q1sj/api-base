@@ -59,7 +59,7 @@ public class HttpUtils {
         BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
         BizAssertUtils.isNotNull(respType, "respType不能为空");
         if (Objects.equals(requestFailUrlCache.get(url), true)) {
-            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败 " + fuseTime + "后重试");
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败 " + fuseTime + "秒后重试");
         }
         long startTime = System.currentTimeMillis();
         T resp = null;
