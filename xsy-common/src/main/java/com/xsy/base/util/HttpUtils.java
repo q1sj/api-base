@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.xsy.base.config.RestTemplateConfig;
+import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
@@ -57,7 +59,7 @@ public class HttpUtils {
         BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
         BizAssertUtils.isNotNull(respType, "respType不能为空");
         if (Objects.equals(requestFailUrlCache.get(url), true)) {
-            throw new GlobalException(url + "请求失败 " + fuseTime + "后重试");
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败 " + fuseTime + "后重试");
         }
         long startTime = System.currentTimeMillis();
         T resp = null;
@@ -66,9 +68,11 @@ public class HttpUtils {
             log.debug("resp:{}", respEntity);
             resp = respEntity.getBody();
             return resp;
-        } catch (Exception e) {
+        } catch (ResourceAccessException e) {
             requestFailUrlCache.put(url, true);
-            throw new GlobalException(url + "请求失败", e);
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求超时", e);
+        } catch (Exception e) {
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败", e);
         } finally {
             log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body == null ? "" : getLogJson(body.getBody()), getLogJson(resp));
         }
