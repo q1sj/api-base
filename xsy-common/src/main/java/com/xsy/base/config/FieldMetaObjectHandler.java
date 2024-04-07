@@ -7,6 +7,8 @@ import com.xsy.security.user.UserDetail;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.util.Date;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * 公共字段，自动填充值
@@ -40,5 +42,22 @@ public class FieldMetaObjectHandler implements MetaObjectHandler {
         strictUpdateFill(metaObject, UPDATER, Long.class, SecurityUser.getUserId());
         //更新时间
         strictUpdateFill(metaObject, UPDATE_DATE, Date.class, new Date());
+    }
+
+    /**
+     * 如果填充的值不为null 覆盖原始值
+     *
+     * @param metaObject metaObject meta object parameter
+     * @param fieldName  java bean property name
+     * @param fieldVal   java bean property value of Supplier
+     * @return
+     */
+    @Override
+    public MetaObjectHandler strictFillStrategy(MetaObject metaObject, String fieldName, Supplier<?> fieldVal) {
+        Object obj = fieldVal.get();
+        if (Objects.nonNull(obj)) {
+            metaObject.setValue(fieldName, obj);
+        }
+        return this;
     }
 }
