@@ -24,4 +24,6 @@ public interface ScheduleJobLogService extends IService<ScheduleJobLogEntity> {
 	PageData<ScheduleJobLogEntity> queryPage(Map<String, Object> params);
 
 	void truncateTable();
+
+	void clearLog(int ago);
 }

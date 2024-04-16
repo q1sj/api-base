@@ -11,6 +11,8 @@ import com.xsy.sys.dao.ApiLogDao;
 import com.xsy.sys.dto.SysLogDTO;
 import com.xsy.sys.entity.SysLogEntity;
 import com.xsy.sys.service.SysLogService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -21,6 +23,9 @@ import java.util.Date;
  */
 @Service
 public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> implements SysLogService {
+	@Value("${api.log.save-day:30}")
+	private Integer logSaveDay;
+
 	@Override
 	public IPage<SysLogEntity> list(SysLogDTO dto) {
 		LambdaQueryWrapper<SysLogEntity> wrapper = Wrappers.lambdaQuery(SysLogEntity.class)
@@ -33,5 +38,10 @@ public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> impl
 		BizAssertUtils.isTrue(ago > 0, "必须大于0");
 		this.remove(Wrappers.lambdaQuery(SysLogEntity.class)
 				.lt(SysLogEntity::getRecordTime, DateUtils.addDays(new Date(), -ago)));
+	}
+
+	@Scheduled(fixedDelay = 60 * 60 * 1000, initialDelay = 60 * 1000)
+	public void clear() {
+		clearLog(logSaveDay);
 	}
 }
