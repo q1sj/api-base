@@ -25,7 +25,7 @@ public class ExportContext {
 	 * @param conditions
 	 * @return
 	 */
-	public List<?> getList(String code, String conditions) {
+	public Export.ExportData getList(String code, String conditions) {
 		return getExport(code).getExportList(conditions);
 	}
 

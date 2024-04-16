@@ -1,10 +1,10 @@
 package com.xsy.sys.task;
 
 import com.alibaba.excel.EasyExcel;
-import com.xsy.base.exception.GlobalException;
+import com.xsy.base.util.CollectionUtils;
+import com.xsy.base.util.Export;
 import com.xsy.base.util.ExportContext;
 import com.xsy.base.util.FileUtils;
-import com.xsy.base.util.StringUtils;
 import com.xsy.file.entity.FileRecordEntity;
 import com.xsy.file.service.FileRecordService;
 import com.xsy.sys.annotation.SysConfig;
@@ -65,7 +65,8 @@ public class ExportTask {
 
 	private void export(ExportRecordEntity entity) {
 		File zipFile = null;
-		String filePath = null;
+		String excelSavePath = null;
+		List<File> files = new ArrayList<>();
 		try {
 			Long id = entity.getId();
 			// 防止重复执行
@@ -82,40 +83,22 @@ public class ExportTask {
 
 			// 获取要导出数据
 			String conditions = entity.getConditions();
-			if (StringUtils.isBlank(conditions)) {
-				throw new GlobalException("conditions为空");
+			// 获取导出的excel
+			Export.ExportData exportData = exportContext.getList(entity.getCode(), conditions);
+			List<?> excelData = exportData.getExcelData();
+			if (CollectionUtils.isNotEmpty(excelData)) {
+				excelSavePath = exportExcel(excelData, entity);
+				files.add(new File(excelSavePath));
 			}
-			List<?> list = exportContext.getList(entity.getCode(), conditions);
-			if (list == null || list.isEmpty()) {
-				throw new GlobalException("导出内容为空");
-			}
-			// 导出
-			String excelPath = System.getProperty("java.io.tmpdir");
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			// 生成导出目录
-			filePath = excelPath + File.separator + sdf.format(new Date()) + File.separator + entity.getFileName();
-			// 目录不存在 自动创建
-			new File(filePath).mkdirs();
-			// 获取导出实体类
-			Class<?> exportEntityClass = list.get(0).getClass();
-			// 大list分割 多excel导出
-			// 获取excel_max_rows
-			log.debug("单表最大行数：" + excelMaxRows);
-			// 分割
-			List<? extends List<?>> lists = subList(list, excelMaxRows);
-			for (int i = 0; i < lists.size(); i++) {
-				log.info("{}/{}.xlsx导出中", filePath, i);
-				EasyExcel.write(filePath + File.separator + i + ".xlsx", exportEntityClass).sheet("sheet1").doWrite(lists.get(i));
-				// 更新导出进度
-				int progress = calculateProgress(i + 1, lists.size());
-				entity.setProgress(progress);
-				log.info("导出进度:{}%", progress);
-				this.exportRecordService.updateById(entity);
+			// 获取导出的其他文件
+			List<File> otherFile = exportData.getOtherFile();
+			if (CollectionUtils.isNotEmpty(otherFile)) {
+				files.addAll(otherFile);
 			}
 			log.info("开始压缩");
 			// 压缩
-			zipFile = new File(filePath + ".zip");
-			FileUtils.zipFiles(new File[]{new File(filePath)}, zipFile);
+			zipFile = File.createTempFile("export-" + System.currentTimeMillis(), ".zip");
+			FileUtils.zipFiles(files, zipFile);
 			// 记录fileRecord
 			FileRecordEntity fileRecordEntity = fileRecordService.save(zipFile, entity.getCode() + "-export", TimeUnit.DAYS.toMillis(30));
 			// 打包完成 更新数据库导出状态
@@ -125,7 +108,6 @@ public class ExportTask {
 			entity.setProgress(100);
 			entity.setExportTime((int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - entity.getCreateTime().getTime()));
 			this.exportRecordService.updateById(entity);
-
 		} catch (Throwable e) {
 			log.error("导出失败:{}", e.getMessage(), e);
 			if (entity != null) {
@@ -136,13 +118,40 @@ public class ExportTask {
 				this.exportRecordService.updateById(entity);
 			}
 		} finally {
-			if (filePath != null) {
-				FileUtils.deleteQuietly(new File(filePath));
+			if (excelSavePath != null) {
+				FileUtils.deleteQuietly(new File(excelSavePath));
 			}
 			if (zipFile != null) {
 				FileUtils.deleteQuietly(zipFile);
 			}
 		}
+	}
+
+	private String exportExcel(List<?> excelData, ExportRecordEntity entity) {
+		// 导出
+		String excelPath = System.getProperty("java.io.tmpdir");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		// 生成导出目录
+		String filePath = excelPath + File.separator + sdf.format(new Date()) + File.separator + entity.getFileName();
+		// 目录不存在 自动创建
+		new File(filePath).mkdirs();
+		// 获取导出实体类
+		Class<?> exportEntityClass = excelData.get(0).getClass();
+		// 大list分割 多excel导出
+		// 获取excel_max_rows
+		log.debug("单表最大行数：" + excelMaxRows);
+		// 分割
+		List<? extends List<?>> lists = subList(excelData, excelMaxRows);
+		for (int i = 0; i < lists.size(); i++) {
+			log.info("{}/{}.xlsx导出中", filePath, i);
+			EasyExcel.write(filePath + File.separator + i + ".xlsx", exportEntityClass).sheet("sheet1").doWrite(lists.get(i));
+			// 更新导出进度
+			int progress = calculateProgress(i + 1, lists.size());
+			entity.setProgress(progress);
+			log.info("导出进度:{}%", progress);
+			this.exportRecordService.updateById(entity);
+		}
+		return filePath;
 	}
 
 	/**

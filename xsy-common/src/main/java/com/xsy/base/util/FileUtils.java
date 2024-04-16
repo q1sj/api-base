@@ -5,6 +5,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -43,6 +45,10 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
     }
 
     public static void zipFiles(File[] filesToZip, File zipFile) throws IOException {
+        zipFiles(Arrays.asList(filesToZip), zipFile);
+    }
+
+    public static void zipFiles(Collection<File> filesToZip, File zipFile) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(zipFile);
              ZipOutputStream zos = new ZipOutputStream(fos)) {
 

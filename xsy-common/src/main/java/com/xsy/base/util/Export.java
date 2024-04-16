@@ -1,5 +1,11 @@
 package com.xsy.base.util;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
+
+import java.io.File;
 import java.util.List;
 
 /**
@@ -20,6 +26,15 @@ public interface Export {
 	 * @param conditions
 	 * @return
 	 */
-	List<?> getExportList(String conditions);
+	ExportData getExportList(String conditions);
 
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	class ExportData {
+		@Nullable
+		private List<?> excelData;
+		@Nullable
+		private List<File> otherFile;
+	}
 }
