@@ -22,10 +22,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -94,7 +91,7 @@ public class ExportTask {
 			Export.ExportData exportData = exportContext.getList(entity.getCode(), conditions);
 			excelSavePath = exportExcel(exportData, entity);
 			if (excelSavePath != null) {
-				files.add(new File(excelSavePath));
+				files.addAll(Arrays.asList(new File(excelSavePath).listFiles()));
 			}
 			// 获取导出的其他文件
 			List<File> otherFile = exportData.getOtherFile();
@@ -106,7 +103,7 @@ public class ExportTask {
 			zipFile = File.createTempFile("export-" + System.currentTimeMillis(), ".zip");
 			FileUtils.zipFiles(files, zipFile);
 			// 记录fileRecord 保留原始文件名
-			FileRecordEntity fileRecordEntity = fileRecordService.save(Files.newInputStream(zipFile.toPath()), zipFile.length(), entity.getFileName(), "export", TimeUnit.DAYS.toMillis(30));
+			FileRecordEntity fileRecordEntity = fileRecordService.save(Files.newInputStream(zipFile.toPath()), zipFile.length(), entity.getFileName() + ".zip", "export", TimeUnit.DAYS.toMillis(30));
 			// 打包完成 更新数据库导出状态
 			entity.setStatus(ExportStatusEnum.SUCCESS.value);
 			entity.setStatusName(ExportStatusEnum.SUCCESS.desc);
@@ -155,7 +152,7 @@ public class ExportTask {
 		List<? extends List<?>> lists = subList(excelData, excelMaxRows);
 		for (int i = 0; i < lists.size(); i++) {
 			log.info("{}/{}.xlsx导出中", filePath, i);
-			ExcelWriterSheetBuilder builder = EasyExcel.write(filePath + File.separator + i + ".xlsx", exportEntityClass).sheet("sheet1");
+			ExcelWriterSheetBuilder builder = EasyExcel.write(filePath + File.separator + entity.getFileName() + "_" + i + ".xlsx", exportEntityClass).sheet("sheet1");
 			if (CollectionUtils.isNotEmpty(exportData.getCellWriteHandlerList())) {
 				for (CellWriteHandler cellWriteHandler : exportData.getCellWriteHandlerList()) {
 					builder.registerWriteHandler(cellWriteHandler);

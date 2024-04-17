@@ -54,7 +54,7 @@ public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> impl
 
 	@Override
 	public String getExportCode() {
-		return "sysLog";
+		return "SYS_LOG";
 	}
 
 	@Override
