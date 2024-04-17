@@ -16,6 +16,8 @@ import com.xsy.sys.entity.SysLogEntity;
 import com.xsy.sys.service.ExportRecordService;
 import com.xsy.sys.service.SysLogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -27,6 +29,9 @@ import java.util.List;
  */
 @Service
 public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> implements SysLogService, Export {
+	@Value("${api.log.save-day:30}")
+	private Integer logSaveDay;
+
 	@Autowired
 	private ExportRecordService exportRecordService;
 
@@ -63,5 +68,10 @@ public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> impl
 		return Wrappers.lambdaQuery(SysLogEntity.class)
 				.between(dto.getStartTime() != null && dto.getEndTime() != null, SysLogEntity::getRecordTime, dto.getStartTime(), dto.getEndTime())
 				.orderByDesc(SysLogEntity::getRecordTime);
+	}
+
+	@Scheduled(fixedDelay = 60 * 60 * 1000, initialDelay = 60 * 1000)
+	public void clear() {
+		clearLog(logSaveDay);
 	}
 }

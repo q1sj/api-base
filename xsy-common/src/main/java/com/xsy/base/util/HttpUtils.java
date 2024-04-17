@@ -1,6 +1,10 @@
 package com.xsy.base.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.xsy.base.config.RestTemplateConfig;
+import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -9,10 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Q1sj
@@ -21,6 +28,19 @@ import java.util.concurrent.*;
 @Slf4j
 @Component
 public class HttpUtils {
+    /**
+     * 接口熔断时间(秒)
+     */
+    private static int fuseTime = 30;
+    /**
+     * 允许超时次数
+     */
+    private static int maxTimeoutCount = 3;
+
+    /**
+     * 请求超时url
+     */
+    private static LoadingCache<String, AtomicInteger> requestTimeoutUrlCache = createCache();
 
     private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(
             10, Runtime.getRuntime().availableProcessors() * 10,
@@ -28,7 +48,7 @@ public class HttpUtils {
             new LinkedBlockingQueue<>(10),
             new CustomizableThreadFactory("async-http-"),
             new ThreadPoolExecutor.CallerRunsPolicy());
-    private static RestTemplate restTemplate = new RestTemplate();
+    private static RestTemplate restTemplate = RestTemplateConfig.createDefaultRestTemplate();
 
     public HttpUtils(RestTemplate restTemplate) {
         // Spring实例化 覆盖默认restTemplate
@@ -36,30 +56,18 @@ public class HttpUtils {
     }
 
     public static <T> T exchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) throws GlobalException {
-        BizAssertUtils.isNotBlank(url, "url不能为空");
-        BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
-        BizAssertUtils.isNotNull(respType, "respType不能为空");
-
-        long startTime = System.currentTimeMillis();
-        T resp = null;
-        try {
-            ResponseEntity<String> respEntity = restTemplate.exchange(url, httpMethod, body, String.class);
-            log.debug("resp:{}", respEntity);
-            String respBody = respEntity.getBody();
-            resp = JsonUtils.parseObject(respBody, respType);
-            return resp;
-        } catch (Exception e) {
-            throw new GlobalException(url + "请求失败", e);
-        } finally {
-            log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body == null ? "" : getLogJson(body.getBody()), getLogJson(resp));
-        }
+        String resp = exchange(url, httpMethod, body, String.class);
+        return JsonUtils.parseObject(resp, respType);
     }
 
     public static <T> T exchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, Class<T> respType) throws GlobalException {
         BizAssertUtils.isNotBlank(url, "url不能为空");
         BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
         BizAssertUtils.isNotNull(respType, "respType不能为空");
-
+        AtomicInteger timeoutCount = requestTimeoutUrlCache.get(url);
+        if (timeoutCount != null && timeoutCount.get() > maxTimeoutCount) {
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败 稍后重试");
+        }
         long startTime = System.currentTimeMillis();
         T resp = null;
         try {
@@ -67,8 +75,11 @@ public class HttpUtils {
             log.debug("resp:{}", respEntity);
             resp = respEntity.getBody();
             return resp;
+        } catch (ResourceAccessException e) {
+            requestTimeoutUrlCache.get(url).incrementAndGet();
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求超时", e);
         } catch (Exception e) {
-            throw new GlobalException(url + "请求失败", e);
+            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败", e);
         } finally {
             log.info("cost:{}ms {} url:{} body:{} resp:{}", System.currentTimeMillis() - startTime, httpMethod, url, body == null ? "" : getLogJson(body.getBody()), getLogJson(resp));
         }
@@ -90,5 +101,20 @@ public class HttpUtils {
         } catch (Exception e) {
             return Objects.toString(o);
         }
+    }
+
+    public static void setFuseTime(int fuseTime) {
+        if (HttpUtils.fuseTime == fuseTime) {
+            return;
+        }
+        HttpUtils.fuseTime = fuseTime;
+        requestTimeoutUrlCache = createCache();
+    }
+
+    private static LoadingCache<String, AtomicInteger> createCache() {
+        return Caffeine.newBuilder()
+                .maximumSize(1000)
+                .expireAfterWrite(Duration.ofSeconds(fuseTime))
+                .build(key -> new AtomicInteger(0));
     }
 }

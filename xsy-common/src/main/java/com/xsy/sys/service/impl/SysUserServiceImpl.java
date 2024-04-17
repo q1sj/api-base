@@ -166,6 +166,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "'sys_user_'+#id")
     public void updatePassword(Long id, String newPassword) {
         newPassword = PasswordUtils.encode(newPassword);
 

@@ -24,8 +24,8 @@ public class DateConverter implements Converter<String, Date> {
     static {
         formatList.add("yyyy-MM");
         formatList.add("yyyy-MM-dd");
-        formatList.add("yyyy-MM-dd hh:mm");
-        formatList.add("yyyy-MM-dd hh:mm:ss");
+        formatList.add("yyyy-MM-dd HH:mm");
+        formatList.add("yyyy-MM-dd HH:mm:ss");
         formatList.add("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     }
 
@@ -36,16 +36,16 @@ public class DateConverter implements Converter<String, Date> {
             return null;
         }
 
-        if(source.matches("^\\d{4}-\\d{1,2}$")){
-            return parseDate(source, formatList.get(0));
-        }else if(source.matches("^\\d{4}-\\d{1,2}-\\d{1,2}$")){
-            return parseDate(source, formatList.get(1));
-        }else if(source.matches("^\\d{4}-\\d{1,2}-\\d{1,2} {1}\\d{1,2}:\\d{1,2}$")){
-            return parseDate(source, formatList.get(2));
-        }else if(source.matches("^\\d{4}-\\d{1,2}-\\d{1,2} {1}\\d{1,2}:\\d{1,2}:\\d{1,2}$")){
-            return parseDate(source, formatList.get(3));
-        }else if(source.matches("^\\d{4}-\\d{1,2}-\\d{1,2}.*T.*\\d{1,2}:\\d{1,2}:\\d{1,2}.*..*$")){
+        if (source.matches("^\\d{4}-\\d{1,2}-\\d{1,2}.*T.*\\d{1,2}:\\d{1,2}:\\d{1,2}.*..*$")) {
             return parseDate(source, formatList.get(4));
+        } else if (source.matches("^\\d{4}-\\d{1,2}-\\d{1,2} {1}\\d{1,2}:\\d{1,2}:\\d{1,2}$")) {
+            return parseDate(source, formatList.get(3));
+        } else if (source.matches("^\\d{4}-\\d{1,2}-\\d{1,2} {1}\\d{1,2}:\\d{1,2}$")) {
+            return parseDate(source, formatList.get(2));
+        } else if (source.matches("^\\d{4}-\\d{1,2}-\\d{1,2}$")) {
+            return parseDate(source, formatList.get(1));
+        } else if (source.matches("^\\d{4}-\\d{1,2}$")) {
+            return parseDate(source, formatList.get(0));
         } else {
             throw new IllegalArgumentException("Invalid boolean value '" + source + "'");
         }
@@ -67,5 +67,4 @@ public class DateConverter implements Converter<String, Date> {
         }
         return date;
     }
-
 }
