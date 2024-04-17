@@ -1,5 +1,6 @@
 package com.xsy.base.util;
 
+import com.alibaba.excel.write.handler.CellWriteHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public interface Export {
 	 * @param conditions
 	 * @return
 	 */
-	ExportData getExportList(String conditions);
+	ExportData getExportData(String conditions);
 
 	@Data
 	@NoArgsConstructor
@@ -36,5 +37,13 @@ public interface Export {
 		private List<?> excelData;
 		@Nullable
 		private List<File> otherFile;
+
+		@Nullable
+		private List<CellWriteHandler> cellWriteHandlerList;
+
+		public ExportData(@Nullable List<?> excelData, @Nullable List<File> otherFile) {
+			this.excelData = excelData;
+			this.otherFile = otherFile;
+		}
 	}
 }

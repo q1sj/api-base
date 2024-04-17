@@ -26,7 +26,7 @@ public class ExportContext {
 	 * @return
 	 */
 	public Export.ExportData getList(String code, String conditions) {
-		return getExport(code).getExportList(conditions);
+		return getExport(code).getExportData(conditions);
 	}
 
 	private Export getExport(String code) {

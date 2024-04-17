@@ -13,4 +13,7 @@ public interface SysLogService extends IService<SysLogEntity> {
 	IPage<SysLogEntity> list(SysLogDTO dto);
 
 	void clearLog(int ago);
+
+	void export(SysLogDTO dto);
+
 }

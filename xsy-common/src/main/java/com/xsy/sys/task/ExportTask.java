@@ -1,6 +1,8 @@
 package com.xsy.sys.task;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
+import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.xsy.base.util.CollectionUtils;
 import com.xsy.base.util.Export;
 import com.xsy.base.util.ExportContext;
@@ -13,10 +15,12 @@ import com.xsy.sys.enums.ExportStatusEnum;
 import com.xsy.sys.service.ExportRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,15 +83,17 @@ public class ExportTask {
 				entity.setStatus(ExportStatusEnum.ING.value);
 				entity.setStatusName(ExportStatusEnum.ING.desc);
 				exportRecordService.updateById(entity);
+			} else {
+				log.warn("id:{}导出中 不重复导出", id);
+				return;
 			}
 
 			// 获取要导出数据
 			String conditions = entity.getConditions();
 			// 获取导出的excel
 			Export.ExportData exportData = exportContext.getList(entity.getCode(), conditions);
-			List<?> excelData = exportData.getExcelData();
-			if (CollectionUtils.isNotEmpty(excelData)) {
-				excelSavePath = exportExcel(excelData, entity);
+			excelSavePath = exportExcel(exportData, entity);
+			if (excelSavePath != null) {
 				files.add(new File(excelSavePath));
 			}
 			// 获取导出的其他文件
@@ -99,8 +105,8 @@ public class ExportTask {
 			// 压缩
 			zipFile = File.createTempFile("export-" + System.currentTimeMillis(), ".zip");
 			FileUtils.zipFiles(files, zipFile);
-			// 记录fileRecord
-			FileRecordEntity fileRecordEntity = fileRecordService.save(zipFile, entity.getCode() + "-export", TimeUnit.DAYS.toMillis(30));
+			// 记录fileRecord 保留原始文件名
+			FileRecordEntity fileRecordEntity = fileRecordService.save(Files.newInputStream(zipFile.toPath()), zipFile.length(), entity.getFileName(), "export", TimeUnit.DAYS.toMillis(30));
 			// 打包完成 更新数据库导出状态
 			entity.setStatus(ExportStatusEnum.SUCCESS.value);
 			entity.setStatusName(ExportStatusEnum.SUCCESS.desc);
@@ -127,7 +133,12 @@ public class ExportTask {
 		}
 	}
 
-	private String exportExcel(List<?> excelData, ExportRecordEntity entity) {
+	@Nullable
+	private String exportExcel(Export.ExportData exportData, ExportRecordEntity entity) {
+		List<?> excelData = exportData.getExcelData();
+		if (CollectionUtils.isEmpty(excelData)) {
+			return null;
+		}
 		// 导出
 		String excelPath = System.getProperty("java.io.tmpdir");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -144,7 +155,13 @@ public class ExportTask {
 		List<? extends List<?>> lists = subList(excelData, excelMaxRows);
 		for (int i = 0; i < lists.size(); i++) {
 			log.info("{}/{}.xlsx导出中", filePath, i);
-			EasyExcel.write(filePath + File.separator + i + ".xlsx", exportEntityClass).sheet("sheet1").doWrite(lists.get(i));
+			ExcelWriterSheetBuilder builder = EasyExcel.write(filePath + File.separator + i + ".xlsx", exportEntityClass).sheet("sheet1");
+			if (CollectionUtils.isNotEmpty(exportData.getCellWriteHandlerList())) {
+				for (CellWriteHandler cellWriteHandler : exportData.getCellWriteHandlerList()) {
+					builder.registerWriteHandler(cellWriteHandler);
+				}
+			}
+			builder.doWrite(lists.get(i));
 			// 更新导出进度
 			int progress = calculateProgress(i + 1, lists.size());
 			entity.setProgress(progress);
