@@ -49,7 +49,7 @@ public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> impl
 
 	@Override
 	public void export(SysLogDTO dto) {
-		exportRecordService.save(ExportRecordEntity.init(getExportCode(), "系统日志", JsonUtils.toJsonString(dto)));
+		exportRecordService.save(ExportRecordEntity.init(getExportCode(), "操作日志", JsonUtils.toJsonString(dto)));
 	}
 
 	@Override

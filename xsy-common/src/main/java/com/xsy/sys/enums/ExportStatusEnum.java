@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum ExportStatusEnum implements BaseEnum<Integer, String> {
 	//0待导出、 1导出中、2导出成功、3导出失败
-	UNKNOWN(-1, "未知"),
 	WAIT(0, "待导出"),
 	ING(1, "导出中"),
 	SUCCESS(2, "导出成功"),

@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public Result<?> handleException(DataIntegrityViolationException e) {
         logger.warn(e.getMessage(), e);
-        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "数据库参数校验失败");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

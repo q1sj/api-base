@@ -46,6 +46,8 @@ public class ExportTask {
 
 	@Scheduled(fixedDelay = 60 * 1000, initialDelay = 60 * 1000)
 	public void run() {
+		// 清理超时导出记录
+		exportRecordService.clearTimeoutRecord();
 		// 查询 待导出记录
 		List<ExportRecordEntity> exportRecordList = this.exportRecordService.findByStatus(ExportStatusEnum.WAIT);
 		// 修改状态 导出中
@@ -140,7 +142,7 @@ public class ExportTask {
 		String excelPath = System.getProperty("java.io.tmpdir");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		// 生成导出目录
-		String filePath = excelPath + File.separator + sdf.format(new Date()) + File.separator + entity.getFileName();
+		String filePath = excelPath + File.separator + sdf.format(new Date()) + File.separator + UUID.randomUUID();
 		// 目录不存在 自动创建
 		new File(filePath).mkdirs();
 		// 获取导出实体类

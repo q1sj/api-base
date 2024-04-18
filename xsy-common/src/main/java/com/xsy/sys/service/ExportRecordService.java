@@ -15,4 +15,5 @@ public interface ExportRecordService extends BaseService<ExportRecordEntity> {
 
 	List<ExportRecordEntity> findByStatus(ExportStatusEnum exportStatus);
 
+	void clearTimeoutRecord();
 }

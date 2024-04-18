@@ -76,9 +76,9 @@ public class ExportRecordEntity implements Serializable {
 	private Date updateTime;
 
 
-	public static ExportRecordEntity init(String code, String codeName, String conditions) {
+	public static ExportRecordEntity init(String code, String codeName, String fileName, String conditions) {
 		ExportRecordEntity entity = new ExportRecordEntity();
-		entity.setFileName(codeName + System.currentTimeMillis());
+		entity.setFileName(fileName);
 		entity.setCode(code);
 		entity.setCodeName(codeName);
 		entity.setConditions(conditions);
@@ -90,5 +90,9 @@ public class ExportRecordEntity implements Serializable {
 		entity.setUserName(user.getRealName());
 		entity.setCreateTime(new Date());
 		return entity;
+	}
+
+	public static ExportRecordEntity init(String code, String codeName, String conditions) {
+		return init(code, codeName, codeName + System.currentTimeMillis(), conditions);
 	}
 }

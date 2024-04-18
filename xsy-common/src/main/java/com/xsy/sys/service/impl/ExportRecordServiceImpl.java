@@ -3,7 +3,9 @@ package com.xsy.sys.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xsy.base.util.DateUtils;
 import com.xsy.base.util.PageData;
+import com.xsy.base.util.StringUtils;
 import com.xsy.security.user.SecurityUser;
 import com.xsy.security.user.UserDetail;
 import com.xsy.sys.dao.ExportRecordDao;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +38,7 @@ public class ExportRecordServiceImpl extends ServiceImpl<ExportRecordDao, Export
 		IPage<ExportRecordEntity> page = page(query.initPage(), Wrappers.lambdaQuery(ExportRecordEntity.class)
 				.eq(!user.isAdmin(), ExportRecordEntity::getUserId, user.getId())
 				.eq(query.getStatus() != null, ExportRecordEntity::getStatus, query.getStatus())
+				.eq(StringUtils.isNotBlank(query.getType()), ExportRecordEntity::getCode, query.getType())
 				.between(query.getStartTime() != null && query.getEndTime() != null, ExportRecordEntity::getExportTime, query.getStartTime(), query.getEndTime())
 				.orderByDesc(ExportRecordEntity::getCreateTime)
 		);
@@ -52,5 +56,17 @@ public class ExportRecordServiceImpl extends ServiceImpl<ExportRecordDao, Export
 		boolean save = super.save(entity);
 		exportTask.asyncExport(entity);
 		return save;
+	}
+
+	@Override
+	public void clearTimeoutRecord() {
+		update(Wrappers.lambdaUpdate(ExportRecordEntity.class)
+				.eq(ExportRecordEntity::getStatus, ExportStatusEnum.ING.value)
+				.lt(ExportRecordEntity::getCreateTime, DateUtils.addDays(new Date(), -1))
+				.set(ExportRecordEntity::getStatus, ExportStatusEnum.FAIL.value)
+				.set(ExportRecordEntity::getStatusName, ExportStatusEnum.FAIL.desc)
+				.set(ExportRecordEntity::getFailReason, "导出超时")
+				.set(ExportRecordEntity::getUpdateTime, new Date())
+		);
 	}
 }
