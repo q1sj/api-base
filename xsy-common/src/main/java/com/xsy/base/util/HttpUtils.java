@@ -6,6 +6,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.xsy.base.config.RestTemplateConfig;
 import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.exception.GlobalException;
+import com.xsy.base.exception.RequestTimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -66,18 +67,17 @@ public class HttpUtils {
         BizAssertUtils.isNotNull(respType, "respType不能为空");
         AtomicInteger timeoutCount = requestTimeoutUrlCache.get(url);
         if (timeoutCount != null && timeoutCount.get() > maxTimeoutCount) {
-            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败 稍后重试");
+            throw new RequestTimeoutException(url + "请求失败 稍后重试");
         }
         long startTime = System.currentTimeMillis();
         T resp = null;
         try {
             ResponseEntity<T> respEntity = restTemplate.exchange(url, httpMethod, body, respType);
-            log.debug("resp:{}", respEntity);
             resp = respEntity.getBody();
             return resp;
         } catch (ResourceAccessException e) {
             requestTimeoutUrlCache.get(url).incrementAndGet();
-            throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求超时", e);
+            throw new RequestTimeoutException(url + "请求超时", e);
         } catch (Exception e) {
             throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败", e);
         } finally {

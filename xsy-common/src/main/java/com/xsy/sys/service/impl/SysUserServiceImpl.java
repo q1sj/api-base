@@ -156,6 +156,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
             @CacheEvict(cacheNames = SecurityConstant.SYS_USER_PERMISSIONS_CACHE_NAME, key = "'user_permissions_'+#ids"),
     })
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long[] ids) {
         //删除用户
         baseDao.deleteBatchIds(Arrays.asList(ids));
