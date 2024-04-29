@@ -18,6 +18,7 @@ import com.xsy.security.user.SecurityUser;
 import com.xsy.security.user.UserDetail;
 import com.xsy.sys.dto.SysUserDTO;
 import com.xsy.sys.service.SysUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Mark sunlightcs@gmail.com
  */
+@Slf4j
 @RestController
 public class LoginController {
     public static final String LOGIN_MAPPING = "/login";
@@ -50,7 +52,9 @@ public class LoginController {
         ValidatorUtils.validateEntity(login);
         SysUserDTO user = sysUserService.validLogin(login);
         //登录成功
-        return Result.ok(sysUserTokenService.createToken(user));
+        TokenDTO token = sysUserTokenService.createToken(user);
+        log.info("登陆成功 username:{} token:{}", user.getUsername(), token);
+        return Result.ok(token);
     }
 
     /**

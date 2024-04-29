@@ -9,6 +9,7 @@
 package com.xsy.security.oauth2;
 
 import com.xsy.base.util.ConvertUtils;
+import com.xsy.base.util.DateFormatUtils;
 import com.xsy.security.entity.SysUserTokenEntity;
 import com.xsy.security.service.AuthService;
 import com.xsy.security.user.UserDetail;
@@ -66,11 +67,13 @@ public class Oauth2Realm extends AuthorizingRealm {
 
         //根据accessToken，查询用户信息
         if (!TokenGenerator.validToken(accessToken)) {
+            log.warn("token不合法:{}", accessToken);
             throw new IncorrectCredentialsException("token无效 " + accessToken);
         }
         SysUserTokenEntity tokenEntity = authService.getByToken(accessToken);
         //token失效
         if (tokenEntity == null || tokenEntity.getExpireDate().getTime() < System.currentTimeMillis()) {
+            log.warn("token过期:{} expireDate:{}", accessToken, tokenEntity == null ? "null" : DateFormatUtils.format(tokenEntity.getExpireDate()));
             throw new ExpiredCredentialsException("token过期 " + accessToken);
         }
 
