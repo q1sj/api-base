@@ -5,35 +5,54 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xsy.base.util.BizAssertUtils;
-import com.xsy.base.util.DateUtils;
-import com.xsy.base.util.Export;
-import com.xsy.base.util.JsonUtils;
+import com.xsy.base.util.*;
 import com.xsy.sys.dao.ApiLogDao;
 import com.xsy.sys.dto.SysLogDTO;
 import com.xsy.sys.entity.ExportRecordEntity;
 import com.xsy.sys.entity.SysLogEntity;
 import com.xsy.sys.service.ExportRecordService;
 import com.xsy.sys.service.SysLogService;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Q1sj
  * @date 2023.11.9 10:20
  */
 @Service
-public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> implements SysLogService, Export {
+public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> implements SysLogService, Export, DisposableBean {
 	@Value("${api.log.save-day:30}")
 	private Integer logSaveDay;
 
 	@Autowired
 	private ExportRecordService exportRecordService;
+
+	private final List<SysLogEntity> sysLogCache = new CopyOnWriteArrayList<>();
+
+	@Override
+	public boolean save(SysLogEntity entity) {
+		sysLogCache.add(entity);
+		return true;
+	}
+
+
+	@Scheduled(fixedDelay = 5000)
+	public void save() {
+		ArrayList<SysLogEntity> list = new ArrayList<>(sysLogCache);
+		if (CollectionUtils.isEmpty(list)) {
+			return;
+		}
+		saveBatch(list);
+		sysLogCache.removeAll(list);
+	}
 
 	@Override
 	public IPage<SysLogEntity> list(SysLogDTO dto) {
@@ -73,5 +92,10 @@ public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> impl
 	@Scheduled(fixedDelay = 60 * 60 * 1000, initialDelay = 60 * 1000)
 	public void clear() {
 		clearLog(logSaveDay);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		save();
 	}
 }
