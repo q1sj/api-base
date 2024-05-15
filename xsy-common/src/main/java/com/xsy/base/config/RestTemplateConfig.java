@@ -6,9 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Configuration("com.xsy.base.config.RestTemplateConfig")
 public class RestTemplateConfig {
@@ -28,6 +32,20 @@ public class RestTemplateConfig {
     @ConditionalOnMissingBean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
         return createDefaultClientHttpRequestFactory();
+    }
+
+    public static ThreadPoolExecutor createHttpThreadPool() {
+        return new ThreadPoolExecutor(
+                10, Runtime.getRuntime().availableProcessors() * 10,
+                1, TimeUnit.MINUTES,
+                new LinkedBlockingQueue<>(10),
+                new CustomizableThreadFactory("async-http-"),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+
+    @Bean
+    public ThreadPoolExecutor httpThreadPool() {
+        return createHttpThreadPool();
     }
 
     public static RestTemplate createDefaultRestTemplate() {

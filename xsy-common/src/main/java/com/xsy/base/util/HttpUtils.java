@@ -1,8 +1,6 @@
 package com.xsy.base.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.xsy.base.config.RestTemplateConfig;
 import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.exception.GlobalException;
@@ -12,15 +10,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Duration;
 import java.util.Objects;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author Q1sj
@@ -29,31 +26,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Component
 public class HttpUtils {
-    /**
-     * 接口熔断时间(秒)
-     */
-    private static int fuseTime = 30;
-    /**
-     * 允许超时次数
-     */
-    private static int maxTimeoutCount = 3;
 
-    /**
-     * 请求超时url
-     */
-    private static LoadingCache<String, AtomicInteger> requestTimeoutUrlCache = createCache();
-
-    private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(
-            10, Runtime.getRuntime().availableProcessors() * 10,
-            1, TimeUnit.MINUTES,
-            new LinkedBlockingQueue<>(10),
-            new CustomizableThreadFactory("async-http-"),
-            new ThreadPoolExecutor.CallerRunsPolicy());
+    private static ExecutorService httpThreadPool = RestTemplateConfig.createHttpThreadPool();
     private static RestTemplate restTemplate = RestTemplateConfig.createDefaultRestTemplate();
 
-    public HttpUtils(RestTemplate restTemplate) {
+    public HttpUtils(RestTemplate restTemplate, ThreadPoolExecutor httpThreadPool) {
         // Spring实例化 覆盖默认restTemplate
         HttpUtils.restTemplate = restTemplate;
+        HttpUtils.httpThreadPool = httpThreadPool;
     }
 
     public static <T> T exchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) throws GlobalException {
@@ -65,10 +45,6 @@ public class HttpUtils {
         BizAssertUtils.isNotBlank(url, "url不能为空");
         BizAssertUtils.isNotNull(httpMethod, "httpMethod不能为空");
         BizAssertUtils.isNotNull(respType, "respType不能为空");
-        AtomicInteger timeoutCount = requestTimeoutUrlCache.get(url);
-        if (timeoutCount != null && timeoutCount.get() > maxTimeoutCount) {
-            throw new RequestTimeoutException(url + "请求失败 稍后重试");
-        }
         long startTime = System.currentTimeMillis();
         T resp = null;
         try {
@@ -76,7 +52,6 @@ public class HttpUtils {
             resp = respEntity.getBody();
             return resp;
         } catch (ResourceAccessException e) {
-            requestTimeoutUrlCache.get(url).incrementAndGet();
             throw new RequestTimeoutException(url + "请求超时", e);
         } catch (Exception e) {
             throw new GlobalException(ResultCodeEnum.THIRD_PARTY_SERVICES_ERROR, url + "请求失败", e);
@@ -86,7 +61,7 @@ public class HttpUtils {
     }
 
     public static <T> Future<T> asyncExchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, TypeReference<T> respType) {
-        return THREAD_POOL.submit(() -> exchange(url, httpMethod, body, respType));
+        return httpThreadPool.submit(() -> exchange(url, httpMethod, body, respType));
     }
 
     private static String getLogJson(Object o) {
@@ -101,20 +76,5 @@ public class HttpUtils {
         } catch (Exception e) {
             return Objects.toString(o);
         }
-    }
-
-    public static void setFuseTime(int fuseTime) {
-        if (HttpUtils.fuseTime == fuseTime) {
-            return;
-        }
-        HttpUtils.fuseTime = fuseTime;
-        requestTimeoutUrlCache = createCache();
-    }
-
-    private static LoadingCache<String, AtomicInteger> createCache() {
-        return Caffeine.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(Duration.ofSeconds(fuseTime))
-                .build(key -> new AtomicInteger(0));
     }
 }
