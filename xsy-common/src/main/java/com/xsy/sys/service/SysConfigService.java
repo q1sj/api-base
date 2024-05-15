@@ -17,6 +17,10 @@ public interface SysConfigService {
 
     boolean saveOrUpdate(String key, String value);
 
+    boolean saveOrUpdate(String key, Number value);
+
+    boolean saveOrUpdate(String key, Boolean value);
+
     boolean saveOrUpdate(String key, SysConfigValueTypeEnum valueType, String value);
 
     @Nullable

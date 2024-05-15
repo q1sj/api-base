@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.PropertyPlaceholderHelper;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -65,6 +66,34 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
         SysConfigEntity sysConfig = new SysConfigEntity();
         sysConfig.setConfigKey(key);
         sysConfig.setConfigValue(value);
+        return saveOrUpdate(sysConfig);
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, Number value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        if (value instanceof BigDecimal) {
+            sysConfig.setConfigValue(((BigDecimal) value).toPlainString());
+        } else {
+            sysConfig.setConfigValue(Objects.toString(value));
+        }
+        if (value instanceof Integer) {
+            sysConfig.setConfigValueType(SysConfigValueTypeEnum.INT.name());
+        } else if (value instanceof Long) {
+            sysConfig.setConfigValueType(SysConfigValueTypeEnum.LONG.name());
+        } else {
+            sysConfig.setConfigValueType(SysConfigValueTypeEnum.STRING.name());
+        }
+        return saveOrUpdate(sysConfig);
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, Boolean value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        sysConfig.setConfigValueType(SysConfigValueTypeEnum.BOOLEAN.name());
+        sysConfig.setConfigValue(Objects.toString(value));
         return saveOrUpdate(sysConfig);
     }
 
