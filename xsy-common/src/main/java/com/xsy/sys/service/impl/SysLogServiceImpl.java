@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xsy.base.log.IgnoreLog;
 import com.xsy.base.util.*;
 import com.xsy.sys.dao.ApiLogDao;
 import com.xsy.sys.dto.SysLogDTO;
@@ -44,14 +45,16 @@ public class SysLogServiceImpl extends ServiceImpl<ApiLogDao, SysLogEntity> impl
 	}
 
 
+	@IgnoreLog
 	@Scheduled(fixedDelay = 5000)
 	public void save() {
-		ArrayList<SysLogEntity> list = new ArrayList<>(sysLogCache);
-		if (CollectionUtils.isEmpty(list)) {
+		if (CollectionUtils.isEmpty(sysLogCache)) {
 			return;
 		}
-		saveBatch(list);
+		ArrayList<SysLogEntity> list = new ArrayList<>(sysLogCache);
 		sysLogCache.removeAll(list);
+		// 先删缓存再存数据库 否则一条数据异常 导致后续日志全部无法落库
+		saveBatch(list);
 	}
 
 	@Override

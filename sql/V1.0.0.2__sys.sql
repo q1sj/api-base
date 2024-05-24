@@ -116,7 +116,7 @@ CREATE TABLE `schedule_job_log`
     `bean_name`   varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NULL DEFAULT NULL COMMENT 'spring bean名称',
     `params`      varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '参数',
     `status`      tinyint(4)                                                     NOT NULL COMMENT '任务状态    0：成功    1：失败',
-    `error`       varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '失败信息',
+    `error` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '失败信息',
     `times`       int(11)                                                        NOT NULL COMMENT '耗时(单位：毫秒)',
     `create_time` datetime(0)                                                    NULL DEFAULT NULL COMMENT '创建时间',
     PRIMARY KEY (`log_id`) USING BTREE,

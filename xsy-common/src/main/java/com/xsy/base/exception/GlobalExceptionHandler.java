@@ -131,7 +131,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Result<?> handleException(HttpMessageNotReadableException ex) {
         logger.warn(ex.getMessage(), ex);
-        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "请求体为空");
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "请求体解析失败");
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
