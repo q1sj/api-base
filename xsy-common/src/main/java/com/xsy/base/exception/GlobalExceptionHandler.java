@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
@@ -48,6 +50,16 @@ public class GlobalExceptionHandler {
     public Result<?> handleParamValidationException(ParamValidationException e) {
         logger.warn(e.getMessage(), e);
         return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, e.getMessage());
+    }
+
+    /**
+     * 处理自定义异常
+     */
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    @ExceptionHandler(ApiLimitException.class)
+    public Result<?> handleException(ApiLimitException ex) {
+        logger.error("key:{} 接口限流 返回:{}", ex.getKey(), ex.getMessage(), ex);
+        return Result.error(ex.getCode(), ex.getMessage());
     }
 
     /**

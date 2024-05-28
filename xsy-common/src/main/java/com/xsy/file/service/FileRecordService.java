@@ -34,7 +34,7 @@ public interface FileRecordService {
 	 *
 	 * @param file     文件
 	 * @param source   数据来源 避免使用文件名中不允许的字符
-	 * @param expireMs 过期毫秒值
+	 * @param expireMs 过期毫秒值  <= 0 不过期
 	 * @return
 	 * @throws IOException
 	 */
