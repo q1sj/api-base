@@ -3,11 +3,16 @@ package com.xsy.sys.controller;
 import com.xsy.base.util.PageData;
 import com.xsy.base.util.Result;
 import com.xsy.sys.entity.SysConfigEntity;
+import com.xsy.sys.enums.SysConfigValueTypeEnum;
 import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 参数管理
@@ -37,6 +42,17 @@ public class SysConfigController {
     }
 
     /**
+     * 根据key查询值
+     *
+     * @param configKey
+     * @return
+     */
+    @GetMapping("/getByKey")
+    public Result<String> getByKey(@RequestParam String configKey) {
+        return Result.ok(sysConfigService.get(configKey));
+    }
+
+    /**
      * 新增或修改
      *
      * @param sysConfigEntity
@@ -44,7 +60,29 @@ public class SysConfigController {
      */
     @PostMapping("/saveOrUpdate")
     public Result<Void> saveOrUpdate(@RequestBody @Validated SysConfigEntity sysConfigEntity) {
-        sysConfigService.put(sysConfigEntity);
+        sysConfigService.saveOrUpdate(sysConfigEntity);
+        return Result.ok();
+    }
+
+    /**
+     * 参数值数据类型
+     *
+     * @return
+     */
+    @GetMapping("/configValueType")
+    public Result<List<String>> configValueType() {
+        return Result.ok(Arrays.stream(SysConfigValueTypeEnum.values()).map(SysConfigValueTypeEnum::name).collect(Collectors.toList()));
+    }
+
+    /**
+     * 删除
+     *
+     * @param configKey 参数名
+     * @return
+     */
+    @PostMapping("/delete/{configKey}")
+    public Result<Void> delete(@PathVariable String configKey) {
+        sysConfigService.delete(configKey);
         return Result.ok();
     }
 }

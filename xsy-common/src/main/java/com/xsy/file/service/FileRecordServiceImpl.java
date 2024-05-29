@@ -1,15 +1,20 @@
 package com.xsy.file.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.xsy.base.util.*;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xsy.base.util.BizAssertUtils;
+import com.xsy.base.util.CollectionUtils;
+import com.xsy.base.util.FileUtils;
+import com.xsy.base.util.IpUtils;
 import com.xsy.file.dao.FileRecordDao;
 import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
 import com.xsy.file.entity.UploadFileDTO;
 import com.xsy.security.user.SecurityUser;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,13 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Q1sj
@@ -31,32 +35,13 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Service
-public class FileRecordServiceImpl implements FileRecordService {
-    @Autowired(required = false)
-    private HttpServletRequest request;
-
+public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecordEntity> implements FileRecordService {
     private final List<String> illegalCharactersInDirectoryNames = Arrays.asList("*", ".", "\"", "[", "]", ":", ";", "|", "=");
-
     private final FileRecordDao fileRecordDao;
-
     private final FileStorageStrategy fileStorageStrategy;
 
-    private final DelayQueue<DeleteFileDelayed> deleteFileDelayQueue = new DelayQueue<>();
-
-    {
-        String threadName = "delete-file-thread";
-        log.info("init {}", threadName);
-        new Thread(() -> {
-            while (true) {
-                try {
-                    DeleteFileDelayed deleteFileDelayed = deleteFileDelayQueue.take();
-                    this.delete(deleteFileDelayed.path);
-                } catch (InterruptedException e) {
-                    log.warn(e.getMessage(), e);
-                }
-            }
-        }, threadName).start();
-    }
+    @Autowired(required = false)
+    private HttpServletRequest request;
 
     public FileRecordServiceImpl(FileRecordDao fileRecordDao, FileStorageStrategy fileStorageStrategy) {
         this.fileRecordDao = fileRecordDao;
@@ -65,36 +50,59 @@ public class FileRecordServiceImpl implements FileRecordService {
 
     @Override
     public FileRecordEntity upload(UploadFileDTO uploadFileDTO) throws IOException {
+        Objects.requireNonNull(uploadFileDTO.getFile());
         MultipartFile file = uploadFileDTO.getFile();
         long size = file.getSize();
         long maxSize = uploadFileDTO.getMaxSize();
         BizAssertUtils.isTrue(size <= maxSize, "文件过大 阈值:" + FileUtils.byteCountToDisplaySize(maxSize) + "实际:" + FileUtils.byteCountToDisplaySize(size));
         String originalFilename = file.getOriginalFilename();
-        List<String> fileExtension = uploadFileDTO.getFileExtension();
-        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getFileExtName(originalFilename)), "文件类型不合法");
+        Set<String> fileExtension = uploadFileDTO.getFileExtension();
+        BizAssertUtils.isTrue(CollectionUtils.isEmpty(fileExtension) || fileExtension.contains(FileUtils.getExtension(originalFilename).toLowerCase()), "文件类型不合法");
         try (InputStream is = file.getInputStream()) {
-            return save(is, originalFilename, uploadFileDTO.getSource(), Objects.toString(SecurityUser.getUserId()), IpUtils.getIpAddr(request), uploadFileDTO.getExpireMs());
+            return save(is, size, originalFilename, uploadFileDTO.getSource(), uploadFileDTO.getExpireMs());
         }
     }
 
     @Override
-    public FileRecordEntity save(InputStream data, String originalFilename, String source, String userId, String ip, long expireMs) throws IOException {
+    public FileRecordEntity save(File file, String source, long expireMs) throws IOException {
+        if (!file.exists()) {
+            throw new FileNotFoundException(file.getAbsolutePath());
+        }
+        return save(Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
+    }
+
+    @Override
+    public FileRecordEntity save(long id, File file, String source, long expireMs) throws IOException {
+        if (!file.exists()) {
+            throw new FileNotFoundException(file.getAbsolutePath());
+        }
+        return save(id, Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
+    }
+
+    @Override
+    public FileRecordEntity save(InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException {
+        return save(IdWorker.getId(), data, fileSize, originalFilename, source, expireMs);
+    }
+
+    @Override
+    public FileRecordEntity save(long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException {
         BizAssertUtils.isNotBlank(source, "source不能为空");
         // 判断source是否包含不允许字符
         illegalCharactersInDirectoryNames.forEach(s -> BizAssertUtils.isFalse(source.contains(s), "source中不允许出现的符号:" + s));
         // 持久化文件
-        int fileSize = data.available();
-        String path = fileStorageStrategy.saveFile(data, generateFilename(originalFilename, source), source);
+        String path = fileStorageStrategy.saveFile(data, fileSize, generateFilename(originalFilename, source), source);
         FileRecordEntity fileRecordEntity = new FileRecordEntity();
+        fileRecordEntity.setId(id);
         fileRecordEntity.setName(originalFilename);
         fileRecordEntity.setPath(path);
-        fileRecordEntity.setFileType(FileUtils.getFileExtName(originalFilename));
+        fileRecordEntity.setFileType(FileUtils.getExtension(originalFilename));
         fileRecordEntity.setFileSize(fileSize);
         fileRecordEntity.setSource(source);
-        fileRecordEntity.setUploadUserId(userId);
-        fileRecordEntity.setUploadIp(ip);
+        fileRecordEntity.setUploadUserId(Objects.toString(SecurityUser.getUserId()));
+        fileRecordEntity.setUploadIp(IpUtils.getIpAddr(request));
+        fileRecordEntity.setUploadTime(new Date());
         fileRecordEntity.setDigest(fileStorageStrategy.digest(path));
-        // expireMs < 0 不过期
+        // expireMs <= 0 不过期
         if (expireMs > 0) {
             Date expireTime = new Date(System.currentTimeMillis() + expireMs);
             fileRecordEntity.setExpireTime(expireTime);
@@ -124,23 +132,69 @@ public class FileRecordServiceImpl implements FileRecordService {
     }
 
     @Override
+    public InputStream getInputStream(Long fileId) throws IOException {
+        FileRecordEntity record = fileRecordDao.selectById(fileId);
+        if (record == null) {
+            throw new FileNotFoundException(Objects.toString(fileId));
+        }
+        return getInputStream(record.getPath());
+    }
+
+    @Override
+    public FileRecordDTO getFileRecord(Long fileId) throws IOException {
+        FileRecordEntity record = fileRecordDao.selectById(fileId);
+        if (record == null) {
+            throw new FileNotFoundException(Objects.toString(fileId));
+        }
+        return getFileRecord(record.getPath());
+    }
+
+    @Override
     public InputStream getInputStream(String path) throws IOException {
-        return getFileRecord(path).getContent();
+        return fileStorageStrategy.getInputStream(path);
     }
 
     @Override
     public boolean delete(String path) {
         log.info("delete {}", path);
+        FileRecordEntity record = this.getRecordByPath(path);
+        if (record == null) {
+            log.warn("path:{} 不存在", path);
+            return false;
+        }
         try {
             fileStorageStrategy.delete(path);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            FileRecordEntity recordEntity = fileRecordDao.selectOne(Wrappers.lambdaQuery(FileRecordEntity.class).eq(FileRecordEntity::getPath, path));
-            recordEntity.setRemark(e.getMessage());
-            fileRecordDao.updateById(recordEntity);
+            record.setRemark(e.getClass().getName() + ":" + e.getMessage());
+            fileRecordDao.updateById(record);
+        }
+        return fileRecordDao.deleteById(record.getId()) > 0;
+    }
+
+    @Override
+    public boolean delete(Long fileId) {
+        log.info("delete {}", fileId);
+        FileRecordEntity record = this.getById(fileId);
+        if (record == null) {
+            log.warn("id:{} 不存在", fileId);
             return false;
         }
-        return fileRecordDao.delete(Wrappers.lambdaQuery(FileRecordEntity.class).eq(FileRecordEntity::getPath, path)) > 0;
+        try {
+            fileStorageStrategy.delete(record.getPath());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            record.setRemark(e.getClass().getName() + ":" + e.getMessage());
+            fileRecordDao.updateById(record);
+        }
+        return fileRecordDao.deleteById(record.getId()) > 0;
+    }
+
+    @Override
+    public void updateExpireTime(long fileId, long expireMs) {
+        update(Wrappers.lambdaUpdate(FileRecordEntity.class)
+                .eq(FileRecordEntity::getId, fileId)
+                .set(FileRecordEntity::getExpireTime, expireMs > 0 ? new Date(System.currentTimeMillis() + expireMs) : null));
     }
 
     /**
@@ -159,48 +213,30 @@ public class FileRecordServiceImpl implements FileRecordService {
     /**
      * 定时删除过期
      */
-    @Scheduled(cron = "${file.delete-task.cron:0 0 1 * * ?}")
+    @Scheduled(fixedDelay = 60 * 60 * 1000, initialDelay = 5 * 60 * 1000)
     public void deleteTask() {
         long start = System.currentTimeMillis();
         log.info("开始删除过期文件...");
-        // 删除已过期文件(防止因为重启延迟队列任务丢失)
         Date now = new Date();
         List<FileRecordEntity> expiredList = expiredList(now);
+        int deleteFileCount = 0;
         for (FileRecordEntity fileRecordEntity : expiredList) {
-            delete(fileRecordEntity.getPath());
+            boolean delete = delete(fileRecordEntity.getPath());
+            if (delete) {
+                deleteFileCount++;
+            }
         }
-        // 24小时内过期文件加入延迟队列
-        List<FileRecordEntity> after24HourExpiredList = this.expiredList(DateUtils.addHours(now, 24));
-        after24HourExpiredList.forEach(f -> deleteFileDelayQueue.add(new DeleteFileDelayed(f.getPath(), f.getExpireTime())));
-        log.info("结束删除过期文件...耗时:{}ms", System.currentTimeMillis() - start);
+        log.info("结束删除过期文件...删除:{}个文件 耗时:{}ms", deleteFileCount, System.currentTimeMillis() - start);
     }
 
     /**
-     * 生成存储文件名 业务名_时间戳_随机字符串.后缀名
+     * 生成存储文件名 业务名_时间_随机字符串.后缀名
      *
      * @param originalFilename 原始文件名
      * @param source
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return source + "_" + System.currentTimeMillis() + "_" + UUID.randomUUID() + "." + FileUtils.getFileExtName(originalFilename);
-    }
-
-    @AllArgsConstructor
-    private static class DeleteFileDelayed implements Delayed {
-
-        private final String path;
-        private final Date expireTime;
-
-        @Override
-        public long getDelay(TimeUnit unit) {
-            return unit.convert(expireTime.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-        }
-
-        @Override
-        public int compareTo(Delayed o) {
-            TimeUnit timeUnit = TimeUnit.MILLISECONDS;
-            return Long.compare(this.getDelay(timeUnit), o.getDelay(timeUnit));
-        }
+        return source + "_" + DateFormatUtils.format(new Date(), "yyyyMMddHHmmss") + "_" + UUID.randomUUID() + "." + FileUtils.getExtension(originalFilename);
     }
 }

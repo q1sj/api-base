@@ -1,15 +1,30 @@
 package com.xsy.sys.service.impl;
 
+import com.xsy.sys.dao.SysConfigDao;
+import com.xsy.sys.entity.BooleanKey;
+import com.xsy.sys.entity.IntKey;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SysConfigServiceImplTest {
+
+    @Spy
+    @InjectMocks
+    private SysConfigServiceImpl sysConfigService;
+    @Mock
+    private SysConfigDao sysConfigDao;
+
     String startSymbol = "${";
     String endSymbol = "}";
     Map<String, String> map = new HashMap<>();
@@ -20,6 +35,11 @@ public class SysConfigServiceImplTest {
         map.put("host", "${ip}:${port}");
         map.put("ip", "192.168.1.1");
         map.put("port", "8080");
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -44,6 +64,17 @@ public class SysConfigServiceImplTest {
         PropertyPlaceholderHelper.PlaceholderResolver resolver = map::get;
         String str = helper.replacePlaceholders(map.get("aaa_api"), resolver);
         String str2 = helper.replacePlaceholders("${abc:123}", resolver);
+    }
+
+    @Test
+    public void testGet() {
+        BooleanKey xxxEnableKey = new BooleanKey("XXX_ENABLE", true);
+        Boolean xxxEnable = sysConfigService.get(xxxEnableKey);
+        Assert.assertTrue(xxxEnable);
+
+        IntKey xxxKey = new IntKey("XXX", 99);
+        Integer xxx = sysConfigService.get(xxxKey);
+        Assert.assertEquals(xxx, Integer.valueOf(99));
     }
 
     public String getValue(String key) {

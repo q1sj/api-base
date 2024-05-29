@@ -16,14 +16,18 @@ import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.AbstractShiroFilter;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Shiro的配置文件
@@ -51,10 +55,21 @@ public class ShiroConfig {
         return securityManager;
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public BaseAuthFilterMapConfig baseAuthFilterMapConfig() {
+        return new BaseAuthFilterMapConfig() {
+            final Map<String, String> map = new ConcurrentHashMap<>();
+
+            @Override
+            public Map<String, String> getFilterMap() {
+                return map;
+            }
+        };
+    }
+
     @Bean("shiroFilter")
-    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager,
-                                             @Autowired(required = false) BaseAuthFilterMapConfig baseAuthFilterMapConfig,
-                                             NoAuthScan noAuthScan) {
+    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager, BaseAuthFilterMapConfig baseAuthFilterMapConfig) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
 
@@ -62,18 +77,24 @@ public class ShiroConfig {
         Map<String, Filter> filters = new HashMap<>();
         filters.put("oauth2", new Oauth2Filter());
         shiroFilter.setFilters(filters);
-        Map<String, String> filterMap;
-        if (baseAuthFilterMapConfig == null) {
-            filterMap = new HashMap<>();
-        } else {
-            filterMap = baseAuthFilterMapConfig.getFilterMap();
-        }
-        // 注解标注的anon接口地址添加到手动配置中
-        filterMap.putAll(noAuthScan.getNoAuthMap());
+        Map<String, String> filterMap = baseAuthFilterMapConfig.getFilterMap();
         filterMap.putIfAbsent("/**", "oauth2");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilter;
+    }
+
+    @Bean
+    public FilterRegistrationBean<Filter> filterRegistrationBean(AbstractShiroFilter shiroFilter) {
+        FilterRegistrationBean<Filter> filterRegistration = new FilterRegistrationBean<>();
+        filterRegistration.setFilter(shiroFilter);
+        filterRegistration.addInitParameter("targetFilterLifecycle", "true");
+        filterRegistration.setAsyncSupported(true);
+        filterRegistration.setEnabled(true);
+        //这里添加一下对DispatcherType.ASYNC的支持就可以了
+        filterRegistration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+
+        return filterRegistration;
     }
 
     @Bean("lifecycleBeanPostProcessor")

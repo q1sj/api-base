@@ -26,6 +26,7 @@ public interface SysRoleMenuService extends RenBaseService<SysRoleMenuEntity> {
 	 * 根据角色ID，获取菜单ID列表
 	 */
 	List<Long> getMenuIdList(Long roleId);
+	List<Long> getMenuIdList(List<Long> roleIdList);
 
 	/**
 	 * 保存或修改

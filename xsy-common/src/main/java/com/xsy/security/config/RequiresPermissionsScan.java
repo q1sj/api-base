@@ -1,14 +1,11 @@
 package com.xsy.security.config;
 
-import com.xsy.base.cache.CacheManagerWrapper;
-import com.xsy.base.cache.CacheWrapper;
-import com.xsy.security.enums.SecurityConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -23,16 +20,17 @@ import java.util.*;
  */
 @Slf4j
 @Component
-public class RequiresPermissionsScan implements ApplicationContextAware {
+public class RequiresPermissionsScan implements CommandLineRunner {
+    @Autowired
+    private ApplicationContext applicationContext;
+    private List<String> permissionList;
 
-    private final CacheWrapper cache;
-
-    public RequiresPermissionsScan(CacheManagerWrapper cacheManagerWrapper) {
-        cache = cacheManagerWrapper.getCache(SecurityConstant.PERMISSIONS_CACHE_NAME);
+    public List<String> getPermissionList() {
+        return Collections.unmodifiableList(permissionList);
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void run(String... args) throws Exception {
         Map<String, Object> controllers = applicationContext.getBeansWithAnnotation(Controller.class);
         Set<String> permissionsSet = new LinkedHashSet<>();
         //遍历每个controller层
@@ -50,6 +48,6 @@ public class RequiresPermissionsScan implements ApplicationContextAware {
                 permissionsSet.addAll(Arrays.asList(permissions.value()));
             }
         }
-        cache.put(SecurityConstant.PERMISSIONS_KEY, new ArrayList<>(permissionsSet));
+        permissionList = new ArrayList<>(permissionsSet);
     }
 }

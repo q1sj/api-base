@@ -8,6 +8,7 @@
 
 package com.xsy.security.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.lang.Nullable;
@@ -17,29 +18,38 @@ import org.springframework.lang.Nullable;
  *
  * @author Mark sunlightcs@gmail.com
  */
+@Slf4j
 public class SecurityUser {
-
-    public static Subject getSubject() {
-        try {
-            return SecurityUtils.getSubject();
-        }catch (Exception e){
-            return null;
-        }
-    }
 
     /**
      * 获取用户信息
      */
     public static UserDetail getUser() {
         Subject subject = getSubject();
-        if(subject == null){
+        if (subject == null) {
             return new UserDetail();
         }
-        UserDetail user = (UserDetail)subject.getPrincipal();
-        if(user == null){
+        UserDetail user = null;
+        try {
+            user = (UserDetail) subject.getPrincipal();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return new UserDetail();
+        }
+        if (user == null) {
             return new UserDetail();
         }
         return user;
+    }
+
+    @Nullable
+    private static Subject getSubject() {
+        try {
+            return SecurityUtils.getSubject();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 
     /**

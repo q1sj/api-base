@@ -11,6 +11,7 @@ package com.xsy.security.service;
 import com.xsy.base.service.RenBaseService;
 import com.xsy.security.dto.TokenDTO;
 import com.xsy.security.entity.SysUserTokenEntity;
+import com.xsy.sys.dto.SysUserDTO;
 
 /**
  * 用户Token
@@ -24,7 +25,7 @@ public interface SysUserTokenService extends RenBaseService<SysUserTokenEntity> 
      *
      * @param userId 用户ID
      */
-    TokenDTO createToken(Long userId);
+    TokenDTO createToken(SysUserDTO user);
 
     /**
      * 根据有效token获取用户信息
@@ -44,7 +45,7 @@ public interface SysUserTokenService extends RenBaseService<SysUserTokenEntity> 
     /**
      * 刷新token过期时间
      *
-     * @param token
+     * @param tokenEntity
      */
     void  refreshExpireDate(SysUserTokenEntity tokenEntity);
 }

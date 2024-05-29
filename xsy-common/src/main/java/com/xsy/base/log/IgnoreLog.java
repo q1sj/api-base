@@ -6,13 +6,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 特殊情况忽略统一日志打印
- * {@link ApiLogAop}
+ * 忽略方法日志打印 {@link ApiLogAop}
+ * <br>
+ * 忽略字段json日志打印 {@link com.xsy.base.util.JsonUtils#toLogJsonString(Object)}
  *
  * @author Q1sj
  * @date 2022.9.22 15:10
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IgnoreLog {
 }

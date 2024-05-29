@@ -4,6 +4,7 @@ import com.xsy.sys.entity.BaseKey;
 import org.springframework.cache.Cache;
 import org.springframework.lang.Nullable;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -20,7 +21,7 @@ public class CacheWrapper implements Cache {
     }
 
     public <T> void put(BaseKey<T> key, @Nullable T val) {
-        cache.put(key.getKey(), val);
+        cache.put(key.getKey(), key.serialization(val));
     }
 
     /**
@@ -33,7 +34,18 @@ public class CacheWrapper implements Cache {
     @Nullable
     public <T> T get(BaseKey<T> key) {
         Cache.ValueWrapper valueWrapper = cache.get(key.getKey());
-        return valueWrapper != null ? (T) valueWrapper.get() : null;
+        if (valueWrapper == null || valueWrapper.get() == null) {
+            return null;
+        }
+        // 修复redis Jackson2JsonRedisSerializer 序列化long 反序列化变为int
+        if (valueWrapper.get() instanceof Number) {
+            return key.deserialization(valueWrapper.get().toString());
+        }
+        return (T) valueWrapper.get();
+    }
+
+    public <T> Optional<T> getOptional(BaseKey<T> key) {
+        return Optional.ofNullable(get(key));
     }
 
     @Nullable

@@ -8,14 +8,17 @@
 
 package com.xsy.base.exception;
 
+import ch.qos.logback.core.util.FileSize;
 import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.util.Result;
 import com.xsy.security.user.SecurityUser;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -23,16 +26,22 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
+import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * 异常处理器
  */
+@Order(0)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
 
     /**
      * 处理自定义异常
@@ -41,6 +50,16 @@ public class GlobalExceptionHandler {
     public Result<?> handleParamValidationException(ParamValidationException e) {
         logger.warn(e.getMessage(), e);
         return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, e.getMessage());
+    }
+
+    /**
+     * 处理自定义异常
+     */
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    @ExceptionHandler(ApiLimitException.class)
+    public Result<?> handleException(ApiLimitException ex) {
+        logger.error("key:{} 接口限流 返回:{}", ex.getKey(), ex.getMessage(), ex);
+        return Result.error(ex.getCode(), ex.getMessage());
     }
 
     /**
@@ -62,6 +81,15 @@ public class GlobalExceptionHandler {
     public Result<?> handleException(BindException e) {
         BindingResult bindingResult = e.getBindingResult();
         return getResult(e, bindingResult);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result<?> handleException(MaxUploadSizeExceededException e) {
+        logger.error(e.getMessage(), e);
+        if (e.getMaxUploadSize() > 0) {
+            return Result.error("文件上传大小不能大于" + new FileSize(e.getMaxUploadSize()));
+        }
+        return Result.error("上传文件过大");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -91,11 +119,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public Result<?> handleException(DataIntegrityViolationException e) {
         logger.warn(e.getMessage(), e);
-        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "数据库参数校验失败");
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Result<?> handleException(ConstraintViolationException e) {
+        logger.warn(e.getMessage(), e);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Result<?> handleAuthorizationException(MethodArgumentNotValidException e) {
+    public Result<?> handleException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         return getResult(e, bindingResult);
     }
@@ -109,13 +143,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Result<?> handleException(HttpMessageNotReadableException ex) {
         logger.warn(ex.getMessage(), ex);
-        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, "请求体解析失败");
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Result<?> handleException(HttpRequestMethodNotSupportedException ex) {
         logger.warn(ex.getMessage());
         return Result.error(ResultCodeEnum.CLIENT_ERROR, "不支持的请求方式");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Result<?> handleException(IllegalArgumentException ex) {
+        logger.warn(ex.getMessage(), ex);
+        return Result.error(ResultCodeEnum.CLIENT_ERROR, "非法参数 " + ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
@@ -125,11 +165,12 @@ public class GlobalExceptionHandler {
     }
 
     private Result<?> getResult(Exception e, BindingResult bindingResult) {
-        StringBuilder errorMessage = new StringBuilder("校验失败:");
+        List<String> errorMessages = new ArrayList<>();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            errorMessage.append(fieldError.getField()).append(fieldError.getDefaultMessage()).append(" ");
+            errorMessages.add(fieldError.getField() + fieldError.getDefaultMessage());
         }
-        logger.warn(errorMessage.toString(), e);
-        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, errorMessage.toString());
+        String errorMessage = "校验失败:" + String.join(",", errorMessages);
+        logger.warn(errorMessage, e);
+        return Result.error(ResultCodeEnum.PARAMETER_VALIDATION_FAILED, errorMessage);
     }
 }

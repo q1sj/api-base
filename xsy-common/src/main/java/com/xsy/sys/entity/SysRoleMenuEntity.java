@@ -13,6 +13,8 @@ import com.xsy.base.pojo.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.Entity;
+
 /**
  * 角色菜单关系
  *
@@ -22,6 +24,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=false)
 @TableName("sys_role_menu")
+@Entity(name = "sys_role_menu")
 public class SysRoleMenuEntity extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 	/**

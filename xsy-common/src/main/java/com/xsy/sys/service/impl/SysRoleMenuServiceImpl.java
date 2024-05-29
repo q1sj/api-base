@@ -8,6 +8,7 @@
 
 package com.xsy.sys.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.sys.dao.SysRoleMenuDao;
 import com.xsy.sys.entity.SysRoleMenuEntity;
@@ -16,7 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -52,6 +57,16 @@ public class SysRoleMenuServiceImpl extends RenBaseServiceImpl<SysRoleMenuDao, S
     @Override
     public List<Long> getMenuIdList(Long roleId) {
         return baseDao.getMenuIdList(roleId);
+    }
+
+    @Override
+    public List<Long> getMenuIdList(List<Long> roleIdList) {
+        if (CollectionUtils.isEmpty(roleIdList)) {
+            return Collections.emptyList();
+        }
+        List<SysRoleMenuEntity> sysRoleMenuList = baseDao.selectList(Wrappers.lambdaQuery(SysRoleMenuEntity.class)
+                .in(SysRoleMenuEntity::getRoleId, roleIdList));
+        return sysRoleMenuList.stream().map(SysRoleMenuEntity::getMenuId).distinct().collect(Collectors.toList());
     }
 
     @Override

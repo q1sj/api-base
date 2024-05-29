@@ -1,5 +1,6 @@
 package com.xsy.sys.entity;
 
+import com.xsy.base.util.StringUtils;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
@@ -11,15 +12,23 @@ public abstract class BaseKey<T> {
     @Nullable
     private T defaultValue;
 
+    public BaseKey(String key) {
+        this.key = key;
+    }
+
+    public BaseKey(String key, @Nullable T defaultValue) {
+        this.key = key;
+        this.defaultValue = defaultValue;
+    }
+
     /**
      * val对象转换为string
      *
      * @param val
      * @return
      */
-    @Nullable
     public String serialization(@Nullable T val) {
-        return val != null ? serializationNotNull(val) : null;
+        return val != null ? serializationNotNull(val) : "";
     }
 
     /**
@@ -28,9 +37,8 @@ public abstract class BaseKey<T> {
      * @param val
      * @return
      */
-    @Nullable
     public T deserialization(@Nullable String val) {
-        return val != null ? deserializationNotNull(val) : null;
+        return StringUtils.isNotBlank(val) ? deserializationNotNull(val) : defaultValue;
     }
 
     /**
@@ -49,15 +57,6 @@ public abstract class BaseKey<T> {
      */
     protected abstract T deserializationNotNull(String val);
 
-    public BaseKey(String key) {
-        this.key = key;
-    }
-
-    public BaseKey(String key, @Nullable T defaultValue) {
-        this.key = key;
-        this.defaultValue = defaultValue;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,5 +69,13 @@ public abstract class BaseKey<T> {
     @Override
     public int hashCode() {
         return Objects.hash(key, defaultValue);
+    }
+
+    @Override
+    public String toString() {
+        return "BaseKey{" +
+                "key='" + key + '\'' +
+                ", defaultValue=" + defaultValue +
+                '}';
     }
 }

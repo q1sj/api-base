@@ -12,7 +12,7 @@ public class BooleanKey extends BaseKey<Boolean> {
 
     @Override
     protected String serializationNotNull(Boolean val) {
-        return val != null ? val.toString() : null;
+        return val.toString();
     }
 
     @Override

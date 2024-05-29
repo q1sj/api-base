@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,7 +29,7 @@ public class ChartDTO<L, V> {
         return init(Stream.of(arr).collect(Collectors.toList()), getLabel, getValue);
     }
 
-    public static <L, V, T> List<ChartDTO<L, V>> init(List<T> list, Function<T, L> getLabel, Function<T, V> getValue) {
+    public static <L, V, T> List<ChartDTO<L, V>> init(Collection<T> list, Function<T, L> getLabel, Function<T, V> getValue) {
         Objects.requireNonNull(getLabel);
         Objects.requireNonNull(getValue);
         if (list == null || list.isEmpty()) {

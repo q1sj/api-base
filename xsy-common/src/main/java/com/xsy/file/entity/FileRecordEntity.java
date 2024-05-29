@@ -1,7 +1,6 @@
 package com.xsy.file.entity;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -30,7 +29,7 @@ public class FileRecordEntity {
     /**
      * 文件大小
      */
-    private Integer fileSize;
+    private Long fileSize;
     /**
      * 文件来源
      */
@@ -43,16 +42,21 @@ public class FileRecordEntity {
      * 上传ip
      */
     private String uploadIp;
-    /**
-     * 过期时间 为空永不过期
-     */
-    private Date expireTime;
+
+    private Date uploadTime;
     /**
      * 摘要
      */
     private String digest;
-
+    /**
+     * 过期时间 为空永不过期
+     */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    private Date expireTime;
     private Date createTime;
-    private Date uploadTime;
+
+    @TableLogic(delval = "id")
+    private Long isDelete;
+
     private String remark;
 }

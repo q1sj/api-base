@@ -1,8 +1,8 @@
 /**
  * Copyright (c) 2018 人人开源 All rights reserved.
- *
+ * <p>
  * https://www.renren.io
- *
+ * <p>
  * 版权所有，侵权必究！
  */
 
@@ -12,7 +12,12 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+import lombok.experimental.FieldNameConstants;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,20 +27,29 @@ import java.util.Date;
  * @author Mark sunlightcs@gmail.com
  */
 @Data
+@MappedSuperclass
+@FieldNameConstants
 public abstract class BaseEntity implements Serializable {
     /**
      * id
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @TableId
     private Long id;
-    /**
-     * 创建者
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private Long  creator;
-    /**
-     * 创建时间
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private Date createDate;
+	/**
+	 * 创建者
+	 */
+	@TableField(fill = FieldFill.INSERT)
+	private Long creator;
+	/**
+	 * 创建时间
+	 */
+	@TableField(fill = FieldFill.INSERT)
+	private Date createDate;
+
+	@TableField(fill = FieldFill.INSERT_UPDATE)
+	private Long updater;
+	@TableField(fill = FieldFill.INSERT_UPDATE)
+	private Date updateDate;
 }

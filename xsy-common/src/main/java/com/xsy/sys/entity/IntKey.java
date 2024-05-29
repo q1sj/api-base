@@ -12,7 +12,7 @@ public class IntKey extends BaseKey<Integer> {
 
     @Override
     protected String serializationNotNull(Integer val) {
-        return val != null ? val.toString() : null;
+        return val.toString();
     }
 
     @Override

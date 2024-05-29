@@ -8,6 +8,7 @@
 
 package com.xsy.security.dto;
 
+import com.xsy.base.log.IgnoreLog;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -25,7 +26,7 @@ public class LoginDTO implements Serializable {
     @NotBlank(message = "{sysuser.username.require}")
     private String username;
 
+    @IgnoreLog
     @NotBlank(message = "{sysuser.password.require}")
     private String password;
-
 }

@@ -3,51 +3,56 @@ package com.xsy.sys.service;
 import com.xsy.base.util.PageData;
 import com.xsy.sys.entity.BaseKey;
 import com.xsy.sys.entity.SysConfigEntity;
+import com.xsy.sys.enums.SysConfigValueTypeEnum;
+import org.springframework.lang.Nullable;
 
-import java.util.function.Supplier;
+import java.util.List;
 
 /**
  * @author Q1sj
  * @date 2022.9.22 8:47
  */
 public interface SysConfigService {
+    boolean saveOrUpdate(SysConfigEntity entity);
 
-    PageData<SysConfigEntity> list(String configKey, int page, int pageSize);
+    boolean saveOrUpdate(String key, String value);
+
+    boolean saveOrUpdate(String key, Number value);
+
+    boolean saveOrUpdate(String key, Boolean value);
+
+    boolean saveOrUpdate(String key, SysConfigValueTypeEnum valueType, String value);
+
+    @Nullable
+    String get(String key);
 
     /**
-     * 新增或修改
+     * 获取原始值 未进行${}替换的值
      *
      * @param key
-     * @param val
-     * @param <T>
-     */
-    <T> void put(BaseKey<T> key, T val);
-
-    void put(SysConfigEntity sysConfigEntity);
-
-    /**
-     * 获取
-     *
-     * @param key
-     * @param <T>
      * @return
      */
+    @Nullable
+    String getOriginal(String key);
+
     <T> T get(BaseKey<T> key);
 
     /**
-     * 获取 为空时调用{@link Supplier#get()}
+     * 只删除数据库中数据,代码中字段仍保持不变
+     * 只删除数据库中数据,代码中字段仍保持不变
+     * 只删除数据库中数据,代码中字段仍保持不变
      *
      * @param key
-     * @param valueLoad
-     * @param <T>
-     * @return
      */
-    <T> T get(BaseKey<T> key, Supplier<T> valueLoad);
+    void delete(String key);
+
+    PageData<SysConfigEntity> list(@Nullable String configKey, int page, int pageSize);
 
     /**
-     * 删除
+     * 根据key前缀查询
      *
-     * @param key
+     * @param keyPrefix
+     * @return
      */
-    void del(BaseKey<?> key);
+    List<SysConfigEntity> startWith(String keyPrefix);
 }

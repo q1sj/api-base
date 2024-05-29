@@ -55,7 +55,7 @@ public class SysUserDTO implements Serializable {
 
 	private String mobile;
 
-	@Range(min=0, max=1, message = "{sysuser.status.range}", groups = Default.class)
+	@Range(min = 0, max = 1, message = "{sysuser.status.range}", groups = Default.class)
 	private Integer status;
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -63,9 +63,15 @@ public class SysUserDTO implements Serializable {
 
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Integer superAdmin;
-
+	/**
+	 * 上次登录时间
+	 */
+	private Date lastLoginTime;
 	private List<Long> roleIdList;
 
-	interface AddGroup{}
-	interface UpdateGroup{}
+	interface AddGroup {
+	}
+
+	interface UpdateGroup {
+	}
 }

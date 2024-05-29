@@ -5,19 +5,27 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xsy.base.exception.GlobalException;
 import com.xsy.base.util.PageData;
 import com.xsy.sys.dao.SysConfigDao;
 import com.xsy.sys.entity.BaseKey;
+import com.xsy.sys.entity.RefreshConfigEvent;
 import com.xsy.sys.entity.SysConfigEntity;
+import com.xsy.sys.enums.SysConfigValueTypeEnum;
 import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.PropertyPlaceholderHelper;
 
-import java.util.function.Supplier;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Q1sj
@@ -25,13 +33,117 @@ import java.util.function.Supplier;
  */
 @Slf4j
 @Service
-@CacheConfig(cacheNames = SysConfigServiceImpl.CACHE_NAME)
 public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEntity> implements SysConfigService {
 
-    static final String CACHE_NAME = "sys_config";
+    private final PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("${", "}", ":", false);
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
-    public PageData<SysConfigEntity> list(String configKey, int page, int pageSize) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveOrUpdate(SysConfigEntity entity) {
+        if (entity.getConfigValueType() == null) {
+            entity.setConfigValueType(SysConfigValueTypeEnum.STRING.name());
+        }
+        SysConfigValueTypeEnum configValueTypeEnum = null;
+        try {
+            configValueTypeEnum = SysConfigValueTypeEnum.valueOf(entity.getConfigValueType());
+        } catch (IllegalArgumentException e) {
+            throw new GlobalException(entity.getConfigValueType() + "不存在", e);
+        }
+        if (!configValueTypeEnum.valid(entity.getConfigValue())) {
+            throw new GlobalException(entity.getConfigValueType() + "类型转换失败");
+        }
+        entity.setUpdateTime(new Date());
+        boolean saveOrUpdate = super.saveOrUpdate(entity);
+        applicationContext.publishEvent(new RefreshConfigEvent(entity.getConfigKey()));
+        return saveOrUpdate;
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, String value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        sysConfig.setConfigValue(value);
+        return saveOrUpdate(sysConfig);
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, Number value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        if (value instanceof BigDecimal) {
+            sysConfig.setConfigValue(((BigDecimal) value).toPlainString());
+        } else {
+            sysConfig.setConfigValue(Objects.toString(value));
+        }
+        if (value instanceof Integer) {
+            sysConfig.setConfigValueType(SysConfigValueTypeEnum.INT.name());
+        } else if (value instanceof Long) {
+            sysConfig.setConfigValueType(SysConfigValueTypeEnum.LONG.name());
+        } else {
+            sysConfig.setConfigValueType(SysConfigValueTypeEnum.STRING.name());
+        }
+        return saveOrUpdate(sysConfig);
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, Boolean value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        sysConfig.setConfigValueType(SysConfigValueTypeEnum.BOOLEAN.name());
+        sysConfig.setConfigValue(Objects.toString(value));
+        return saveOrUpdate(sysConfig);
+    }
+
+    @Override
+    public boolean saveOrUpdate(String key, SysConfigValueTypeEnum valueType, String value) {
+        SysConfigEntity sysConfig = new SysConfigEntity();
+        sysConfig.setConfigKey(key);
+        sysConfig.setConfigValue(value);
+        sysConfig.setConfigValueType(valueType.name());
+        return saveOrUpdate(sysConfig);
+    }
+
+    @Nullable
+    public String get(String key) {
+        SysConfigEntity entity = this.getById(key);
+        if (entity == null) {
+            return null;
+        }
+        return propertyPlaceholderHelper.replacePlaceholders(entity.getConfigValue(), k -> {
+            if (Objects.equals(k, key)) {
+                throw new IllegalArgumentException("key:" + key);
+            }
+            return get(k);
+        });
+    }
+
+    @Override
+    public String getOriginal(String key) {
+        SysConfigEntity entity = this.getById(key);
+        if (entity == null) {
+            return null;
+        }
+        return entity.getConfigValue();
+    }
+
+    @Override
+    public <T> T get(BaseKey<T> key) {
+        String k = key.getKey();
+        String valStr = get(k);
+        return key.deserialization(valStr);
+    }
+
+    @Override
+    public void delete(String key) {
+        log.warn("参数管理删除 key:{}", key);
+        removeById(key);
+    }
+
+    @Override
+    public PageData<SysConfigEntity> list(@Nullable String configKey, int page, int pageSize) {
         LambdaQueryWrapper<SysConfigEntity> wrapper = Wrappers.lambdaQuery(SysConfigEntity.class)
                 .like(StringUtils.isNotBlank(configKey), SysConfigEntity::getConfigKey, configKey);
         IPage<SysConfigEntity> iPage = new Page<>(page, pageSize);
@@ -40,84 +152,8 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
-    @CacheEvict(key = "#key.getKey()")
-    public <T> void put(BaseKey<T> key, T val) {
-        saveOrUpdate(new SysConfigEntity(key.getKey(), key.serialization(val)));
+    public List<SysConfigEntity> startWith(String keyPrefix) {
+        return this.list(Wrappers.lambdaQuery(SysConfigEntity.class)
+                .likeRight(SysConfigEntity::getConfigKey, keyPrefix));
     }
-
-    @Override
-    @CacheEvict(key = "#sysConfigEntity.getConfigKey()")
-    public void put(SysConfigEntity sysConfigEntity) {
-        saveOrUpdate(sysConfigEntity);
-    }
-
-    @Override
-    @Cacheable(key = "#key.getKey()")
-    public <T> T get(BaseKey<T> key) {
-        log.debug("select {}", key);
-        SysConfigEntity entity = getById(key.getKey());
-        return entity != null ? key.deserialization(entity.getConfigValue()) : key.getDefaultValue();
-    }
-
-    @Override
-    @Cacheable(key = "#key.getKey()")
-    public <T> T get(BaseKey<T> key, Supplier<T> valueLoad) {
-        T val = get(key);
-        if (val != null) {
-            return val;
-        }
-        synchronized (key) {
-            val = get(key);
-            if (val != null) {
-                return val;
-            }
-            val = valueLoad.get();
-            put(key, val);
-            return val;
-        }
-    }
-
-    @Override
-    @CacheEvict(key = "#key.getKey()")
-    public void del(BaseKey<?> key) {
-        removeById(key.getKey());
-    }
-
-    //demo
-    /*
-    public static void main(String[] args) throws Exception {
-
-        SysConfigServiceImpl service = new SysConfigServiceImpl();
-        service.put(ConfigKeyConstant.INT_DEMO, 123);
-        Integer a = service.get(ConfigKeyConstant.INT_DEMO);
-        service.put(ConfigKeyConstant.BOOLEAN_DEMO, true);
-        Boolean b = service.get(ConfigKeyConstant.BOOLEAN_DEMO);
-        service.put(ConfigKeyConstant.STR_DEMO, "aaaaa");
-        String s = service.get(ConfigKeyConstant.STR_DEMO);
-        SysUserDTO u = new SysUserDTO();
-        u.setId(9999L);
-        service.put(ConfigKeyConstant.OBJ_DEMO, u);
-        SysUserDTO userDTO = service.get(ConfigKeyConstant.OBJ_DEMO);
-        Boolean d = service.get(ConfigKeyConstant.DEFAULT_VAL_DEMO);
-        Boolean d2 = service.get(ConfigKeyConstant.DEFAULT_VAL_DEMO);
-        service.put(ConfigKeyConstant.LIST_DEMO, Arrays.asList(1, 2, 3));
-        List<Integer> l = service.get(ConfigKeyConstant.LIST_DEMO);
-        service.put(ConfigKeyConstant.getDynamicKey("1"), "d1");
-        service.put(ConfigKeyConstant.getDynamicKey("2"), "d2");
-        String d1 = service.get(ConfigKeyConstant.getDynamicKey("1"));
-    }
-
-    public static class ConfigKeyConstant {
-        // demo
-        public static final IntConfigKey INT_DEMO = new IntConfigKey("i");
-        public static final BooleanConfigKey BOOLEAN_DEMO = new BooleanConfigKey("b");
-        public static final StringConfigKey STR_DEMO = new StringConfigKey("s");
-        public static final BooleanConfigKey DEFAULT_VAL_DEMO = new BooleanConfigKey("d", false);
-        public static final ObjectConfigKey<SysUserDTO> OBJ_DEMO = new ObjectConfigKey<>("u", SysUserDTO.class);
-        public static final ListConfigKey<Integer> LIST_DEMO = new ListConfigKey<>("l", Integer.class);
-
-        public static StringConfigKey getDynamicKey(String keyPrefix) {
-            return new StringConfigKey(keyPrefix + "dynamicKey");
-        }
-    }*/
 }

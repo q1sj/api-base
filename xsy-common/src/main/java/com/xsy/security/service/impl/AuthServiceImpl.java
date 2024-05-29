@@ -20,6 +20,7 @@ import com.xsy.sys.service.SysUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -30,10 +31,13 @@ import java.util.Set;
 @Service
 public class AuthServiceImpl implements AuthService {
     @Autowired
+    @Lazy
     private SysMenuService sysMenuService;
     @Autowired
+    @Lazy
     private SysUserService sysUserService;
     @Autowired
+    @Lazy
     private SysUserTokenService sysUserTokenService;
 
     @Override
@@ -67,5 +71,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public SysUserEntity getUser(Long userId) {
         return sysUserService.selectById(userId);
+    }
+
+    @Override
+    public void refreshExpireDate(SysUserTokenEntity tokenEntity) {
+        sysUserTokenService.refreshExpireDate(tokenEntity);
+    }
+
+    @Override
+    public boolean userIsDisable(SysUserEntity user) {
+        return sysUserService.userIsDisable(user);
     }
 }

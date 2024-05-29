@@ -12,7 +12,7 @@ public class LongKey extends BaseKey<Long> {
 
     @Override
     protected String serializationNotNull(Long val) {
-        return val != null ? val.toString() : null;
+        return val.toString();
     }
 
     @Override

@@ -13,25 +13,34 @@ import com.xsy.base.enums.ResultCodeEnum;
 import com.xsy.base.util.HttpContextUtils;
 import com.xsy.base.util.JsonUtils;
 import com.xsy.base.util.Result;
+import com.xsy.base.util.SpringContextUtils;
+import com.xsy.security.annotation.NoAuth;
 import com.xsy.security.enums.SecurityConstant;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * oauth2过滤器
  *
  * @author Mark sunlightcs@gmail.com
  */
+@Slf4j
 public class Oauth2Filter extends AuthenticatingFilter {
 
     @Override
@@ -51,7 +60,25 @@ public class Oauth2Filter extends AuthenticatingFilter {
         if (((HttpServletRequest) request).getMethod().equals(RequestMethod.OPTIONS.name())) {
             return true;
         }
-
+        RequestMappingHandlerMapping requestMappingHandlerMapping = SpringContextUtils.getBean(RequestMappingHandlerMapping.class);
+        try {
+            Optional<HandlerMethod> handlerMethod = Optional.ofNullable(requestMappingHandlerMapping.getHandler((HttpServletRequest) request))
+                    .map(handler -> ((HandlerMethod) handler.getHandler()));
+            if (handlerMethod.map(HandlerMethod::getBeanType)
+                    .map(beanType -> AnnotatedElementUtils.findMergedAnnotation(beanType, NoAuth.class))
+                    .isPresent()) {
+                log.debug("{} 类存在@NoAuth", ((HttpServletRequest) request).getRequestURI());
+                return true;
+            }
+            if (handlerMethod.map(HandlerMethod::getMethod)
+                    .map(method -> AnnotatedElementUtils.findMergedAnnotation(method, NoAuth.class))
+                    .isPresent()) {
+                log.debug("{} 方法存在@NoAuth", ((HttpServletRequest) request).getRequestURI());
+                return true;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
         return false;
     }
 
@@ -77,6 +104,7 @@ public class Oauth2Filter extends AuthenticatingFilter {
 
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
+        log.warn("认证失败 {}", Objects.toString(e));
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         httpResponse.setContentType("application/json;charset=utf-8");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
@@ -93,7 +121,7 @@ public class Oauth2Filter extends AuthenticatingFilter {
             r = Result.error(resultCodeEnum);
             String json = JsonUtils.toJsonString(r);
             httpResponse.getWriter().print(json);
-        } catch (IOException e1) {
+        } catch (IOException ignore) {
 
         }
 

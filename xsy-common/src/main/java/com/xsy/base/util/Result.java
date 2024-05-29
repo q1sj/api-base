@@ -45,6 +45,8 @@ public class Result<T> {
      */
     private Long timestamp;
 
+    private String traceId;
+
     public Result() {
     }
 
@@ -79,8 +81,12 @@ public class Result<T> {
     }
 
     public static <T> Result<T> error(Exception e) {
+        return error(FAIL_MSG, e);
+    }
+
+    public static <T> Result<T> error(String msg, Exception e) {
         Objects.requireNonNull(e);
-        Result<T> result = new Result<>(FAIL_CODE, FAIL_MSG);
+        Result<T> result = new Result<>(FAIL_CODE, msg);
         result.setException(e.getClass().getName());
         return result;
     }
@@ -91,6 +97,9 @@ public class Result<T> {
     }
 
     public boolean isSuccess() {
-        return this.code == SUCCESS_CODE;
+        if (this.code == null) {
+            return true;
+        }
+        return Objects.equals(this.code, SUCCESS_CODE);
     }
 }

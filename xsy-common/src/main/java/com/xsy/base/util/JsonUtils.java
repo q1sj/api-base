@@ -4,25 +4,31 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.xsy.base.exception.GlobalException;
+import com.xsy.base.log.IgnoreLog;
 import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * JSON 工具类
  *
- * @author Mark sunlightcs@gmail.com
+ * @author Q1sj
  */
 public class JsonUtils {
-    private static final ObjectMapper objectMapper;
+    private static final ObjectMapper OBJECT_MAPPER;
+    private static final ObjectMapper LOG_OBJECT_MAPPER;
 
     static {
-        objectMapper = new ObjectMapper();
-        init(objectMapper);
+        OBJECT_MAPPER = init(new ObjectMapper());
+        LOG_OBJECT_MAPPER = initLogMapper(new ObjectMapper());
     }
 
     public static ObjectMapper init(ObjectMapper objectMapper) {
@@ -41,20 +47,46 @@ public class JsonUtils {
         return objectMapper;
     }
 
+    public static ObjectMapper initLogMapper(ObjectMapper objectMapper) {
+        init(objectMapper);
+        objectMapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean hasIgnoreMarker(AnnotatedMember m) {
+                IgnoreLog ann = _findAnnotation(m, IgnoreLog.class);
+                return ann != null;
+            }
+        });
+        return objectMapper;
+    }
+
+
     public static String toJsonString(Object object) {
         try {
-            return objectMapper.writeValueAsString(object);
+            return OBJECT_MAPPER.writeValueAsString(object);
+        } catch (Exception e) {
+            throw new GlobalException("json序列化失败", e);
+        }
+    }
+
+    /**
+     * 忽略{@link IgnoreLog}注解的字段
+     *
+     * @param object
+     * @return
+     */
+    public static String toLogJsonString(Object object) {
+        try {
+            return LOG_OBJECT_MAPPER.writeValueAsString(object);
         } catch (Exception e) {
             throw new GlobalException("json序列化失败", e);
         }
     }
 
     public static <T> T parseObject(String text, Class<T> clazz) {
-        if (StringUtils.isEmpty(text)) {
-            return null;
-        }
         try {
-            return objectMapper.readValue(text, clazz);
+            return OBJECT_MAPPER.readValue(text, clazz);
         } catch (Exception e) {
             throw new GlobalException("json反序列化失败", e);
         }
@@ -62,7 +94,7 @@ public class JsonUtils {
 
     public static <T> T parseObject(String text, TypeReference<T> typeReference) {
         try {
-            return objectMapper.readValue(text, typeReference);
+            return OBJECT_MAPPER.readValue(text, typeReference);
         } catch (Exception e) {
             throw new GlobalException("json反序列化失败", e);
         }
@@ -73,7 +105,7 @@ public class JsonUtils {
             return new ArrayList<>();
         }
         try {
-            return objectMapper.readValue(text, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+            return OBJECT_MAPPER.readValue(text, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (Exception e) {
             throw new GlobalException("json反序列化失败", e);
         }

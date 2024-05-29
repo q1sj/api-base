@@ -40,6 +40,6 @@ public class FileStorageProperties {
         /**
          * 存储基础路径
          */
-        private String basePath = System.getProperties().getProperty("user.home").replace("\\", "/") + "/file-storage";
+        private String basePath = System.getProperties().getProperty("user.home").replace("\\", "/");
     }
 }

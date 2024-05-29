@@ -15,10 +15,17 @@ public class PageQuery {
      */
     public static final int DEFAULT_PAGE = 1;
     /**
+     * 最大页码
+     */
+    public static final int MAX_PAGE = 100;
+    /**
      * 默认每页条数
      */
     public static final int DEFAULT_PAGE_SIZE = 10;
-
+    /**
+     * 最大每页条数
+     */
+    public static final int MAX_PAGE_SIZE = 100;
     /**
      * 当前页
      */
@@ -29,6 +36,9 @@ public class PageQuery {
     private Integer pageSize;
 
     public <T> IPage<T> initPage() {
-        return new Page<>(page == null ? DEFAULT_PAGE : page, pageSize == null ? DEFAULT_PAGE_SIZE : pageSize);
+        return new Page<>(
+                page == null ? DEFAULT_PAGE : Math.min(page, MAX_PAGE),
+                pageSize == null ? DEFAULT_PAGE_SIZE : Math.min(pageSize, MAX_PAGE_SIZE)
+        );
     }
 }

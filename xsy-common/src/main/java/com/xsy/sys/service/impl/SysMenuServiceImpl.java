@@ -8,13 +8,12 @@
 
 package com.xsy.sys.service.impl;
 
-import com.xsy.base.cache.CacheManagerWrapper;
-import com.xsy.base.cache.CacheWrapper;
 import com.xsy.base.enums.RenConstant;
 import com.xsy.base.exception.GlobalException;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.TreeUtils;
+import com.xsy.security.config.RequiresPermissionsScan;
 import com.xsy.security.enums.SecurityConstant;
 import com.xsy.security.user.UserDetail;
 import com.xsy.sys.dao.SysMenuDao;
@@ -35,7 +34,7 @@ public class SysMenuServiceImpl extends RenBaseServiceImpl<SysMenuDao, SysMenuEn
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
     @Autowired
-    private CacheManagerWrapper cacheManagerWrapper;
+    private RequiresPermissionsScan requiresPermissionsScan;
 
     @Override
     public SysMenuDTO get(Long id) {
@@ -119,11 +118,6 @@ public class SysMenuServiceImpl extends RenBaseServiceImpl<SysMenuDao, SysMenuEn
 
     @Override
     public List<String> getAllPermissions() {
-        CacheWrapper cache = cacheManagerWrapper.getCache(SecurityConstant.PERMISSIONS_CACHE_NAME);
-        return cache.get(SecurityConstant.PERMISSIONS_KEY);
-    }
-
-    private void validPermissions(String permissions) {
-
+        return requiresPermissionsScan.getPermissionList();
     }
 }

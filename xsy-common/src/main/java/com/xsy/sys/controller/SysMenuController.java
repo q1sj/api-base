@@ -81,7 +81,6 @@ public class SysMenuController {
      * @return
      */
     @GetMapping("list")
-    @RequiresPermissions("sys:menu:list")
     public Result<List<SysMenuDTO>> list(Integer type) {
         List<SysMenuDTO> list = sysMenuService.getAllMenuList(type);
 
@@ -95,7 +94,6 @@ public class SysMenuController {
      * @return
      */
     @GetMapping("{id}")
-    @RequiresPermissions("sys:menu:info")
     public Result<SysMenuDTO> get(@PathVariable("id") Long id) {
         SysMenuDTO data = sysMenuService.get(id);
 
@@ -109,7 +107,7 @@ public class SysMenuController {
      * @return
      */
     @PostMapping
-    @RequiresPermissions("sys:menu:save")
+    @RequiresPermissions("menu:save")
     public Result save(@RequestBody SysMenuDTO dto) {
         //效验数据
         ValidatorUtils.validateEntity(dto, Default.class);
@@ -126,7 +124,7 @@ public class SysMenuController {
      * @return
      */
     @PutMapping
-    @RequiresPermissions("sys:menu:update")
+    @RequiresPermissions("menu:update")
     public Result update(@RequestBody SysMenuDTO dto) {
         //效验数据
         ValidatorUtils.validateEntity(dto, Default.class);
@@ -143,7 +141,7 @@ public class SysMenuController {
      * @return
      */
     @DeleteMapping("{id}")
-    @RequiresPermissions("sys:menu:delete")
+    @RequiresPermissions("menu:delete")
     public Result delete(@PathVariable("id") Long id) {
         //判断是否有子菜单或按钮
         List<SysMenuDTO> list = sysMenuService.getListPid(id);
@@ -162,9 +160,9 @@ public class SysMenuController {
      * @return
      */
     @GetMapping("select")
-    @RequiresPermissions("sys:menu:select")
     public Result<List<SysMenuDTO>> select() {
         UserDetail user = SecurityUser.getUser();
+        //非bug 只查菜单使用nav接口
         List<SysMenuDTO> list = sysMenuService.getUserMenuList(user, null);
 
         return Result.ok(list);
