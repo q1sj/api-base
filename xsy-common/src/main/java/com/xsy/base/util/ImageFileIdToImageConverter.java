@@ -18,6 +18,11 @@ import java.util.Objects;
 @Slf4j
 public class ImageFileIdToImageConverter implements Converter<Long> {
 	@Override
+	public Class<?> supportJavaTypeKey() {
+		return Long.class;
+	}
+
+	@Override
 	public WriteCellData<?> convertToExcelData(Long value, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
 		FileRecordService fileRecordService = SpringContextUtils.getBean(FileRecordService.class);
 		FileRecordDTO fileRecord = null;
