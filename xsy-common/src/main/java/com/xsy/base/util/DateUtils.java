@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Q1sj
@@ -23,6 +24,29 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     public static Date getNetDate() throws IOException {
         return getNetDate(DEFAULT_NTP_SERVER_HOST);
+    }
+
+    /**
+     * 持续分钟
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    public static long durationMinute(Date start, Date end) {
+        return duration(start, end, TimeUnit.MINUTES);
+    }
+
+    /***
+     * 持续时间
+     * @param start 开始时间
+     * @param end 结束时间
+     * @param timeUnit 返回的持续时间单位
+     * @return
+     */
+    public static long duration(Date start, Date end, TimeUnit timeUnit) {
+        BizAssertUtils.isTrue(!start.after(end), "开始时间大于结束时间");
+        return timeUnit.convert(end.getTime() - start.getTime(), TimeUnit.MILLISECONDS);
     }
 
     /**
