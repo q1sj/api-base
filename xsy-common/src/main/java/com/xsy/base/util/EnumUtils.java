@@ -15,16 +15,16 @@ import java.util.Objects;
 public class EnumUtils {
 
     public static <E extends BaseEnum<V, D>, V, D> D getDescByValue(Class<E> enumClass, V value, D defaultDesc) {
-        D desc = getDescByValue(enumClass, value);
-        return desc != null ? desc : defaultDesc;
-    }
-    @Nullable
-    public static <E extends BaseEnum<V, D>, V, D> D getDescByValue(Class<E> enumClass, V value) {
         E e = getByValue(enumClass, value);
         if (e == null) {
-            return null;
+            return defaultDesc;
         }
         return e.getDesc();
+    }
+
+    @Nullable
+    public static <E extends BaseEnum<V, D>, V, D> D getDescByValue(Class<E> enumClass, V value) {
+        return getDescByValue(enumClass, value, null);
     }
 
     @Nullable
@@ -36,8 +36,7 @@ public class EnumUtils {
         return e.getValue();
     }
 
-    @Nullable
-    public static <E extends BaseEnum<V, D>, V, D> E getByValue(Class<E> enumClass, V value) {
+    public static <E extends BaseEnum<V, D>, V, D> E getByValue(Class<E> enumClass, V value, E defaultEnum) {
         if (enumClass.isEnum()) {
             for (E baseEnum : enumClass.getEnumConstants()) {
                 if (Objects.equals(baseEnum.getValue(), value)) {
@@ -45,7 +44,12 @@ public class EnumUtils {
                 }
             }
         }
-        return null;
+        return defaultEnum;
+    }
+
+    @Nullable
+    public static <E extends BaseEnum<V, D>, V, D> E getByValue(Class<E> enumClass, V value) {
+        return getByValue(enumClass, value, null);
     }
 
     @Nullable
