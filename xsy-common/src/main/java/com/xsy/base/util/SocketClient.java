@@ -1,11 +1,13 @@
 package com.xsy.base.util;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 /**
  * @author Q1sj
@@ -13,11 +15,20 @@ import java.net.Socket;
  */
 @Slf4j
 public class SocketClient implements AutoCloseable {
+	/**
+	 * 默认读取超时时间
+	 */
 	private static final int DEFAULT_SO_TIMEOUT = 5000;
+	/**
+	 * 默认连接超时时间
+	 */
 	private static final int DEFAULT_CONNECT_TIMEOUT = 5000;
 
+	@Getter
 	private final String host;
+	@Getter
 	private final int port;
+
 	private final Socket socket;
 
 
@@ -38,12 +49,12 @@ public class SocketClient implements AutoCloseable {
 		return new SocketClient(socket);
 	}
 
-	public void send(String msg) throws IOException {
+	public void write(String msg) throws IOException {
 		socket.getOutputStream().write(msg.getBytes());
 		log.info("向{}:{} 发送string: {}", host, port, msg);
 	}
 
-	public void send(byte[] bytes) throws IOException {
+	public void write(byte[] bytes) throws IOException {
 		socket.getOutputStream().write(bytes);
 		log.info("向{}:{} 发送hex: 0x{}", host, port, Hex.encodeHexString(bytes));
 	}
@@ -58,16 +69,12 @@ public class SocketClient implements AutoCloseable {
 		return IOUtils.readJson(socket.getInputStream());
 	}
 
+	public String readJson(Charset charset) throws IOException {
+		return IOUtils.readJson(socket.getInputStream(), charset);
+	}
+
 	@Override
 	public void close() throws Exception {
 		socket.close();
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public int getPort() {
-		return port;
 	}
 }

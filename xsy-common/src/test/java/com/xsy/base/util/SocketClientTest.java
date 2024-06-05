@@ -8,12 +8,12 @@ public class SocketClientTest {
 	@Test
 	public void test() throws Exception {
 		try (SocketClient socketClient = SocketClient.connect("192.168.2.111", 8092)) {
-			socketClient.send("hello world");
+			socketClient.write("hello world");
+			byte[] bytes = socketClient.read(2);
+			log.info(new String(bytes));
 			String json = socketClient.readJson();
 			log.info(json);
-			byte[] bytes = socketClient.read(1);
-			log.info(new String(bytes));
-			socketClient.send("bye".getBytes());
+			socketClient.write("bye".getBytes());
 		}
 	}
 }
