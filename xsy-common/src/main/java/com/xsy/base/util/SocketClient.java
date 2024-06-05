@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -59,6 +60,10 @@ public class SocketClient implements AutoCloseable {
 		log.info("向{}:{} 发送hex: 0x{}", host, port, Hex.encodeHexString(bytes));
 	}
 
+	public <T> T read(ReadFunction<InputStream, T> readFunction) throws IOException {
+		return readFunction.apply(socket.getInputStream());
+	}
+
 	public byte[] read(int length) throws IOException {
 		byte[] bytes = new byte[length];
 		IOUtils.read(socket.getInputStream(), bytes);
@@ -73,8 +78,21 @@ public class SocketClient implements AutoCloseable {
 		return IOUtils.readJson(socket.getInputStream(), charset);
 	}
 
+	public int readInt() throws IOException {
+		return IOUtils.readInt(socket.getInputStream());
+	}
+
+	public long readLong() throws IOException {
+		return IOUtils.readLong(socket.getInputStream());
+	}
+
 	@Override
 	public void close() throws Exception {
 		socket.close();
+	}
+
+	@FunctionalInterface
+	public interface ReadFunction<T, R> {
+		R apply(T t) throws IOException;
 	}
 }

@@ -3,6 +3,7 @@ package com.xsy.base.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -26,6 +27,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 	public static String readJson(InputStream is, Charset charsets) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int bracesCount = 0;
+		int bracketsCount = 0;
 		boolean inString = false;
 		boolean escaped = false;
 
@@ -49,16 +51,46 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 					bracesCount++;
 				} else if (c == '}') {
 					bracesCount--;
-					if (bracesCount == 0) {
-						break;
-					}
+				} else if (c == '[') {
+					bracketsCount++;
+				} else if (c == ']') {
+					bracketsCount--;
+				}
+
+				if (bracesCount == 0 && bracketsCount == 0 && (c == '}' || c == ']')) {
+					break;
 				}
 			}
 		}
 
-		if (bracesCount != 0) {
-			throw new IOException("Incomplete JSON object");
+		if (bracesCount != 0 || bracketsCount != 0) {
+			throw new IOException("Incomplete JSON object or array");
 		}
+
 		return baos.toString(charsets.name());
+	}
+
+	public static byte[] read(InputStream is, byte terminator) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int b;
+		while ((b = is.read()) != -1) {
+			baos.write(b);
+			if (b == Byte.toUnsignedInt(terminator)) {
+				break;
+			}
+		}
+		return baos.toByteArray();
+	}
+
+	public static int readInt(InputStream is) throws IOException {
+		byte[] bytes = new byte[Integer.BYTES];
+		read(is, bytes);
+		return ByteBuffer.wrap(bytes).getInt();
+	}
+
+	public static long readLong(InputStream is) throws IOException {
+		byte[] bytes = new byte[Long.BYTES];
+		read(is, bytes);
+		return ByteBuffer.wrap(bytes).getLong();
 	}
 }
