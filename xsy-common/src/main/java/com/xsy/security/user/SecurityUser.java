@@ -33,7 +33,7 @@ public class SecurityUser {
         try {
             user = (UserDetail) subject.getPrincipal();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.warn("用户获取失败 {}", e.getMessage());
             return new UserDetail();
         }
         if (user == null) {

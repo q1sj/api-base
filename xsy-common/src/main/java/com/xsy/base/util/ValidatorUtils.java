@@ -17,8 +17,10 @@ import org.springframework.validation.beanvalidation.MessageSourceResourceBundle
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * hibernate-validator校验工具类
@@ -51,8 +53,8 @@ public class ValidatorUtils {
 
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(object, groups);
         if (!constraintViolations.isEmpty()) {
-            ConstraintViolation<Object> constraint = constraintViolations.iterator().next();
-            throw new ParamValidationException(constraint.getPropertyPath() + constraint.getMessage());
+            List<String> errMessages = constraintViolations.stream().map(constraint -> constraint.getPropertyPath() + constraint.getMessage()).collect(Collectors.toList());
+            throw new ParamValidationException(String.join(",", errMessages));
         }
     }
 }

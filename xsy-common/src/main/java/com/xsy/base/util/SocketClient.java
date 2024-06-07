@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -15,7 +16,7 @@ import java.nio.charset.Charset;
  * @date 2024/6/5 下午3:27
  */
 @Slf4j
-public class SocketClient implements AutoCloseable {
+public class SocketClient implements Closeable {
 	/**
 	 * 默认读取超时时间
 	 */
@@ -26,7 +27,7 @@ public class SocketClient implements AutoCloseable {
 	private static final int DEFAULT_CONNECT_TIMEOUT = 5000;
 
 	@Getter
-	private final String host;
+	private final String hostname;
 	@Getter
 	private final int port;
 
@@ -35,12 +36,12 @@ public class SocketClient implements AutoCloseable {
 
 	private SocketClient(Socket socket) {
 		this.socket = socket;
-		this.host = socket.getInetAddress().getHostAddress();
+		this.hostname = socket.getInetAddress().getHostAddress();
 		this.port = socket.getPort();
 	}
 
-	public static SocketClient connect(String host, int port) throws IOException {
-		return connect(host, port, DEFAULT_SO_TIMEOUT, DEFAULT_CONNECT_TIMEOUT);
+	public static SocketClient connect(String hostname, int port) throws IOException {
+		return connect(hostname, port, DEFAULT_SO_TIMEOUT, DEFAULT_CONNECT_TIMEOUT);
 	}
 
 	public static SocketClient connect(String host, int port, int connectTimeout, int readTimeout) throws IOException {
@@ -52,12 +53,12 @@ public class SocketClient implements AutoCloseable {
 
 	public void write(String msg) throws IOException {
 		socket.getOutputStream().write(msg.getBytes());
-		log.info("向{}:{} 发送string: {}", host, port, msg);
+		log.info("向{}:{} 发送string: {}", hostname, port, msg);
 	}
 
 	public void write(byte[] bytes) throws IOException {
 		socket.getOutputStream().write(bytes);
-		log.info("向{}:{} 发送hex: 0x{}", host, port, Hex.encodeHexString(bytes));
+		log.info("向{}:{} 发送hex: 0x{}", hostname, port, Hex.encodeHexString(bytes));
 	}
 
 	public <T> T read(ReadFunction<InputStream, T> readFunction) throws IOException {
@@ -87,7 +88,7 @@ public class SocketClient implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		socket.close();
 	}
 
