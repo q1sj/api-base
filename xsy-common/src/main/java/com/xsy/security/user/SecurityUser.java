@@ -47,7 +47,7 @@ public class SecurityUser {
         try {
             return SecurityUtils.getSubject();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("用户获取失败 {}", e.getMessage());
             return null;
         }
     }
