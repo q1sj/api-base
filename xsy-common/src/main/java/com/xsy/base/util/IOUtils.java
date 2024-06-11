@@ -57,7 +57,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 					bracketsCount--;
 				}
 
-				if (bracesCount == 0 && bracketsCount == 0 && (c == '}' || c == ']')) {
+				if (bracesCount <= 0 && bracketsCount <= 0 && (c == '}' || c == ']')) {
 					break;
 				}
 			}

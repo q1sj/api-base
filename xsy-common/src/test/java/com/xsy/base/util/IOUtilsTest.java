@@ -27,6 +27,7 @@ public class IOUtilsTest {
 
 	@Test
 	public void tcpStickyPacket() throws IOException {
+		// 粘包测试
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream((json + jsonArray).getBytes());
 
 		Assert.assertEquals(json, IOUtils.readJson(byteArrayInputStream));
@@ -35,6 +36,7 @@ public class IOUtilsTest {
 
 	@Test
 	public void testJsonEscape() throws IOException {
+		// 转义测试
 		String json = "{\"key\":\"{\"}";
 		Assert.assertEquals(json, IOUtils.readJson(new ByteArrayInputStream(json.getBytes())));
 
@@ -43,5 +45,9 @@ public class IOUtilsTest {
 		// {"key":"{\"a\":\"{\"}"}
 		json = "{\"key\":\"{\\\"a\\\":123}\"}";
 		Assert.assertEquals(json, IOUtils.readJson(new ByteArrayInputStream(json.getBytes())));
+
+		// }{"key":"{\"a\":\"{\"}
+		String errorJson = "}{\"key\":\"{\\\"a\\\":\\\"{\\\"}";
+		Assert.assertThrows(IOException.class, () -> IOUtils.readJson(new ByteArrayInputStream(errorJson.getBytes())));
 	}
 }
