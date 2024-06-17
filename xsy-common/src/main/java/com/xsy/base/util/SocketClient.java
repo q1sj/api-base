@@ -52,7 +52,11 @@ public class SocketClient implements Closeable {
 	}
 
 	public void write(String msg) throws IOException {
-		socket.getOutputStream().write(msg.getBytes());
+		write(msg, Charset.defaultCharset());
+	}
+
+	public void write(String msg, Charset charset) throws IOException {
+		socket.getOutputStream().write(msg.getBytes(charset));
 		log.info("向{}:{} 发送string: {}", hostname, port, msg);
 	}
 

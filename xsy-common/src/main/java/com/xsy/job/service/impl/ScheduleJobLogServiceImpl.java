@@ -49,11 +49,6 @@ public class ScheduleJobLogServiceImpl extends ServiceImpl<ScheduleJobLogDao, Sc
 	}
 
 	@Override
-	public void truncateTable() {
-		scheduleJobLogDao.truncateTable();
-	}
-
-	@Override
 	public void clearLog(int ago) {
 		BizAssertUtils.isTrue(ago > 0, "必须大于0");
 		this.remove(Wrappers.lambdaQuery(ScheduleJobLogEntity.class)

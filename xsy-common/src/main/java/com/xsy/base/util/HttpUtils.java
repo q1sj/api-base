@@ -64,6 +64,11 @@ public class HttpUtils {
         return httpThreadPool.submit(() -> exchange(url, httpMethod, body, respType));
     }
 
+    public static <T> Future<T> asyncExchange(String url, HttpMethod httpMethod, @Nullable HttpEntity<Object> body, Class<T> respType) {
+        return httpThreadPool.submit(() -> exchange(url, httpMethod, body, respType));
+    }
+
+
     private static String getLogJson(Object o) {
         if (o == null) {
             return "";
