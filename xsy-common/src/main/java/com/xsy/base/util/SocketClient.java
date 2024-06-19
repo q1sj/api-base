@@ -69,24 +69,70 @@ public class SocketClient implements Closeable {
 		return readFunction.apply(socket.getInputStream());
 	}
 
+	/**
+	 * 读取固定长度的数据
+	 *
+	 * @param length 数据长度
+	 * @return
+	 * @throws IOException
+	 */
 	public byte[] read(int length) throws IOException {
 		byte[] bytes = new byte[length];
-		IOUtils.read(socket.getInputStream(), bytes);
+		int read = IOUtils.read(socket.getInputStream(), bytes);
+		if (read != length) {
+			throw new IOException("不完整的数据,预期:" + length+"实际:"+read);
+		}
 		return bytes;
 	}
 
+	/**
+	 * 读取到终止符返回数据
+	 *
+	 * @param terminator 终止符
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] read(byte terminator) throws IOException {
+		return IOUtils.read(socket.getInputStream(), terminator);
+	}
+
+	/**
+	 * 读取一个完整的json
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public String readJson() throws IOException {
 		return IOUtils.readJson(socket.getInputStream());
 	}
 
+	/**
+	 * 读取一个完整的json
+	 *
+	 * @param charset
+	 * @return
+	 * @throws IOException
+	 */
 	public String readJson(Charset charset) throws IOException {
 		return IOUtils.readJson(socket.getInputStream(), charset);
 	}
 
+	/**
+	 * 读取4byte的数据转换为int
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public int readInt() throws IOException {
 		return IOUtils.readInt(socket.getInputStream());
 	}
 
+	/**
+	 * 读取8byte的数据转换为long
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public long readLong() throws IOException {
 		return IOUtils.readLong(socket.getInputStream());
 	}
