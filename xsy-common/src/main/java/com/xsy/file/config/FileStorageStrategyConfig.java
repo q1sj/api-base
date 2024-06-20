@@ -1,9 +1,9 @@
 package com.xsy.file.config;
 
-import com.xsy.base.util.BizAssertUtils;
 import com.xsy.file.service.FastDfsFileStorageStrategy;
 import com.xsy.file.service.FileStorageStrategy;
 import com.xsy.file.service.LocalFileStorageStrategy;
+import com.xsy.file.service.MinioFileStorageStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -11,8 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 /**
  * 文件存储策略配置
@@ -32,6 +30,15 @@ public class FileStorageStrategyConfig {
     public FastDfsFileStorageStrategy fastDfsFileStorageStrategy() {
         log.info("init fastDfsFileStorageStrategy");
         return new FastDfsFileStorageStrategy();
+    }
+
+    @Bean
+    @ConditionalOnClass(name = "io.minio.MinioClient")
+    @ConditionalOnProperty(name = FileStorageProperties.MINIO_ENABLE, havingValue = "true", matchIfMissing = true)
+    public MinioFileStorageStrategy minioFileStorageStrategy() {
+        log.info("init minioFileStorageStrategy");
+        FileStorageProperties.Minio minio = fileStorageProperties.getMinio();
+        return new MinioFileStorageStrategy(minio.getEndpoint(), minio.getAccessKey(), minio.getSecretKey(), minio.getBucketName());
     }
 
     @Bean
