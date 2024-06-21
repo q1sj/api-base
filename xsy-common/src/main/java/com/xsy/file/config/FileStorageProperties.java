@@ -46,7 +46,7 @@ public class FileStorageProperties {
          * <dependency>
          *     <groupId>io.minio</groupId>
          *     <artifactId>minio</artifactId>
-         *     <version>8.5.10</version>
+         *     <version>8.2.1</version>
          * </dependency>
          * }</pre>
          */

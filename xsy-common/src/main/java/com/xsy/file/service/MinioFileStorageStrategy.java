@@ -2,9 +2,11 @@ package com.xsy.file.service;
 
 import com.xsy.base.util.DateFormatUtils;
 import com.xsy.base.util.DigestUtils;
-import io.minio.*;
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 
-import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -27,19 +29,16 @@ public class MinioFileStorageStrategy implements FileStorageStrategy {
 		this.accessKey = accessKey;
 		this.secretKey = secretKey;
 		this.bucketName = bucketName;
-		this.minioClient = MinioClient.builder().endpoint(endpoint).build();
-	}
-
-	@PreDestroy
-	public void destroy() throws Exception {
-		minioClient.close();
+		this.minioClient = MinioClient.builder()
+				.endpoint(endpoint)
+				.credentials(accessKey, secretKey)
+				.build();
 	}
 
 	@Override
 	public String digest(String path) throws IOException {
-		try {
-			GetObjectResponse response = minioClient.getObject(GetObjectArgs.builder().object(path).build());
-			return DigestUtils.md5Hex(response);
+		try (InputStream inputStream = getInputStream(path)) {
+			return DigestUtils.md5Hex(inputStream);
 		} catch (IOException e) {
 			throw e;
 		} catch (Exception e) {
@@ -50,7 +49,7 @@ public class MinioFileStorageStrategy implements FileStorageStrategy {
 	@Override
 	public InputStream getInputStream(String path) throws IOException {
 		try {
-			return minioClient.getObject(GetObjectArgs.builder().object(path).build());
+			return minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(path).build());
 		} catch (IOException e) {
 			throw e;
 		} catch (Exception e) {
@@ -61,7 +60,10 @@ public class MinioFileStorageStrategy implements FileStorageStrategy {
 	@Override
 	public String saveFile(InputStream data, long length, String fileName, String source) throws IOException {
 		String objectName = getObjectName(fileName, source);
-		PutObjectArgs putObjectArgs = PutObjectArgs.builder().stream(data, length, -1).object(objectName).build();
+		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+				.bucket(bucketName)
+				.stream(data, length, -1)
+				.object(objectName).build();
 		try {
 			minioClient.putObject(putObjectArgs);
 		} catch (IOException e) {
@@ -75,7 +77,7 @@ public class MinioFileStorageStrategy implements FileStorageStrategy {
 	@Override
 	public void delete(String path) throws IOException {
 		try {
-			minioClient.removeObject(RemoveObjectArgs.builder().object(path).build());
+			minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(path).build());
 		} catch (IOException e) {
 			throw e;
 		} catch (Exception e) {
@@ -84,6 +86,6 @@ public class MinioFileStorageStrategy implements FileStorageStrategy {
 	}
 
 	private String getObjectName(String filename, String source) {
-		return source + "/" + DateFormatUtils.format(new Date(), "yyyyMMdd") + "/" + filename;
+		return "/" + source + "/" + DateFormatUtils.format(new Date(), "yyyyMMdd") + "/" + filename;
 	}
 }
