@@ -36,8 +36,8 @@ public class FileStorageStrategyConfig {
     @ConditionalOnClass(name = "io.minio.MinioClient")
     @ConditionalOnProperty(name = FileStorageProperties.MINIO_ENABLE, havingValue = "true", matchIfMissing = true)
     public MinioFileStorageStrategy minioFileStorageStrategy() {
-        log.info("init minioFileStorageStrategy");
         FileStorageProperties.Minio minio = fileStorageProperties.getMinio();
+        log.info("init minioFileStorageStrategy endpoint:{}", minio.getEndpoint());
         return new MinioFileStorageStrategy(minio.getEndpoint(), minio.getAccessKey(), minio.getSecretKey(), minio.getBucketName());
     }
 
