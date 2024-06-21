@@ -2,11 +2,10 @@ package com.xsy.file.service;
 
 import com.xsy.base.util.DateFormatUtils;
 import com.xsy.base.util.DigestUtils;
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
+import io.minio.*;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -15,6 +14,7 @@ import java.util.Date;
  * @author Q1sj
  * @date 2024/6/20 上午9:26
  */
+@Slf4j
 public class MinioFileStorageStrategy implements FileStorageStrategy {
 
 	private final String endpoint;
@@ -33,6 +33,20 @@ public class MinioFileStorageStrategy implements FileStorageStrategy {
 				.endpoint(endpoint)
 				.credentials(accessKey, secretKey)
 				.build();
+	}
+
+	@PostConstruct
+	public void init() {
+		try {
+			boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+			if (!found) {
+				minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+			} else {
+				log.info("minio bucket '{}' already exists.", bucketName);
+			}
+		} catch (Exception e) {
+			log.error("minio创建桶:{}失败 请手动创建", bucketName, e);
+		}
 	}
 
 	@Override
