@@ -46,6 +46,8 @@ public interface SysConfigService {
      */
     void delete(String key);
 
+    List<SysConfigEntity> list();
+
     PageData<SysConfigEntity> list(@Nullable String configKey, int page, int pageSize);
 
     /**

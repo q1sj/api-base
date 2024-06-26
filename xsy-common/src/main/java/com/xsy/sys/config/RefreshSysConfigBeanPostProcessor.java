@@ -18,10 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -47,6 +44,10 @@ public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventList
 	@Lazy
 	private SysConfigService sysConfigService;
 
+	public Set<String> sysKeySet() {
+		return new HashSet<>(SYS_CONFIG_FIELD_MAP.keySet());
+	}
+
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		initSysConfigField(bean);
@@ -55,11 +56,11 @@ public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventList
 
 	@Override
 	public void refreshConfigEvent(String key) {
-		log.info("refreshConfigEvent key:{}", key);
 		List<SysConfigField> sysConfigFields = SYS_CONFIG_FIELD_MAP.get(key);
 		if (CollectionUtils.isEmpty(sysConfigFields)) {
 			return;
 		}
+		log.info("refreshConfigEvent key:{}", key);
 		String valueStr = sysConfigService.get(key);
 		sysConfigFields.forEach(sysConfigField -> refreshValue(sysConfigField, valueStr));
 		// 更新value依赖项

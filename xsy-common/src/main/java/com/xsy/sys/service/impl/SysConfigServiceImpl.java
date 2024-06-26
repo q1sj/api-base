@@ -16,6 +16,9 @@ import com.xsy.sys.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -33,15 +36,19 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
+@CacheConfig(cacheNames = SysConfigServiceImpl.CACHE_NAME)
 public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEntity> implements SysConfigService {
-
+    public static final String CACHE_NAME = "sys_config";
     private final PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("${", "}", ":", false);
 
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private SysConfigService _this;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(key = "#entity.configKey")
     public boolean saveOrUpdate(SysConfigEntity entity) {
         if (entity.getConfigValueType() == null) {
             entity.setConfigValueType(SysConfigValueTypeEnum.STRING.name());
@@ -62,6 +69,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
+    @CacheEvict(key = "#key")
     public boolean saveOrUpdate(String key, String value) {
         SysConfigEntity sysConfig = new SysConfigEntity();
         sysConfig.setConfigKey(key);
@@ -70,6 +78,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
+    @CacheEvict(key = "#key")
     public boolean saveOrUpdate(String key, Number value) {
         SysConfigEntity sysConfig = new SysConfigEntity();
         sysConfig.setConfigKey(key);
@@ -89,6 +98,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
+    @CacheEvict(key = "#key")
     public boolean saveOrUpdate(String key, Boolean value) {
         SysConfigEntity sysConfig = new SysConfigEntity();
         sysConfig.setConfigKey(key);
@@ -98,6 +108,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Override
+    @CacheEvict(key = "#key")
     public boolean saveOrUpdate(String key, SysConfigValueTypeEnum valueType, String value) {
         SysConfigEntity sysConfig = new SysConfigEntity();
         sysConfig.setConfigKey(key);
@@ -107,6 +118,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     }
 
     @Nullable
+    @Cacheable(key = "#key")
     public String get(String key) {
         SysConfigEntity entity = this.getById(key);
         if (entity == null) {
@@ -132,14 +144,20 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
     @Override
     public <T> T get(BaseKey<T> key) {
         String k = key.getKey();
-        String valStr = get(k);
+        String valStr = _this.get(k);
         return key.deserialization(valStr);
     }
 
     @Override
+    @CacheEvict(key = "#key")
     public void delete(String key) {
         log.warn("参数管理删除 key:{}", key);
         removeById(key);
+    }
+
+    @Override
+    public List<SysConfigEntity> list() {
+        return super.list();
     }
 
     @Override
