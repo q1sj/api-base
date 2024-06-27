@@ -8,6 +8,7 @@ import com.xsy.file.entity.UploadFileDTO;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * @author Q1sj
@@ -78,6 +79,19 @@ public interface FileRecordService {
 	 */
 	FileRecordEntity save(long id, InputStream data, long fileSize, String originalFilename, String source, long expireMs) throws IOException;
 
+	/**
+	 * 从URL中下载文件保存
+	 *
+	 * @param data
+	 * @param originalFilename
+	 * @param source
+	 * @param expireMs
+	 * @return
+	 * @throws IOException
+	 */
+	FileRecordEntity save(URL data, String originalFilename, String source, long expireMs) throws IOException;
+
+	FileRecordEntity save(long id, URL data, String originalFilename, String source, long expireMs) throws IOException;
 	/**
 	 * 获取文件内容
 	 *

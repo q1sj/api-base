@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.xsy.base.util.BizAssertUtils;
-import com.xsy.base.util.CollectionUtils;
-import com.xsy.base.util.FileUtils;
-import com.xsy.base.util.IpUtils;
+import com.xsy.base.util.*;
 import com.xsy.file.dao.FileRecordDao;
 import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
@@ -22,10 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -110,6 +106,31 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
         // 持久化上传记录
         fileRecordDao.insert(fileRecordEntity);
         return fileRecordEntity;
+    }
+
+    @Override
+    public FileRecordEntity save(URL data, String originalFilename, String source, long expireMs) throws IOException {
+        return save(IdWorker.getId(), data, originalFilename, source, expireMs);
+    }
+
+    @Override
+    public FileRecordEntity save(long id, URL data, String originalFilename, String source, long expireMs) throws IOException {
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("url-download-" + id, "");
+            URLConnection urlConnection = data.openConnection();
+            // 先下载到本地临时文件
+            try (InputStream inputStream = urlConnection.getInputStream()) {
+                IOUtils.copy(inputStream, Files.newOutputStream(tempFile.toPath()));
+            }
+            try (FileInputStream inputStream = new FileInputStream(tempFile)) {
+                return save(id, inputStream, tempFile.length(), originalFilename, source, expireMs);
+            }
+        } finally {
+            // 删除本地临时文件
+            FileUtils.deleteQuietly(tempFile);
+        }
+
     }
 
     public FileRecordEntity getRecordByPath(String path) {
@@ -237,6 +258,8 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
      * @return
      */
     private String generateFilename(String originalFilename, String source) {
-        return source + "_" + DateFormatUtils.format(new Date(), "yyyyMMddHHmmss") + "_" + UUID.randomUUID() + "." + FileUtils.getExtension(originalFilename);
+        String extension = FileUtils.getExtension(originalFilename);
+        return source + "_" + DateFormatUtils.format(new Date(), "yyyyMMddHHmmss") + "_" + UUID.randomUUID()
+                + (StringUtils.isNotBlank(extension) ? "." + extension : "");
     }
 }
