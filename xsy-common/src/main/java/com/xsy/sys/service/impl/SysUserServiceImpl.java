@@ -47,6 +47,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -59,6 +60,7 @@ import java.util.concurrent.TimeUnit;
 public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEntity> implements SysUserService {
     private static final int MAX_WRONG_PASSWORD_COUNT = 5;
     private static final int WRONG_PASSWORD_RECORD_EXPIRED = 30;
+    private final Map<String, WrongPasswordRecord> wrongPasswordRecordMap = new ConcurrentHashMap<>();
     @Autowired
     private SysRoleUserService sysRoleUserService;
     @Autowired
@@ -190,7 +192,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         }
         //账号停用
         if (userIsDisable(user)) {
-            throw new GlobalException("账户锁定");
+            throw new UserLockedException("账户锁定");
         }
         // 密码错误
         if (!PasswordUtils.matches(login.getPassword(), user.getPassword())) {
@@ -226,12 +228,8 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
      *
      * @param username
      */
-    private synchronized int accumulateWrongPasswords(String username) {
-        WrongPasswordRecord record = getWrongPasswordRecord(username);
-        record.setWrongCount(record.getWrongCount() + 1);
-        record.setLastWrongTime(System.currentTimeMillis());
-        wrongPasswordRecordMap.put(username, record);
-        return record.getWrongCount();
+    private int accumulateWrongPasswords(String username) {
+        return getWrongPasswordRecord(username).getWrongCount().incrementAndGet();
     }
 
     /**
@@ -244,8 +242,8 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     private boolean passwordErrorExceeded(String username) {
         WrongPasswordRecord record = getWrongPasswordRecord(username);
         // x分钟内错误次数大于x次 锁定
-        if (record.getWrongCount() >= MAX_WRONG_PASSWORD_COUNT) {
-            if (record.getLastWrongTime() + TimeUnit.MINUTES.toMillis(30) > System.currentTimeMillis()) {
+        if (record.getWrongCount().intValue() >= MAX_WRONG_PASSWORD_COUNT) {
+            if (record.getLastWrongTime() + TimeUnit.MINUTES.toMillis(WRONG_PASSWORD_RECORD_EXPIRED) > System.currentTimeMillis()) {
                 return true;
             } else {
                 // 超出时间 清空错误次数
@@ -257,13 +255,11 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     }
 
     private void clearWrongPasswordCount(String username) {
-        getWrongPasswordRecord(username).setWrongCount(0);
+        getWrongPasswordRecord(username).getWrongCount().set(0);
     }
 
-    private final Map<String, WrongPasswordRecord> wrongPasswordRecordMap = new ConcurrentHashMap<>();
-
     private WrongPasswordRecord getWrongPasswordRecord(String username) {
-        return wrongPasswordRecordMap.computeIfAbsent(username, k -> new WrongPasswordRecord(username, 0, 0L));
+        return wrongPasswordRecordMap.computeIfAbsent(username, k -> new WrongPasswordRecord(username, new AtomicInteger(0), 0L));
     }
 
     /**
@@ -280,7 +276,7 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
         /**
          * 错误次数
          */
-        private Integer wrongCount;
+        private AtomicInteger wrongCount;
         /**
          * 上次密码错误时间
          */
