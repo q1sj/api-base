@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -116,15 +115,14 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
         URLConnection urlConnection = url.openConnection();
         urlConnection.setConnectTimeout(5000);
         urlConnection.setReadTimeout(5000);
-        if (urlConnection instanceof HttpURLConnection) {
-            HttpURLConnection httpURLConnection = (HttpURLConnection) urlConnection;
-            // 如果请求头中存在ContentLength 根据ContentLength下载
-            long contentLengthLong = httpURLConnection.getContentLengthLong();
-            if (contentLengthLong > 0) {
-                return save(id, httpURLConnection.getInputStream(), contentLengthLong, originalFilename, source, expireMs);
+        // 如果头中存在ContentLength 根据ContentLength下载
+        long contentLengthLong = urlConnection.getContentLengthLong();
+        if (contentLengthLong > 0) {
+            try (InputStream inputStream = urlConnection.getInputStream()) {
+                return save(id, inputStream, contentLengthLong, originalFilename, source, expireMs);
             }
         }
-        // 无法获取到InputStream的长度,先下载到本地临时文件
+        // 无法获取到ContentLength,先下载到本地临时文件
         File tempFile = null;
         try {
             tempFile = File.createTempFile("url-download-" + id, "");
