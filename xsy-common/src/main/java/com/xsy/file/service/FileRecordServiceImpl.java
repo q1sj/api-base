@@ -61,10 +61,7 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
 
     @Override
     public FileRecordEntity save(File file, String source, long expireMs) throws IOException {
-        if (!file.exists()) {
-            throw new FileNotFoundException(file.getAbsolutePath());
-        }
-        return save(Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
+        return save(IdWorker.getId(), file, source, expireMs);
     }
 
     @Override
@@ -109,19 +106,22 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     }
 
     @Override
-    public FileRecordEntity save(URL data, String originalFilename, String source, long expireMs) throws IOException {
-        return save(IdWorker.getId(), data, originalFilename, source, expireMs);
+    public FileRecordEntity save(URL url, String originalFilename, String source, long expireMs) throws IOException {
+        return save(IdWorker.getId(), url, originalFilename, source, expireMs);
     }
 
     @Override
-    public FileRecordEntity save(long id, URL data, String originalFilename, String source, long expireMs) throws IOException {
+    public FileRecordEntity save(long id, URL url, String originalFilename, String source, long expireMs) throws IOException {
         File tempFile = null;
         try {
             tempFile = File.createTempFile("url-download-" + id, "");
-            URLConnection urlConnection = data.openConnection();
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
             // 先下载到本地临时文件
-            try (InputStream inputStream = urlConnection.getInputStream()) {
-                IOUtils.copy(inputStream, Files.newOutputStream(tempFile.toPath()));
+            try (InputStream inputStream = urlConnection.getInputStream();
+                 OutputStream outputStream = Files.newOutputStream(tempFile.toPath())) {
+                IOUtils.copy(inputStream, outputStream);
             }
             try (FileInputStream inputStream = new FileInputStream(tempFile)) {
                 return save(id, inputStream, tempFile.length(), originalFilename, source, expireMs);

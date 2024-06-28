@@ -28,7 +28,7 @@ CREATE TABLE `file_record`
     `path`           varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL,
     `file_type`      varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci   NOT NULL,
     `file_size`      bigint(20)                                                     NOT NULL,
-    `source`         varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci   NOT NULL,
+    `source` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `upload_user_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci   NOT NULL,
     `upload_ip`      varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  NOT NULL,
     `upload_time`    datetime(6)                                                    NULL     DEFAULT NULL,

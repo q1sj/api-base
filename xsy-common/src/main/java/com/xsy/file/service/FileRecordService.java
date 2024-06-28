@@ -82,16 +82,16 @@ public interface FileRecordService {
 	/**
 	 * 从URL中下载文件保存
 	 *
-	 * @param data
+	 * @param url
 	 * @param originalFilename
 	 * @param source
 	 * @param expireMs
 	 * @return
 	 * @throws IOException
 	 */
-	FileRecordEntity save(URL data, String originalFilename, String source, long expireMs) throws IOException;
+	FileRecordEntity save(URL url, String originalFilename, String source, long expireMs) throws IOException;
 
-	FileRecordEntity save(long id, URL data, String originalFilename, String source, long expireMs) throws IOException;
+	FileRecordEntity save(long id, URL url, String originalFilename, String source, long expireMs) throws IOException;
 	/**
 	 * 获取文件内容
 	 *
