@@ -136,6 +136,22 @@ public class FileRecordController {
 		}
 	}
 
+	@NoAuth
+	@GetMapping(IMG_MAPPING)
+	public void img(HttpServletResponse response, @RequestParam String path) {
+		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		try (InputStream is = this.fileRecordService.getInputStream(path);
+		     OutputStream os = response.getOutputStream()) {
+			int length = IOUtils.copy(is, os);
+			response.setContentLength(length);
+		} catch (FileNotFoundException e) {
+			throw new GlobalException("文件已过期或不存在", e);
+		} catch (IOException e) {
+			throw new GlobalException("文件下载失败", e);
+		}
+	}
+
+
 	/**
 	 * 删除
 	 *

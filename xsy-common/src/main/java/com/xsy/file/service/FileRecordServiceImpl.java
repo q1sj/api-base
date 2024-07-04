@@ -115,6 +115,7 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
         URLConnection urlConnection = url.openConnection();
         urlConnection.setConnectTimeout(5000);
         urlConnection.setReadTimeout(5000);
+        urlConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:221.0) Gecko/20100101 Firefox/31.0");
         // 如果头中存在ContentLength 根据ContentLength下载
         long contentLengthLong = urlConnection.getContentLengthLong();
         if (contentLengthLong > 0) {
