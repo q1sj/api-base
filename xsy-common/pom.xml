@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>xsy-common</artifactId>
-    <version>1.4.4</version>
+    <version>1.4.5</version>
 
     <dependencies>
         <dependency>
@@ -81,6 +81,12 @@
             <version>8.2.1</version>
             <optional>true</optional>
         </dependency>
+
+        <!--<dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.125</version>
+        </dependency>-->
     </dependencies>
     <build>
         <plugins>

@@ -33,7 +33,7 @@ public @interface ApiLimit {
 	long timeout() default 0;
 
 	/**
-	 * 获取令牌最大等待时间,单位(例:分钟/秒/毫秒) 默认:毫秒
+	 * 获取令牌最大等待时间,单位(例:分钟/秒/毫秒) 默认:秒
 	 */
 	TimeUnit timeunit() default TimeUnit.SECONDS;
 

@@ -18,11 +18,11 @@ import java.util.Date;
 public class MinioFileStorageStrategy implements FileStorageStrategy {
 
 	private final String endpoint;
-	private String accessKey;
-	private String secretKey;
-	private String bucketName;
+	private final String accessKey;
+	private final String secretKey;
+	private final String bucketName;
 
-	private MinioClient minioClient;
+	private final MinioClient minioClient;
 
 	public MinioFileStorageStrategy(String endpoint, String accessKey, String secretKey, String bucketName) {
 		this.endpoint = endpoint;

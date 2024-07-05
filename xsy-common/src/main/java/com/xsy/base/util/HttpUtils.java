@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author Q1sj
@@ -30,7 +29,7 @@ public class HttpUtils {
     private static ExecutorService httpThreadPool = RestTemplateConfig.createHttpThreadPool();
     private static RestTemplate restTemplate = RestTemplateConfig.createDefaultRestTemplate();
 
-    public HttpUtils(RestTemplate restTemplate, ThreadPoolExecutor httpThreadPool) {
+    public HttpUtils(RestTemplate restTemplate, ExecutorService httpThreadPool) {
         // Spring实例化 覆盖默认restTemplate
         HttpUtils.restTemplate = restTemplate;
         HttpUtils.httpThreadPool = httpThreadPool;
