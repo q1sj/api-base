@@ -66,7 +66,7 @@ public class FileRecordController {
     }
 
     /**
-     * 下载文件
+     * 下载文件(根据path)
      *
      * @param response
      * @param path     {@link FileRecordEntity#getPath()}
@@ -91,7 +91,7 @@ public class FileRecordController {
     }
 
 	/**
-	 * 下载文件
+	 * 下载文件(根据id)
 	 *
 	 * @param response
 	 * @param fileId
@@ -116,7 +116,7 @@ public class FileRecordController {
 	}
 
 	/**
-	 * 访问图片
+	 * 访问图片(根据id)
 	 *
 	 * @param response
 	 * @param fileId
@@ -136,6 +136,12 @@ public class FileRecordController {
 		}
 	}
 
+	/**
+	 * 访问图片(根据path)
+	 *
+	 * @param response
+	 * @param path
+	 */
 	@NoAuth
 	@GetMapping(IMG_MAPPING)
 	public void img(HttpServletResponse response, @RequestParam String path) {
