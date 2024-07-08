@@ -15,6 +15,7 @@ import com.xsy.sys.enums.ExportStatusEnum;
 import com.xsy.sys.service.ExportRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -43,9 +44,14 @@ public class ExportTask {
 	private FileRecordService fileRecordService;
 	@SysConfig("EXCEL_MAX_ROWS")
 	private Integer excelMaxRows = 1000;
+	@Value("${scheduled.export.enable:true}")
+	private Boolean enable;
 
 	@Scheduled(fixedDelay = 60 * 1000, initialDelay = 60 * 1000)
 	public void run() {
+		if (!enable) {
+			return;
+		}
 		// 清理超时导出记录
 		exportRecordService.clearTimeoutRecord();
 		// 查询 待导出记录
