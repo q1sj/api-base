@@ -10,6 +10,7 @@ import com.xsy.file.entity.FileRecordDTO;
 import com.xsy.file.entity.FileRecordEntity;
 import com.xsy.file.entity.UploadFileDTO;
 import com.xsy.security.user.SecurityUser;
+import com.xsy.sys.annotation.SysConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.BeanUtils;
@@ -35,6 +36,11 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     private final List<String> illegalCharactersInDirectoryNames = Arrays.asList("*", ".", "\"", "[", "]", ":", ";", "|", "=");
     private final FileRecordDao fileRecordDao;
     private final FileStorageStrategy fileStorageStrategy;
+
+    @SysConfig("URL_DOWNLOAD_CONNECT_TIMEOUT")
+    private int urlConnectTimeout = 5000;
+    @SysConfig("URL_DOWNLOAD_READ_TIMEOUT")
+    private int urlReadTimeout = 5000;
 
     @Autowired(required = false)
     private HttpServletRequest request;
@@ -113,8 +119,8 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     @Override
     public FileRecordEntity save(long id, URL url, String originalFilename, String source, long expireMs) throws IOException {
         URLConnection urlConnection = url.openConnection();
-        urlConnection.setConnectTimeout(5000);
-        urlConnection.setReadTimeout(5000);
+        urlConnection.setConnectTimeout(urlConnectTimeout);
+        urlConnection.setReadTimeout(urlReadTimeout);
         urlConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:221.0) Gecko/20100101 Firefox/31.0");
         // 如果头中存在ContentLength 根据ContentLength下载
         long contentLengthLong = urlConnection.getContentLengthLong();
@@ -123,7 +129,7 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
                 return save(id, inputStream, contentLengthLong, originalFilename, source, expireMs);
             }
         }
-        // 无法获取到ContentLength,先下载到本地临时文件
+        log.warn("url:{}无法获取ContentLength,先下载到本地临时文件", url);
         File tempFile = null;
         try {
             tempFile = File.createTempFile("url-download-" + id, "");

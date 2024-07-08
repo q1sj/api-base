@@ -29,7 +29,7 @@ public interface FileStorageStrategy {
      * @param length
      * @param fileName 文件名
      * @param source   数据来源 会创建目录 避免出现不允许的特殊字符
-     * @return 相对路径 通过nginx配置反向代理访问
+     * @return 相对路径
      * @throws IOException
      */
     String saveFile(InputStream data, long length, String fileName, String source) throws IOException;
