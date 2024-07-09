@@ -110,11 +110,11 @@ public class SysUserController {
      * 重置密码
      *
      * @return
-     * @apiNote 将密码重置为123456
+     * @apiNote 将密码重置为xsy@admin
      */
     @PostMapping("/resetPassword/{userId}")
     public Result<Void> resetPassword(@PathVariable Long userId) {
-        sysUserService.updatePassword(userId, "123456");
+        sysUserService.updatePassword(userId, "xsy@admin");
         return Result.ok();
     }
 

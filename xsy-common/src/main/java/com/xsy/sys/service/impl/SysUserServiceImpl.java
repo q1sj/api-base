@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xsy.base.exception.GlobalException;
 import com.xsy.base.exception.UserLockedException;
 import com.xsy.base.service.impl.RenBaseServiceImpl;
+import com.xsy.base.util.BizAssertUtils;
 import com.xsy.base.util.ConvertUtils;
 import com.xsy.base.util.PageData;
 import com.xsy.security.dto.LoginDTO;
@@ -171,8 +172,8 @@ public class SysUserServiceImpl extends RenBaseServiceImpl<SysUserDao, SysUserEn
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(cacheNames = SecurityConstant.SYS_USER_CACHE_NAME, key = "'sys_user_'+#id")
     public void updatePassword(Long id, String newPassword) {
+        BizAssertUtils.isTrue(SecurityUser.getUser().isAdmin(), "只允许超级管理员重置密码");
         newPassword = PasswordUtils.encode(newPassword);
-
         baseDao.updatePassword(id, newPassword);
     }
 
