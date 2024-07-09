@@ -45,7 +45,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return
      */
     public static long duration(Date start, Date end, TimeUnit timeUnit) {
-        BizAssertUtils.isTrue(!start.after(end), "开始时间大于结束时间");
         return timeUnit.convert(end.getTime() - start.getTime(), TimeUnit.MILLISECONDS);
     }
 

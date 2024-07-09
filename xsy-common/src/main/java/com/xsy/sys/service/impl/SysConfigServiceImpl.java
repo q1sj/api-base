@@ -64,7 +64,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
         }
         entity.setUpdateTime(new Date());
         boolean saveOrUpdate = super.saveOrUpdate(entity);
-        applicationContext.publishEvent(new RefreshConfigEvent(entity.getConfigKey()));
+        applicationContext.publishEvent(new RefreshConfigEvent(entity.getConfigKey(), entity.getConfigValue()));
         return saveOrUpdate;
     }
 

@@ -55,20 +55,19 @@ public class RefreshSysConfigBeanPostProcessor implements RefreshConfigEventList
 	}
 
 	@Override
-	public void refreshConfigEvent(String key) {
+	public void refreshConfigEvent(String key, String value) {
 		List<SysConfigField> sysConfigFields = SYS_CONFIG_FIELD_MAP.get(key);
 		if (CollectionUtils.isEmpty(sysConfigFields)) {
 			return;
 		}
 		log.info("refreshConfigEvent key:{}", key);
-		String valueStr = sysConfigService.get(key);
-		sysConfigFields.forEach(sysConfigField -> refreshValue(sysConfigField, valueStr));
+		sysConfigFields.forEach(sysConfigField -> refreshValue(sysConfigField, value));
 		// 更新value依赖项
 		updateValueDepend(key);
 		// 更新依赖此key的key
 		for (Map.Entry<String, List<String>> entry : DEPEND_SYS_CONFIG_KEY.entrySet()) {
 			if (CollectionUtils.contains(entry.getValue().listIterator(), key)) {
-				refreshConfigEvent(entry.getKey());
+				refreshConfigEvent(entry.getKey(), sysConfigService.get(entry.getKey()));
 			}
 		}
 	}

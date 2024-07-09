@@ -9,8 +9,15 @@ import org.springframework.context.ApplicationEvent;
  */
 public class RefreshConfigEvent extends ApplicationEvent {
 
-    public RefreshConfigEvent(String key) {
+    public String value;
+
+    public RefreshConfigEvent(String key, String value) {
         super(key);
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
     }
 
     public String getKey() {

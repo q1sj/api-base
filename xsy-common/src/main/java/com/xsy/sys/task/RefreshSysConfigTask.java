@@ -51,7 +51,7 @@ public class RefreshSysConfigTask implements RefreshConfigEventListener {
 			}
 			sysConfigMap.put(key, newValue);
 			try {
-				refreshSysConfigBeanPostProcessor.refreshConfigEvent(key);
+				refreshSysConfigBeanPostProcessor.refreshConfigEvent(key, newValue);
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
@@ -59,7 +59,7 @@ public class RefreshSysConfigTask implements RefreshConfigEventListener {
 	}
 
 	@Override
-	public void refreshConfigEvent(String key) {
-		sysConfigMap.put(key, sysConfigService.get(key));
+	public void refreshConfigEvent(String key, String value) {
+		sysConfigMap.put(key, value);
 	}
 }

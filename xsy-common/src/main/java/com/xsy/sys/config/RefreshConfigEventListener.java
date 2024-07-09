@@ -10,10 +10,10 @@ import org.springframework.core.Ordered;
  */
 public interface RefreshConfigEventListener extends ApplicationListener<RefreshConfigEvent>, Ordered {
 
-    void refreshConfigEvent(String key);
+    void refreshConfigEvent(String key, String value);
 
     default void onApplicationEvent(RefreshConfigEvent event) {
-        refreshConfigEvent(event.getKey());
+        refreshConfigEvent(event.getKey(), event.getValue());
     }
 
     default int getOrder() {
