@@ -5,7 +5,6 @@ import com.github.tobato.fastdfs.domain.proto.ErrorCodeConstants;
 import com.github.tobato.fastdfs.exception.FdfsException;
 import com.github.tobato.fastdfs.exception.FdfsServerException;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
-import com.xsy.base.util.DigestUtils;
 import com.xsy.base.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +22,6 @@ import java.io.InputStream;
 public class FastDfsFileStorageStrategy implements FileStorageStrategy {
     @Autowired
     private FastFileStorageClient fastFileStorageClient;
-
-    @Override
-    public String digest(String path) throws IOException {
-        try (InputStream is = getInputStream(path)) {
-            return DigestUtils.md5Hex(is);
-        }
-    }
 
     @Override
     public InputStream getInputStream(String path) throws IOException {

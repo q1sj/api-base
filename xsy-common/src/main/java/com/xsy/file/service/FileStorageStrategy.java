@@ -1,6 +1,8 @@
 package com.xsy.file.service;
 
 
+import com.xsy.base.util.DigestUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -11,8 +13,11 @@ import java.io.InputStream;
  * @date 2022.8.22 16:20
  */
 public interface FileStorageStrategy {
-    String digest(String path) throws IOException;
-
+    default String digest(String path) throws IOException {
+        try (InputStream inputStream = getInputStream(path)) {
+            return DigestUtils.md5Hex(inputStream);
+        }
+    }
     /**
      * 获取文件内容
      *

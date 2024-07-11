@@ -1,7 +1,6 @@
 package com.xsy.file.service;
 
 
-import com.xsy.base.util.DigestUtils;
 import com.xsy.base.util.FileUtils;
 import com.xsy.base.util.IOUtils;
 import com.xsy.base.util.StringUtils;
@@ -31,13 +30,6 @@ public class LocalFileStorageStrategy implements FileStorageStrategy {
 
     public void setBasePath(String basePath) {
         this.basePath = basePath;
-    }
-
-    @Override
-    public String digest(String path) throws IOException {
-        try (InputStream is = getInputStream(path)) {
-            return DigestUtils.md5Hex(is);
-        }
     }
 
     @Override
