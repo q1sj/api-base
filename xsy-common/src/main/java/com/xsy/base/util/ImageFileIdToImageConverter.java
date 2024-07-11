@@ -9,6 +9,7 @@ import com.xsy.file.service.FileRecordService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 /**
@@ -35,6 +36,8 @@ public class ImageFileIdToImageConverter implements Converter<Long> {
 		if (fileRecord == null) {
 			return new WriteCellData<>(Objects.toString(value));
 		}
-		return new WriteCellData<>(IOUtils.readFully(fileRecord.getContent(), fileRecord.getFileSize().intValue()));
+		try (InputStream content = fileRecord.getContent()) {
+			return new WriteCellData<>(IOUtils.readFully(content, fileRecord.getFileSize().intValue()));
+		}
 	}
 }
