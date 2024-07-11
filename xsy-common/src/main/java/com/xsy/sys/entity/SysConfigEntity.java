@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -29,6 +30,7 @@ public class SysConfigEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @TableId(type = IdType.INPUT)
     @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "key只允许英文数字-_")
     private String configKey;
     /**
      * 参数值的数据类型

@@ -75,7 +75,9 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
         if (!file.exists()) {
             throw new FileNotFoundException(file.getAbsolutePath());
         }
-        return save(id, Files.newInputStream(file.toPath()), file.length(), file.getName(), source, expireMs);
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+            return save(id, inputStream, file.length(), file.getName(), source, expireMs);
+        }
     }
 
     @Override
