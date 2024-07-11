@@ -80,8 +80,8 @@ public class FileRecordController {
 		    response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
 		    try (InputStream is = fileRecord.getContent();
 		         OutputStream os = response.getOutputStream()) {
-			    long length = IOUtils.copyLarge(is, os);
-			    response.setContentLengthLong(length);
+			    response.setContentLengthLong(fileRecord.getFileSize());
+			    IOUtils.copyLarge(is, os);
 		    }
 	    } catch (FileNotFoundException e) {
 		    throw new GlobalException("文件已过期或不存在", e);
@@ -105,8 +105,8 @@ public class FileRecordController {
 			response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileRecord.getName(), StandardCharsets.UTF_8.displayName()));
 			try (InputStream is = fileRecord.getContent();
 			     OutputStream os = response.getOutputStream()) {
-				long length = IOUtils.copyLarge(is, os);
-				response.setContentLengthLong(length);
+				response.setContentLengthLong(fileRecord.getFileSize());
+				IOUtils.copyLarge(is, os);
 			}
 		} catch (FileNotFoundException e) {
 			throw new GlobalException("文件已过期或不存在", e);
@@ -125,10 +125,14 @@ public class FileRecordController {
 	@GetMapping(IMG_MAPPING + "/{fileId}")
 	public void img(HttpServletResponse response, @PathVariable Long fileId) {
 		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-		try (InputStream is = this.fileRecordService.getInputStream(fileId);
-		     OutputStream os = response.getOutputStream()) {
-			int length = IOUtils.copy(is, os);
-			response.setContentLength(length);
+		try {
+			FileRecordDTO fileRecord = this.fileRecordService.getFileRecord(fileId);
+			try (InputStream is = fileRecord.getContent();
+			     OutputStream os = response.getOutputStream()) {
+				response.setHeader("Cache-Control", "max-age=3600, must-revalidate");
+				response.setContentLengthLong(fileRecord.getFileSize());
+				IOUtils.copy(is, os);
+			}
 		} catch (FileNotFoundException e) {
 			throw new GlobalException("文件已过期或不存在", e);
 		} catch (IOException e) {
@@ -146,10 +150,14 @@ public class FileRecordController {
 	@GetMapping(IMG_MAPPING)
 	public void img(HttpServletResponse response, @RequestParam String path) {
 		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-		try (InputStream is = this.fileRecordService.getInputStream(path);
-		     OutputStream os = response.getOutputStream()) {
-			int length = IOUtils.copy(is, os);
-			response.setContentLength(length);
+		try {
+			FileRecordDTO fileRecord = fileRecordService.getFileRecord(path);
+			try (InputStream is = fileRecord.getContent();
+			     OutputStream os = response.getOutputStream()) {
+				response.setHeader("Cache-Control", "max-age=3600, must-revalidate");
+				response.setContentLengthLong(fileRecord.getFileSize());
+				IOUtils.copy(is, os);
+			}
 		} catch (FileNotFoundException e) {
 			throw new GlobalException("文件已过期或不存在", e);
 		} catch (IOException e) {

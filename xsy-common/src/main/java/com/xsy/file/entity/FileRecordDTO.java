@@ -1,8 +1,11 @@
 package com.xsy.file.entity;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -55,5 +58,14 @@ public class FileRecordDTO {
     private Date uploadTime;
     private String remark;
 
-    private InputStream content;
+    @Getter(AccessLevel.NONE)
+    private ContentSupplier contentSupplier;
+
+    public InputStream getContent() throws IOException {
+        return contentSupplier.get();
+    }
+
+    public interface ContentSupplier {
+        InputStream get() throws IOException;
+    }
 }

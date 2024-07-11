@@ -159,10 +159,9 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
         if (record == null) {
             throw new FileNotFoundException(path + " 不存在");
         }
-        InputStream inputStream = fileStorageStrategy.getInputStream(path);
         FileRecordDTO dto = new FileRecordDTO();
         BeanUtils.copyProperties(record, dto);
-        dto.setContent(inputStream);
+        dto.setContentSupplier(() -> fileStorageStrategy.getInputStream(path));
         return dto;
     }
 
@@ -177,11 +176,14 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
 
     @Override
     public FileRecordDTO getFileRecord(Long fileId) throws IOException {
-        FileRecordEntity record = fileRecordDao.selectById(fileId);
+        FileRecordEntity record = getById(fileId);
         if (record == null) {
-            throw new FileNotFoundException(Objects.toString(fileId));
+            throw new FileNotFoundException(fileId + " 不存在");
         }
-        return getFileRecord(record.getPath());
+        FileRecordDTO dto = new FileRecordDTO();
+        BeanUtils.copyProperties(record, dto);
+        dto.setContentSupplier(() -> fileStorageStrategy.getInputStream(record.getPath()));
+        return dto;
     }
 
     @Override
