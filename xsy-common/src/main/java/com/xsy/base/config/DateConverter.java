@@ -1,13 +1,12 @@
 package com.xsy.base.config;
 
+import com.xsy.base.util.DateFormatUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,8 +59,7 @@ public class DateConverter implements Converter<String, Date> {
     public Date parseDate(String dateStr, String format) {
         Date date = null;
         try {
-            DateFormat dateFormat = new SimpleDateFormat(format);
-            date = dateFormat.parse(dateStr);
+            date = DateFormatUtils.parse(dateStr, format);
         } catch (Exception e) {
             logger.error("Formatted date with date: {} and format : {} ", dateStr, format);
         }
