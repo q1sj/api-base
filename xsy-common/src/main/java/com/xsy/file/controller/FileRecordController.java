@@ -11,6 +11,7 @@ import com.xsy.file.service.FileRecordService;
 import com.xsy.security.annotation.NoAuth;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,12 @@ public class FileRecordController {
 	public static final String IMG_MAPPING = "/img";
 	@Autowired
 	private FileRecordService fileRecordService;
+	/**
+	 * 图片接口浏览器缓存天数
+	 * 默认2592000秒(30天)
+	 */
+	@Value("${file.img.max-age:2592000}")
+	private Integer maxAge;
 
 	/**
 	 * 上传文件
@@ -129,7 +136,7 @@ public class FileRecordController {
 			FileRecordDTO fileRecord = this.fileRecordService.getFileRecord(fileId);
 			try (InputStream is = fileRecord.getContent();
 			     OutputStream os = response.getOutputStream()) {
-				response.setHeader("Cache-Control", "max-age=3600, must-revalidate");
+				response.setHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
 				response.setContentLengthLong(fileRecord.getFileSize());
 				IOUtils.copy(is, os);
 			}
@@ -154,7 +161,7 @@ public class FileRecordController {
 			FileRecordDTO fileRecord = fileRecordService.getFileRecord(path);
 			try (InputStream is = fileRecord.getContent();
 			     OutputStream os = response.getOutputStream()) {
-				response.setHeader("Cache-Control", "max-age=3600, must-revalidate");
+				response.setHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
 				response.setContentLengthLong(fileRecord.getFileSize());
 				IOUtils.copy(is, os);
 			}
