@@ -53,7 +53,7 @@ public class LoginController {
         SysUserDTO user = sysUserService.validLogin(login);
         //登录成功
         TokenDTO token = sysUserTokenService.createToken(user);
-        log.info("登陆成功 username:{} token:{}", user.getUsername(), token);
+        log.info("登录成功 username:{} token:{}", user.getUsername(), token);
         return Result.ok(token);
     }
 

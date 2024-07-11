@@ -25,7 +25,7 @@ public enum ResultCodeEnum implements BaseEnum<Integer, String> {
 	// 认证失败 403xx
 	AUTHENTICATE_FAIL(40300, "认证失败"),
 	NO_LOGIN(40301, "未登录"),
-	LOGIN_EXPIRED(40302, "用户登陆已过期"),
+	LOGIN_EXPIRED(40302, "用户登录已过期"),
 	// 授权失败
 	UNAUTHORIZED(40303, "授权失败"),
     // 第三方服务错误 3xxxx,
