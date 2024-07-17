@@ -38,7 +38,7 @@ public class FileRecordController {
     public static final String REQUEST_MAPPING = "/file";
     public static final String DOWNLOAD_MAPPING = "/download";
 	public static final String IMG_MAPPING = "/img";
-	private static final String THUMBNAIL_MAPPING = "/thumbnail";
+	public static final String THUMBNAIL_MAPPING = "/thumbnail";
 	@Autowired
 	private FileRecordService fileRecordService;
 	/**
