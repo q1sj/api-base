@@ -177,15 +177,40 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     }
 
     @Override
+    public synchronized FileRecordDTO getThumbnail(String originPath) throws IOException {
+        FileRecordDTO originFileRecord = getFileRecord(originPath);
+        // remark存压缩后path
+        if (StringUtils.isNotBlank(originFileRecord.getRemark())) {
+            return getFileRecord(originFileRecord.getRemark());
+        }
+        byte[] thumbnailBytes = ImageCompressor.compressImage(originFileRecord.getFileType(), originFileRecord.getContent(), 500 * FileUtils.ONE_KB);
+        long expireMs = originFileRecord.getExpireTime() == null ? FileRecordService.NO_EXPIRE : originFileRecord.getExpireTime().getTime() - System.currentTimeMillis();
+        FileRecordEntity thumbnailFileRecord = save(new ByteArrayInputStream(thumbnailBytes), thumbnailBytes.length, originFileRecord.getName(), originFileRecord.getSource(), expireMs);
+        updateRemark(originFileRecord.getId(), thumbnailFileRecord.getPath());
+        return createFileRecordDTO(thumbnailFileRecord);
+    }
+
+    @Override
+    public synchronized FileRecordDTO getThumbnail(Long originFileId) throws IOException {
+        FileRecordDTO originFileRecord = getFileRecord(originFileId);
+        // remark存压缩后path
+        if (StringUtils.isNotBlank(originFileRecord.getRemark())) {
+            return getFileRecord(originFileRecord.getRemark());
+        }
+        byte[] thumbnailBytes = ImageCompressor.compressImage(originFileRecord.getFileType(), originFileRecord.getContent(), 500 * FileUtils.ONE_KB);
+        long expireMs = originFileRecord.getExpireTime() == null ? FileRecordService.NO_EXPIRE : originFileRecord.getExpireTime().getTime() - System.currentTimeMillis();
+        FileRecordEntity thumbnailFileRecord = save(new ByteArrayInputStream(thumbnailBytes), thumbnailBytes.length, originFileRecord.getName(), originFileRecord.getSource(), expireMs);
+        updateRemark(originFileRecord.getId(), thumbnailFileRecord.getPath());
+        return createFileRecordDTO(thumbnailFileRecord);
+    }
+
+    @Override
     public FileRecordDTO getFileRecord(Long fileId) throws IOException {
         FileRecordEntity record = getById(fileId);
         if (record == null) {
             throw new FileNotFoundException(fileId + " 不存在");
         }
-        FileRecordDTO dto = new FileRecordDTO();
-        BeanUtils.copyProperties(record, dto);
-        dto.setContentSupplier(() -> fileStorageStrategy.getInputStream(record.getPath()));
-        return dto;
+        return createFileRecordDTO(record);
     }
 
     @Override
@@ -279,5 +304,19 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
         String extension = FileUtils.getExtension(originalFilename);
         return source + "_" + DateFormatUtils.format(new Date(), "yyyyMMddHHmmss") + "_" + UUID.randomUUID()
                 + (StringUtils.isNotBlank(extension) ? "." + extension : "");
+    }
+
+    private FileRecordDTO createFileRecordDTO(FileRecordEntity record) {
+        FileRecordDTO dto = new FileRecordDTO();
+        BeanUtils.copyProperties(record, dto);
+        dto.setContentSupplier(() -> fileStorageStrategy.getInputStream(record.getPath()));
+        return dto;
+    }
+
+    private void updateRemark(Long id, String remark) {
+        FileRecordEntity fileRecordEntity = new FileRecordEntity();
+        fileRecordEntity.setId(id);
+        fileRecordEntity.setRemark(remark);
+        updateById(fileRecordEntity);
     }
 }

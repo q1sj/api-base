@@ -38,6 +38,7 @@ public class FileRecordController {
     public static final String REQUEST_MAPPING = "/file";
     public static final String DOWNLOAD_MAPPING = "/download";
 	public static final String IMG_MAPPING = "/img";
+	private static final String THUMBNAIL_MAPPING = "/thumbnail";
 	@Autowired
 	private FileRecordService fileRecordService;
 	/**
@@ -172,6 +173,55 @@ public class FileRecordController {
 		}
 	}
 
+	/**
+	 * 访问图片(根据id)
+	 *
+	 * @param response
+	 * @param fileId
+	 */
+	@NoAuth
+	@GetMapping(THUMBNAIL_MAPPING + "/{fileId}")
+	public void thumbnail(HttpServletResponse response, @PathVariable Long fileId) {
+		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		try {
+			FileRecordDTO fileRecord = this.fileRecordService.getThumbnail(fileId);
+			try (InputStream is = fileRecord.getContent();
+			     OutputStream os = response.getOutputStream()) {
+				response.setHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
+				response.setContentLengthLong(fileRecord.getFileSize());
+				IOUtils.copy(is, os);
+			}
+		} catch (FileNotFoundException e) {
+			throw new GlobalException("文件已过期或不存在", e);
+		} catch (IOException e) {
+			throw new GlobalException("文件下载失败", e);
+		}
+	}
+
+	/**
+	 * 访问缩略图(根据path)
+	 *
+	 * @param response
+	 * @param originPath
+	 */
+	@NoAuth
+	@GetMapping(THUMBNAIL_MAPPING)
+	public void thumbnail(HttpServletResponse response, @RequestParam String originPath) {
+		response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+		try {
+			FileRecordDTO fileRecord = fileRecordService.getThumbnail(originPath);
+			try (InputStream is = fileRecord.getContent();
+			     OutputStream os = response.getOutputStream()) {
+				response.setHeader("Cache-Control", "max-age=" + maxAge + ", must-revalidate");
+				response.setContentLengthLong(fileRecord.getFileSize());
+				IOUtils.copy(is, os);
+			}
+		} catch (FileNotFoundException e) {
+			throw new GlobalException("文件已过期或不存在", e);
+		} catch (IOException e) {
+			throw new GlobalException("文件下载失败", e);
+		}
+	}
 
 	/**
 	 * 删除

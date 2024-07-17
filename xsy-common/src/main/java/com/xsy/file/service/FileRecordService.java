@@ -103,6 +103,9 @@ public interface FileRecordService {
 
 	InputStream getInputStream(Long fileId) throws IOException;
 
+	FileRecordDTO getThumbnail(String originPath) throws IOException;
+
+	FileRecordDTO getThumbnail(Long originFileId) throws IOException;
 	/**
 	 * 获取文件内容
 	 *
