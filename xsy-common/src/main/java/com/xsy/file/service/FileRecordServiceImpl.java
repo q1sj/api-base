@@ -189,6 +189,10 @@ public class FileRecordServiceImpl extends ServiceImpl<FileRecordDao, FileRecord
     }
 
     private FileRecordDTO getThumbnail(FileRecordDTO originFileRecord) throws IOException {
+        // 无需压缩
+        if (originFileRecord.getFileSize() <= 500 * FileUtils.ONE_KB) {
+            return originFileRecord;
+        }
         // remark存压缩后path
         if (StringUtils.isNotBlank(originFileRecord.getRemark())) {
             return getFileRecord(originFileRecord.getRemark());
