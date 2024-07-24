@@ -3,7 +3,6 @@ package com.xsy.base.config;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.xsy.base.pojo.BaseEntity;
 import com.xsy.security.user.SecurityUser;
-import com.xsy.security.user.UserDetail;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.time.LocalDateTime;
@@ -26,35 +25,31 @@ public class FieldMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        UserDetail user = SecurityUser.getUser();
-        Date date = new Date();
-
         //创建者
-        strictInsertFill(metaObject, CREATOR, Long.class, user.getId());
+        strictInsertFill(metaObject, CREATOR, SecurityUser::getUserId, Long.class);
         //创建时间
-        strictInsertFill(metaObject, CREATE_DATE, Date.class, date);
-        strictInsertFill(metaObject, CREATE_DATE, LocalDateTime.class, LocalDateTime.now());
-        strictInsertFill(metaObject, CREATE_TIME, Date.class, date);
-        strictInsertFill(metaObject, CREATE_TIME, LocalDateTime.class, LocalDateTime.now());
+        strictInsertFill(metaObject, CREATE_DATE, Date::new, Date.class);
+        strictInsertFill(metaObject, CREATE_DATE, LocalDateTime::now, LocalDateTime.class);
+        strictInsertFill(metaObject, CREATE_TIME, Date::new, Date.class);
+        strictInsertFill(metaObject, CREATE_TIME, LocalDateTime::now, LocalDateTime.class);
         //更新者
-        strictInsertFill(metaObject, UPDATER, Long.class, user.getId());
+        strictInsertFill(metaObject, UPDATER, SecurityUser::getUserId, Long.class);
         //更新时间
-        strictInsertFill(metaObject, UPDATE_DATE, Date.class, date);
-        strictInsertFill(metaObject, UPDATE_DATE, LocalDateTime.class, LocalDateTime.now());
-        strictInsertFill(metaObject, UPDATE_TIME, Date.class, date);
-        strictInsertFill(metaObject, UPDATE_TIME, LocalDateTime.class, LocalDateTime.now());
+        strictInsertFill(metaObject, UPDATE_DATE, Date::new, Date.class);
+        strictInsertFill(metaObject, UPDATE_DATE, LocalDateTime::now, LocalDateTime.class);
+        strictInsertFill(metaObject, UPDATE_TIME, Date::new, Date.class);
+        strictInsertFill(metaObject, UPDATE_TIME, LocalDateTime::now, LocalDateTime.class);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         //更新者
-        strictUpdateFill(metaObject, UPDATER, Long.class, SecurityUser.getUserId());
+        strictUpdateFill(metaObject, UPDATER, SecurityUser::getUserId, Long.class);
         //更新时间
-        Date date = new Date();
-        strictInsertFill(metaObject, UPDATE_DATE, Date.class, date);
-        strictInsertFill(metaObject, UPDATE_DATE, LocalDateTime.class, LocalDateTime.now());
-        strictInsertFill(metaObject, UPDATE_TIME, Date.class, date);
-        strictInsertFill(metaObject, UPDATE_TIME, LocalDateTime.class, LocalDateTime.now());
+        strictInsertFill(metaObject, UPDATE_DATE, Date::new, Date.class);
+        strictInsertFill(metaObject, UPDATE_DATE, LocalDateTime::now, LocalDateTime.class);
+        strictInsertFill(metaObject, UPDATE_TIME, Date::new, Date.class);
+        strictInsertFill(metaObject, UPDATE_TIME, LocalDateTime::now, LocalDateTime.class);
     }
 
     /**
