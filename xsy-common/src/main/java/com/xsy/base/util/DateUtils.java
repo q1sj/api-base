@@ -128,4 +128,24 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static LocalDateTime toLocalDateTime(Date date) {
         return toZonedDateTime(date).toLocalDateTime();
     }
+
+    /**
+     * 时间是否相同
+     * <br><pre>{@code
+     * Date d1 = DateFormatUtils.parse("2024-01-01 00:00:11");
+     * Date d2 = DateFormatUtils.parse("2024-01-01 00:01:11");
+     * boolean sameDay = DateUtils.isSame(d1, d2, TimeUnit.DAYS); // true
+     * boolean sameHour = DateUtils.isSame(d1, d2, TimeUnit.HOURS); // true
+     * boolean sameMinutes = DateUtils.isSame(d1, d2, TimeUnit.MINUTES); // false
+     * boolean sameSeconds = DateUtils.isSame(d1, d2, TimeUnit.SECONDS); // false
+     * }</pre>
+     *
+     * @param d1
+     * @param d2
+     * @param timeUnit 比较的时间维度
+     * @return
+     */
+    public static boolean isSame(Date d1, Date d2, TimeUnit timeUnit) {
+        return timeUnit.convert(d1.getTime(), TimeUnit.MILLISECONDS) == timeUnit.convert(d2.getTime(), TimeUnit.MILLISECONDS);
+    }
 }
