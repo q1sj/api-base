@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,16 +42,25 @@ public class PageData<T> implements Serializable {
      */
     public PageData(List<T> list, long total) {
         this.list = list;
-        this.total = (int) total;
+        this.total = (int) Math.min(total, Integer.MAX_VALUE);
+    }
+
+    public PageData(List<T> list, int total) {
+        this.list = list;
+        this.total = total;
     }
 
     public PageData(IPage<T> iPage) {
         this.list = iPage.getRecords();
-        this.total = (int) iPage.getTotal();
+        this.total = (int) Math.min(iPage.getTotal(), Integer.MAX_VALUE);
     }
 
     public <R> PageData<R> convert(Function<T, R> function) {
         List<R> newList = list.stream().map(function).collect(Collectors.toList());
         return new PageData<>(newList, total);
+    }
+
+    public static <T> PageData<T> empty() {
+        return new PageData<>(Collections.emptyList(), 0);
     }
 }
