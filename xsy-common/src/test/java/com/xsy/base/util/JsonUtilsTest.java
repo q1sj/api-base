@@ -6,7 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JsonUtilsTest {
 
@@ -35,6 +37,27 @@ public class JsonUtilsTest {
         Assert.assertTrue(s5.length() < s6.length());
     }
 
+    @Test
+    public void testLongLogString() {
+        Map map = new HashMap();
+        StringBuilder longLogString = new StringBuilder();
+        for (int i = 0; i < JsonUtils.maxLogStringLength; i++) {
+            longLogString.append("a");
+        }
+        map.put("a", 1);
+        map.put("b", longLogString + "111111111111111111111111111111111111");
+        String logJsonString = JsonUtils.toLogJsonString(map);
+        String jsonString = JsonUtils.toJsonString(map);
+        Assert.assertTrue(logJsonString.length() < jsonString.length());
+
+
+        Body body = new Body();
+        body.setData2(longLogString + "11111111111111111111111111111111");
+        String logJsonString2 = JsonUtils.toLogJsonString(body);
+        String jsonString2 = JsonUtils.toJsonString(body);
+        Assert.assertTrue(logJsonString2.length() < jsonString2.length());
+    }
+
     @Data
     public static class TestObj {
         private Body body;
@@ -45,5 +68,7 @@ public class JsonUtilsTest {
         private Integer code;
         @IgnoreLog
         private String data;
+
+        private String data2;
     }
 }

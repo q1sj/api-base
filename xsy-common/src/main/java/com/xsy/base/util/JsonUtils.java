@@ -1,9 +1,12 @@
 package com.xsy.base.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -12,10 +15,9 @@ import com.xsy.base.exception.GlobalException;
 import com.xsy.base.log.IgnoreLog;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * JSON 工具类
@@ -23,6 +25,7 @@ import java.util.TimeZone;
  * @author Q1sj
  */
 public class JsonUtils {
+    public static int maxLogStringLength = 10 * 1024;
     private static final ObjectMapper OBJECT_MAPPER;
     private static final ObjectMapper LOG_OBJECT_MAPPER;
 
@@ -58,6 +61,10 @@ public class JsonUtils {
                 return ann != null;
             }
         });
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Map.class, new MapStringTruncateSerializer());
+        module.addSerializer(String.class, new StringTruncateSerializer());
+        objectMapper.registerModule(module);
         return objectMapper;
     }
 
@@ -110,4 +117,40 @@ public class JsonUtils {
             throw new GlobalException("json反序列化失败", e);
         }
     }
+
+
+    public static class MapStringTruncateSerializer extends JsonSerializer<Map> {
+
+        @Override
+        public void serialize(Map value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            Map<?, ?> map = value;
+            gen.writeStartObject();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                String key = Objects.toString(entry.getKey());
+                Object entryValue = entry.getValue();
+                if (entryValue instanceof String) {
+                    String strValue = (String) entryValue;
+                    if (strValue.length() > maxLogStringLength) {
+                        strValue = strValue.substring(0, maxLogStringLength) + "...长度:" + strValue.length();
+                    }
+                    gen.writeStringField(key, strValue);
+                } else {
+                    serializers.defaultSerializeField(key, entryValue, gen);
+                }
+            }
+            gen.writeEndObject();
+        }
+    }
+
+    public static class StringTruncateSerializer extends JsonSerializer<String> {
+
+        @Override
+        public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            if (value.length() > maxLogStringLength) {
+                value = value.substring(0, maxLogStringLength) + "...长度:" + value.length();
+            }
+            gen.writeString(value);
+        }
+    }
+
 }
