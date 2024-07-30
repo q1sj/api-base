@@ -25,6 +25,11 @@ import java.util.concurrent.Future;
 @Slf4j
 @Component
 public class HttpUtils {
+    /**
+     * 日志报文最大长度
+     * 该配置为兜底方案,不需要打印日志的字段应使用{@link com.xsy.base.log.IgnoreLog}注解,保持日志精简
+     */
+    public static int maxLogString = 50 * 1024;
 
     private static ExecutorService httpThreadPool = RestTemplateConfig.createHttpThreadPool();
     private static RestTemplate restTemplate = RestTemplateConfig.createDefaultRestTemplate();
@@ -67,18 +72,22 @@ public class HttpUtils {
         return httpThreadPool.submit(() -> exchange(url, httpMethod, body, respType));
     }
 
-
     private static String getLogJson(Object o) {
         if (o == null) {
             return "";
         }
+        String originLogString;
         if (String.class.equals(o.getClass())) {
-            return o.toString();
+            originLogString = o.toString();
+        } else {
+            try {
+                originLogString = JsonUtils.toLogJsonString(o);
+            } catch (Exception e) {
+                originLogString = Objects.toString(o);
+            }
         }
-        try {
-            return JsonUtils.toLogJsonString(o);
-        } catch (Exception e) {
-            return Objects.toString(o);
-        }
+        return originLogString.length() > maxLogString
+                ? originLogString.substring(0, maxLogString) + "...(长度:" + originLogString.length() + ")"
+                : originLogString;
     }
 }
