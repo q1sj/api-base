@@ -15,8 +15,6 @@ import com.xsy.base.pojo.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Entity;
-import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -27,7 +25,6 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_menu")
-@Entity(name = "sys_menu")
 public class SysMenuEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -73,6 +70,5 @@ public class SysMenuEntity extends BaseEntity {
      * 上级菜单名称
      */
     @TableField(exist = false)
-    @Transient
     private String parentName;
 }

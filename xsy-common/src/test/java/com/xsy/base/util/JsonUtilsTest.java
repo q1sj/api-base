@@ -56,6 +56,10 @@ public class JsonUtilsTest {
         String logJsonString2 = JsonUtils.toLogJsonString(body);
         String jsonString2 = JsonUtils.toJsonString(body);
         Assert.assertTrue(logJsonString2.length() < jsonString2.length());
+
+        Body body2 = new Body();
+        body2.setData2(map);
+        String logJsonString3 = JsonUtils.toLogJsonString(body2);
     }
 
     @Data
@@ -69,6 +73,6 @@ public class JsonUtilsTest {
         @IgnoreLog
         private String data;
 
-        private String data2;
+        private Object data2;
     }
 }

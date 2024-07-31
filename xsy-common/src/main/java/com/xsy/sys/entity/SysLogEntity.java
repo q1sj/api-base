@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.xsy.base.util.StringLimitConverter;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -18,12 +18,10 @@ import java.util.Date;
  * @date 2023.11.9 9:35
  */
 @Data
-@Entity(name = "sys_log")
 @TableName("sys_log")
 @ExcelIgnoreUnannotated
 public class SysLogEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@TableId(type = IdType.ASSIGN_ID)
 	@ExcelProperty(value = "id", converter = LongStringConverter.class)
 	private Long id;
@@ -41,19 +39,16 @@ public class SysLogEntity {
 	 * 参数
 	 */
 	@ExcelProperty(value = "请求参数", converter = StringLimitConverter.class)
-	@Column(columnDefinition = "text")
 	private String args;
 	/**
 	 * 响应
 	 */
 	@ExcelProperty(value = "响应", converter = StringLimitConverter.class)
-	@Column(columnDefinition = "text")
 	private String resp;
 	/**
 	 * 异常
 	 */
 	@ExcelProperty(value = "异常", converter = StringLimitConverter.class)
-	@Column(columnDefinition = "text")
 	private String throwable;
 	/**
 	 * 耗时(ms)

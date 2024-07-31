@@ -16,10 +16,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -30,15 +26,12 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_user")
-@Entity(name = "sys_user")
-@Table(indexes = {@Index(name = "idx_sys_user_create_date", columnList = BaseEntity.Fields.createDate)})
 @FieldNameConstants
 public class SysUserEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
     /**
      * 用户名
      */
-    @Column(nullable = false, unique = true, length = 50)
     private String username;
     /**
      * 密码

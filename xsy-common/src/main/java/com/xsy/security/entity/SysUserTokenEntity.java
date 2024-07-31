@@ -13,8 +13,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -23,25 +23,21 @@ import java.util.Date;
  */
 @Data
 @TableName("sys_user_token")
-@Entity(name = "sys_user_token")
 public class SysUserTokenEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     /**
      * id
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @TableId
     private Long id;
     /**
      * 用户ID
      */
-    @Column(nullable = false, unique = true,length = 20)
     private Long userId;
     /**
      * 用户token
      */
-	@Column(nullable = false, unique = true,length = 100)
 	private String token;
     /**
      * 过期时间

@@ -15,8 +15,6 @@ import com.xsy.base.pojo.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import java.util.Date;
 
 /**
@@ -27,7 +25,6 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper=false)
 @TableName("sys_role")
-@Entity(name = "sys_role")
 public class SysRoleEntity extends BaseEntity {
 	private static final long serialVersionUID = 1L;
 

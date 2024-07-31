@@ -13,11 +13,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -27,14 +24,12 @@ import java.util.Date;
  * @author Mark sunlightcs@gmail.com
  */
 @Data
-@MappedSuperclass
 @FieldNameConstants
 public abstract class BaseEntity implements Serializable {
     /**
      * id
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @TableId
     private Long id;
 	/**

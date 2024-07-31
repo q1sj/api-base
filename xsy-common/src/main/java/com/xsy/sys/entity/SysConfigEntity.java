@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -20,14 +20,12 @@ import java.util.Date;
  */
 @Data
 @TableName("sys_config")
-@Entity(name = "sys_config")
 @NoArgsConstructor
 public class SysConfigEntity {
     /**
      * 键
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @TableId(type = IdType.INPUT)
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "key只允许英文数字-_")
@@ -36,13 +34,11 @@ public class SysConfigEntity {
      * 参数值的数据类型
      * {@link com.xsy.sys.enums.SysConfigValueTypeEnum}
      */
-    @Column(nullable = false)
     private String configValueType;
     /**
      * 值
      */
     @NotNull
-    @Column(nullable = false, columnDefinition = "text")
     private String configValue;
     /**
      * 备注
