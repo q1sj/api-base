@@ -48,7 +48,7 @@ public class ExportRecordServiceImpl extends ServiceImpl<ExportRecordDao, Export
 	@Override
 	public List<ExportRecordEntity> findByStatus(ExportStatusEnum exportStatus) {
 		return list(Wrappers.lambdaQuery(ExportRecordEntity.class)
-				.eq(ExportRecordEntity::getStatus, exportStatus));
+				.eq(ExportRecordEntity::getStatus, exportStatus.getValue()));
 	}
 
 	@Override
